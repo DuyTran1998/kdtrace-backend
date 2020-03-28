@@ -32,4 +32,12 @@ public class CompanyInfo {
     private String create_at;
 
     private String update_at;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    public CompanyInfo(){
+
+    }
 }

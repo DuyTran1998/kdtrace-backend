@@ -1,8 +1,11 @@
 package com.duytran.kdtrace.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -13,6 +16,10 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     private RoleName roleName;
+
+    @JsonIgnore
+    @OneToMany(targetEntity=User.class, mappedBy="role",cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User> user = new ArrayList<>();
 
     public Role(){
     }

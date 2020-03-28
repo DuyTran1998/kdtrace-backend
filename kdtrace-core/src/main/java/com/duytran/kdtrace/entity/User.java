@@ -19,14 +19,17 @@ public class User {
     private String username;
 
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 100)
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "companyinfo_id", referencedColumnName = "id")
-    private CompanyInfo companyInfo;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="role_id", referencedColumnName = "id")
     private Role role;
+
+    public User(){}
+
+    public User(String username, String password){
+        this.username = username;
+        this.password = password;
+    }
 }
