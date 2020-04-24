@@ -1,26 +1,32 @@
 package com.duytran.kdtrace.controller;
 
-import com.duytran.kdtrace.entity.User;
-import com.duytran.kdtrace.exeption.RecordNotFoundException;
-import com.duytran.kdtrace.repository.UserRepository;
+import com.duytran.kdtrace.model.UserModel;
+import com.duytran.kdtrace.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("api/admin")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class UserController {
+
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @GetMapping("/get")
     public ResponseEntity<?> getUserById(@RequestParam long id){
-        User user = userRepository.findUserById(id).orElseThrow(
-                () -> new RecordNotFoundException("NOT FOUND")
-        );
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping("getAllUsers")
+    public ResponseEntity<?> getAllUser(){
+        return ResponseEntity.ok(userService.getAllUser());
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<?> updateRoleForUser(@RequestBody UserModel userModel){
+        return ResponseEntity.ok(userService.updateUser(userModel));
     }
 }

@@ -8,9 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
-@Entity
-@Table(name = "companies")
-public class CompanyInfo {
+@MappedSuperclass
+public abstract class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -37,7 +36,6 @@ public class CompanyInfo {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    public CompanyInfo(){
-
+    public Company(){
     }
 }

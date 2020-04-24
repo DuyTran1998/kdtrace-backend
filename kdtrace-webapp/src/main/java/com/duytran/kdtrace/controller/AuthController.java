@@ -1,6 +1,7 @@
 package com.duytran.kdtrace.controller;
 
 import com.duytran.kdtrace.model.LoginRequest;
+import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.model.UserModel;
 import com.duytran.kdtrace.security.jwt.JwtAuthenticationResponse;
 import com.duytran.kdtrace.security.jwt.JwtTokenProvider;
@@ -30,12 +31,12 @@ public class AuthController {
     @Autowired
     JwtTokenProvider tokenProvider;
 
-    @PostMapping("/register")
+    @PostMapping("api/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserModel userModel){
     return ResponseEntity.ok(userService.saveUser(userModel));
 }
 
-    @PostMapping("login")
+    @PostMapping("api/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -43,9 +44,13 @@ public class AuthController {
                         loginRequest.getPassword()
                 )
         );
+        if(!userService.trackingActive(loginRequest.getUsername())){
+            return ResponseEntity.ok( new ResponseModel("The account non-active", 400,
+                                                        loginRequest.getUsername()));
+        }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
-
 }
