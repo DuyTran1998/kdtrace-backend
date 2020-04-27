@@ -1,8 +1,8 @@
 package com.duytran.kdtrace.controller;
 
 import com.duytran.kdtrace.model.LoginRequest;
+import com.duytran.kdtrace.model.RegisterRequest;
 import com.duytran.kdtrace.model.ResponseModel;
-import com.duytran.kdtrace.model.UserModel;
 import com.duytran.kdtrace.security.jwt.JwtAuthenticationResponse;
 import com.duytran.kdtrace.security.jwt.JwtTokenProvider;
 import com.duytran.kdtrace.service.UserService;
@@ -32,8 +32,8 @@ public class AuthController {
     JwtTokenProvider tokenProvider;
 
     @PostMapping("api/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserModel userModel){
-    return ResponseEntity.ok(userService.saveUser(userModel));
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest){
+    return ResponseEntity.ok(userService.saveUser(registerRequest ));
 }
 
     @PostMapping("api/login")

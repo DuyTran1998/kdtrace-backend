@@ -33,7 +33,7 @@ public abstract class Company {
     private String update_at;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", updatable = false)
     private User user;
 
     public Company(){

@@ -5,9 +5,9 @@ import com.duytran.kdtrace.entity.RoleName;
 import com.duytran.kdtrace.entity.User;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.UserMapper;
+import com.duytran.kdtrace.model.RegisterRequest;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.model.UserModel;
-import com.duytran.kdtrace.repository.ProducerRepository;
 import com.duytran.kdtrace.repository.RoleRepository;
 import com.duytran.kdtrace.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +29,13 @@ public class UserService {
     private RoleRepository roleRepository;
 
     @Autowired
-    private ProducerRepository producerRepository;
+    private ProducerService producerService;
 
     @Autowired
-    private ProductService productService;
+    private TransportService transportService;
 
+    @Autowired
+    private DistributorService distributorService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -42,11 +44,11 @@ public class UserService {
     // Create new account for user.
 
     @Transactional
-    public ResponseModel saveUser(UserModel userModel){
-        if(userRepository.existsUserByUsername(userModel.getUsername())){
-            return new ResponseModel("Username have been created", HttpStatus.CREATED.value(), userModel.getUsername());
+    public ResponseModel saveUser(RegisterRequest registerRequest){
+        if(userRepository.existsUserByUsername(registerRequest.getUsername())){
+            return new ResponseModel("Username have been created", HttpStatus.CREATED.value(), registerRequest.getUsername());
         }
-        User user = new User(userModel.getUsername(), passwordEncoder.encode(userModel.getPassword()));
+        User user = new User(registerRequest.getUsername(), passwordEncoder.encode(registerRequest.getPassword()));
         Role role = roleRepository.findByRoleName(RoleName.ROLE_USER).orElseThrow(
                 () -> new RecordNotFoundException("RoleName isn't exist")
         );
@@ -96,12 +98,23 @@ public class UserService {
             if(user.getRole().getRoleName() != RoleName.ROLE_USER){
                 return new ResponseModel("The account don't allow to change role.", 403, userModel);
             }
+            Role role = roleRepository.findByRoleName(userModel.getRole().getRoleName()).orElseThrow(
+                    () -> new RecordNotFoundException("Role isn't exist")
+            );
+            user.setRole(role);
+            user.setActive(userModel.isActive());
             switch (userModel.getRole().getRoleName()){
+                    //    Create the description for user have ROLE_PRODUCER
                 case ROLE_PRODUCER:
-                    productService.createProducer(user); //    Description for user have ROLE_PRODUCER
+                    producerService.createProducer(user);
+                    //    Create the description for user have ROLE_TRANSPORT
+                case ROLE_TRANSPORT:
+                    transportService.createTransport(user);
+                    //    Create the description for user have ROLE_DISTRIBUTOR
+                case ROLE_DISTRIBUTOR:
+                    distributorService.createDistributor(user);
             }
         }
-
         try{
             userRepository.save(user);
         }catch (Exception e){

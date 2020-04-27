@@ -30,18 +30,16 @@ public class RoleDBInit implements CommandLineRunner {
 
         Role roleAdmin = new Role(1, RoleName.ROLE_ADMIN);
         Role roleUser = new Role(2, RoleName.ROLE_USER);
-        Role roleExpress = new Role(3, RoleName.ROLE_EXPRESS);
-        Role roleProducer = new Role(4, RoleName.ROLE_PRODUCER);
+        Role roleTransport = new Role(3, RoleName.ROLE_PRODUCER);
+        Role roleExpress = new Role(4, RoleName.ROLE_TRANSPORT);
         Role roleDistributor = new Role(5, RoleName.ROLE_DISTRIBUTOR);
 
         userRepository.save( new User("duytran", passwordEncoder.encode("123456"), true, roleAdmin));
 
         roleRepository.save(roleUser);
+        roleRepository.save(roleTransport);
         roleRepository.save(roleExpress);
-        roleRepository.save(roleProducer);
         roleRepository.save(roleDistributor);
-
-
 
     }
 }

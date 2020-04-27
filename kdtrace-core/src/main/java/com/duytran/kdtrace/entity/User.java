@@ -16,6 +16,7 @@ public class User {
 
     @NotBlank
     @Size(min = 3, max = 50)
+    @Column(updatable = false)
     private String username;
 
     @NotBlank
