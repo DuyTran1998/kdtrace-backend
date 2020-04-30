@@ -8,5 +8,5 @@ import java.util.List;
 public interface DeliveryTruckRepository extends JpaRepository<DeliveryTruck, Long> {
     boolean existsDeliveryTruckByNumberPlate(String numberPlate);
 
-    List<DeliveryTruck> findAllByTransport_Id(long id);
+    List<DeliveryTruck> findAllByTransport_Id(Long id);
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class QRCodeModel {
-    private long id;
+    private Long id;
 
     private String qr_code;
 

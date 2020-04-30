@@ -39,7 +39,7 @@ public class ProductService {
         product.setProducer(producer);
         productRepository.save(product);
         generateCode(product);
-        return new ResponseModel("Create Successfully", HttpStatus.OK.value(), product);
+        return new ResponseModel("Create Successfully", HttpStatus.OK.value(), productModel);
     }
 
     @Value("${url}")

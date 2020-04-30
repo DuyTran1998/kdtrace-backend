@@ -12,7 +12,8 @@ import java.util.List;
 @Table(name = "roles")
 public class Role {
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     private RoleName roleName;
@@ -24,8 +25,7 @@ public class Role {
     public Role(){
     }
 
-    public Role(long id, RoleName roleName){
-        this.id = id;
+    public Role(RoleName roleName){
         this.roleName = roleName;
     }
 }

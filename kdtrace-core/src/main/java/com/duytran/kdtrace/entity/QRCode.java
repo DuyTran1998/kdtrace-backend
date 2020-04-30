@@ -11,16 +11,20 @@ import javax.persistence.*;
 public class QRCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 
     private String qr_code;
 
     private String ower;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "process_id")
+    private Process process;
 
     public QRCode(){
     }
