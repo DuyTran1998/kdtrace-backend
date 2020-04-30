@@ -28,11 +28,11 @@ public class RoleDBInit implements CommandLineRunner {
     public void run(String... args) throws Exception {
         this.roleRepository.deleteAll();
 
-        Role roleAdmin = new Role(1, RoleName.ROLE_ADMIN);
-        Role roleUser = new Role(2, RoleName.ROLE_USER);
-        Role roleTransport = new Role(3, RoleName.ROLE_PRODUCER);
-        Role roleExpress = new Role(4, RoleName.ROLE_TRANSPORT);
-        Role roleDistributor = new Role(5, RoleName.ROLE_DISTRIBUTOR);
+        Role roleAdmin = new Role(RoleName.ROLE_ADMIN);
+        Role roleUser = new Role(RoleName.ROLE_USER);
+        Role roleTransport = new Role(RoleName.ROLE_PRODUCER);
+        Role roleExpress = new Role(RoleName.ROLE_TRANSPORT);
+        Role roleDistributor = new Role(RoleName.ROLE_DISTRIBUTOR);
 
         userRepository.save( new User("duytran", passwordEncoder.encode("123456"), true, roleAdmin));
 

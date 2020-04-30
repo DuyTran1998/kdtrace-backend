@@ -71,7 +71,7 @@ public class UserService {
 
     //  Get User By Id
 
-    public UserModel getUserById(long id){
+    public UserModel getUserById(Long id){
         User user = userRepository.findUserById(id).orElseThrow(
                 () ->  new RecordNotFoundException("User Not Found")
         );

@@ -16,7 +16,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/get")
-    public ResponseEntity<?> getUserById(@RequestParam long id){
+    public ResponseEntity<?> getUserById(@RequestParam Long id){
         return ResponseEntity.ok(userService.getUserById(id));
     }
 

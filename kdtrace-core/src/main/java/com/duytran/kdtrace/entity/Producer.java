@@ -2,10 +2,7 @@ package com.duytran.kdtrace.entity;
 
 import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Data
@@ -13,6 +10,6 @@ import java.util.List;
 @Table(name = "producers")
 public class Producer extends Company {
 
-    @OneToMany(mappedBy = "producer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "producer", fetch = FetchType.LAZY)
     private List<Product> products;
 }

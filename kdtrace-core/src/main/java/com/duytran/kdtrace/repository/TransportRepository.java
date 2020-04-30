@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface TransportRepository extends JpaRepository<Transport,Long> {
     Optional<Transport> findTransportByUser_Username(String username);
 
-    boolean existsById(long id);
+    boolean existsById(Long id);
 }

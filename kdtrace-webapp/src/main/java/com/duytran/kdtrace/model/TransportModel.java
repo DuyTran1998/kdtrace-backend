@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class TransportModel {
-    private long id;
+    private Long id;
     private String companyName;
     private String email;
     private String address;

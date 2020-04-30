@@ -9,7 +9,7 @@ import javax.persistence.Enumerated;
 
 @Data
 public class DeliveryTruckModel {
-    private long id;
+    private Long id;
 
     private String numberPlate;
 

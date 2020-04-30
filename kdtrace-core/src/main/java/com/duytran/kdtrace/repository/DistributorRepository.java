@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface DistributorRepository extends JpaRepository<Distributor, Long> {
     Optional<Distributor> findDistributorByUser_Username(String username);
 
-    boolean existsById(long id);
+    boolean existsById(Long id);
 }

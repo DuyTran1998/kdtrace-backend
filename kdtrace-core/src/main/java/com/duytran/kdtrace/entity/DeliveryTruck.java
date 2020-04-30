@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
         import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Data
 @Entity
@@ -12,7 +13,7 @@ import javax.persistence.*;
 public class DeliveryTruck {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(unique = true)
     @NotBlank
@@ -24,9 +25,11 @@ public class DeliveryTruck {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "transport_id")
     private Transport transport;
+
+    @OneToMany(mappedBy = "deliveryTruck", fetch = FetchType.LAZY)
+    private List<Process> processes;
 
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 public class ProductModel {
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -22,7 +22,7 @@ public class ProductModel {
 
     private List<QRCodeModel> codes;
 
-    private long quantity;
+    private Long quantity;
 
     @Enumerated(EnumType.STRING)
     private Unit unit;

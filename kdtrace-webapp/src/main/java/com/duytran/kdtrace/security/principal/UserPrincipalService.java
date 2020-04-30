@@ -28,7 +28,7 @@ public class UserPrincipalService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDetails loadUserById(long id){
+    public UserDetails loadUserById(Long id){
         User user = userRepository.findUserById(id).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with id:" + id)
         );
