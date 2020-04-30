@@ -28,6 +28,12 @@ public class User {
     @JoinColumn(name="role_id", referencedColumnName = "id")
     private Role role;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hf_user_context_id", referencedColumnName = "id")
+    private HFUserContext hfUserContext;
+
+    private String organization = "Org1";
+
     public User(){}
 
     public User(String username, String password, boolean isActive, Role role){
@@ -40,5 +46,10 @@ public class User {
     public User(String username, String password){
         this.username = username;
         this.password = password;
+    }
+
+    public User hfUserContext(HFUserContext hfUserContext) {
+        this.hfUserContext = hfUserContext;
+        return this;
     }
 }

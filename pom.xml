@@ -5,6 +5,7 @@
     <modules>
         <module>kdtrace-core</module>
         <module>kdtrace-webapp</module>
+        <module>blockchain</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
