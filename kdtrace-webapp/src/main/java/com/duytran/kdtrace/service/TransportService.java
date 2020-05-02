@@ -30,10 +30,18 @@ public class TransportService {
     private DeliveryTruckRepository deliveryTruckRepository;
 
     @Autowired
+    private BlockchainService blockchainService;
+
+    @Autowired
     private CommonService commonService;
 
     public void createTransport(User user){
         Transport transport = new Transport();
+        try {
+            blockchainService.registerIdentity(user.getUsername(), transport.getOrgMsp());
+        }catch (Exception e){
+            throw new RuntimeException("Cannot register user identity");
+        }
         transport.setCompanyName("Transport");
         transport.setUser(user);
         transportRepository.save(transport);

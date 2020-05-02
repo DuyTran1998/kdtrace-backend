@@ -1,8 +1,10 @@
 package com.duytran.kdtrace.mapper;
 
+import com.duytran.kdtrace.dto.UserDto;
 import com.duytran.kdtrace.entity.User;
 import com.duytran.kdtrace.model.UserModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -18,4 +20,7 @@ public interface UserMapper {
     List<UserModel> userListToUserModelList(List<User> users);
 
     List<User> userModelListToUserList(List<UserModel> userModel);
+
+    @Mapping(target = "role", source = "role.roleName")
+    UserDto userToUserDto (User user);
 }

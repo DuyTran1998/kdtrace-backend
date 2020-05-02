@@ -5,7 +5,7 @@ import com.duytran.kdtrace.entity.User;
 import com.duytran.kdtrace.exeption.RecordHasCreatedException;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.UserContextMapper;
-import com.duytran.kdtrace.model.UserContextDto;
+import com.duytran.kdtrace.dto.UserContextDto;
 import com.duytran.kdtrace.repository.HFUserContextRepository;
 import com.duytran.kdtrace.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +13,6 @@ import main.HyperledgerFabric;
 import model.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 @Slf4j

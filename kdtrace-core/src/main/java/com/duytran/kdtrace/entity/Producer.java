@@ -12,4 +12,6 @@ public class Producer extends Company {
 
     @OneToMany(mappedBy = "producer", fetch = FetchType.LAZY)
     private List<Product> products;
+
+    String orgMsp = "Org1";
 }

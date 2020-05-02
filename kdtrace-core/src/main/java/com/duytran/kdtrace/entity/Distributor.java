@@ -11,4 +11,6 @@ import java.util.List;
 public class Distributor extends Company {
     @OneToMany(mappedBy = "distributor", fetch = FetchType.LAZY)
     private List<Process> processes;
+
+    String orgMsp = "Org3";
 }

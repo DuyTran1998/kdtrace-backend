@@ -1,6 +1,6 @@
 package com.duytran.kdtrace.controller;
 
-import com.duytran.kdtrace.model.UserContextDto;
+import com.duytran.kdtrace.dto.UserContextDto;
 import com.duytran.kdtrace.service.BlockchainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -21,10 +21,18 @@ public class DistributorService {
     private UserPrincipalService userPrincipalService;
 
     @Autowired
+    private BlockchainService blockchainService;
+
+    @Autowired
     private CommonService commonService;
 
     public void createDistributor(User user){
         Distributor distributor = new Distributor();
+        try {
+            blockchainService.registerIdentity(user.getUsername(), distributor.getOrgMsp());
+        }catch (Exception e){
+            throw new RuntimeException("Cannot register user identity");
+        }
         distributor.setCompanyName("Distributor");
         distributor.setUser(user);
         distributorRepository.save(distributor);

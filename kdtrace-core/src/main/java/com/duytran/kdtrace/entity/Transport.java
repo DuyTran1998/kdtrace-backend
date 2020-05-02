@@ -12,4 +12,6 @@ public class Transport extends Company {
 
     @OneToMany(mappedBy = "transport", fetch = FetchType.LAZY)
     private List<DeliveryTruck> deliveryTruckList;
+
+    String orgMsp = "Org2";
 }

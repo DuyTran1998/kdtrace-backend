@@ -23,11 +23,19 @@ public class ProducerService {
     @Autowired
     private CommonService commonService;
 
+    @Autowired
+    private BlockchainService blockchainService;
+
 
     // Function to create Producer Detail.
 
     public void createProducer(User user){
         Producer producer = new Producer();
+        try {
+            blockchainService.registerIdentity(user.getUsername(), producer.getOrgMsp());
+        }catch (Exception e){
+            throw new RuntimeException("Cannot register user identity");
+        }
         producer.setCompanyName("Producer");
         producer.setUser(user);
         producerRepository.save(producer);

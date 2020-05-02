@@ -93,26 +93,26 @@ public class CAClientWrapper {
     public UserContext registerUser(UserContext registrarAdmin, String organization, com.duytran.kdtrace.entity.User user) throws Exception {
         UserContext userContext;
 
-        RegistrationRequest regRequest = new RegistrationRequest(new Long(user.getId()).toString() + "-" + user.getUsername(), organization);
+        RegistrationRequest regRequest = new RegistrationRequest( user.getId().toString() + "-" + user.getUsername(), organization);
         regRequest.setType("user");
         Map<String,Set<String>> maps;
-        regRequest.addAttribute(new Attribute("id", new Long(user.getId()).toString(), true));
+        regRequest.addAttribute(new Attribute("id", user.getId().toString(), true));
         regRequest.addAttribute(new Attribute("userName", user.getUsername(), true));
         regRequest.addAttribute(new Attribute("systemRole", user.getRole().getRoleName().name(), true));
-        regRequest.addAttribute(new Attribute("organization", user.getOrganization(), true));
+        regRequest.addAttribute(new Attribute("organization", organization, true));
 
         if (registrarAdmin == null) {
             Logger.getLogger(CAClientWrapper.class.getName()).log(Level.SEVERE, "Registrar admin is not enrolled. Enroll Registrar.");
             throw new Exception("registrar context not valid");
         }
         String enrollSecret = hfcaClient.register(regRequest, registrarAdmin);
-        Enrollment enrollment = hfcaClient.enroll(new Long(user.getId()).toString() + "-" + user.getUsername(), enrollSecret);
+        Enrollment enrollment = hfcaClient.enroll(user.getId().toString() + "-" + user.getUsername(), enrollSecret);
 
         userContext = new UserContext();
         userContext.setMspId(FabricNetworkProfileLoader.getOrgInfo(org).getMspId());
         userContext.setAffiliation(org);
         userContext.setEnrollment(enrollment);
-        userContext.setName(new Long(user.getId()).toString() + "-" + user.getUsername());
+        userContext.setName(user.getId().toString() + "-" + user.getUsername());
         Logger.getLogger(CAClientWrapper.class.getName()).log(Level.INFO, "UserName - " + user.getUsername() + "  is successfully registered and enrolled by registrar -  " + registrarAdmin);
         return userContext;
     }

@@ -107,12 +107,15 @@ public class UserService {
                     //    Create the description for user have ROLE_PRODUCER
                 case ROLE_PRODUCER:
                     producerService.createProducer(user);
+                    break;
                     //    Create the description for user have ROLE_TRANSPORT
                 case ROLE_TRANSPORT:
                     transportService.createTransport(user);
+                    break;
                     //    Create the description for user have ROLE_DISTRIBUTOR
                 case ROLE_DISTRIBUTOR:
                     distributorService.createDistributor(user);
+                    break;
             }
         }
         try{
@@ -120,7 +123,7 @@ public class UserService {
         }catch (Exception e){
             return new ResponseModel("Update Fail", 400, userModel);
         }
-        return new ResponseModel("Update Successfull", 200, user);
+        return new ResponseModel("Update Successfull", 200, UserMapper.INSTANCE.userToUserDto(user));
     }
 
 
