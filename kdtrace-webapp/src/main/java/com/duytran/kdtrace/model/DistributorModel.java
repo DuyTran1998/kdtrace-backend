@@ -1,8 +1,11 @@
 package com.duytran.kdtrace.model;
 
-import lombok.Data;
 
-@Data
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class DistributorModel {
     private Long id;
     private String companyName;

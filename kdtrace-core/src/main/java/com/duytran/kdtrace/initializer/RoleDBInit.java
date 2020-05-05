@@ -40,6 +40,5 @@ public class RoleDBInit implements CommandLineRunner {
         roleRepository.save(roleTransport);
         roleRepository.save(roleExpress);
         roleRepository.save(roleDistributor);
-
     }
 }

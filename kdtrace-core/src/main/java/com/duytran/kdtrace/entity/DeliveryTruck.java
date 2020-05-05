@@ -1,14 +1,16 @@
 package com.duytran.kdtrace.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
         import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-@Data
 @Entity
+@Getter
+@Setter
 @Table
 public class DeliveryTruck {
     @Id
@@ -29,7 +31,7 @@ public class DeliveryTruck {
     @JoinColumn(name = "transport_id")
     private Transport transport;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "deliveryTruck", fetch = FetchType.LAZY)
     private List<Process> processes;
-
 }
