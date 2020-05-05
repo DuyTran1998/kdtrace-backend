@@ -11,6 +11,8 @@ import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 public class DistributorService {
 
@@ -52,7 +54,7 @@ public class DistributorService {
         return new ResponseModel("Update Successfully ", 200, distributor);
     }
 
-
+    @Transactional
     public Distributor getDistributorInPrincipal(){
         Distributor distributor =  distributorRepository.findDistributorByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
                 () -> new RecordNotFoundException("Don't found distributor")

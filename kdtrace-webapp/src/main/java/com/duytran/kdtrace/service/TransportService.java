@@ -81,7 +81,7 @@ public class TransportService {
             }catch (Exception e){
                 return new ResponseModel("Create not successfull", 400, e);
             }
-            return new ResponseModel("Create successfully", 200, deliveryTruck);
+            return new ResponseModel("Create successfully", 200, deliveryTruckModel);
         }
     }
 
@@ -91,5 +91,12 @@ public class TransportService {
         List<DeliveryTruckModel> deliveryTruckModelList = DeliveryTruckMapper.INSTANCE
                                                         .deliveryTruckListToDeliveryTruckModelList(deliveryTruckList);
         return new ResponseModel("Delivery Truck List", 200, deliveryTruckModelList);
+    }
+
+    public DeliveryTruck findDeliveryTruckById(Long id){
+        DeliveryTruck deliveryTruck = deliveryTruckRepository.findDeliveryTruckById(id).orElseThrow(
+                () -> new RecordNotFoundException("Not Found")
+        );
+        return deliveryTruck;
     }
 }

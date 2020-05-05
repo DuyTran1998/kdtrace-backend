@@ -3,12 +3,15 @@ package com.duytran.kdtrace.model;
 import com.duytran.kdtrace.entity.QRCode;
 import com.duytran.kdtrace.entity.Unit;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class ProductModel {
     private Long id;
 

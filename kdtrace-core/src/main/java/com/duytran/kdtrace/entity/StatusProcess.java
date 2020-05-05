@@ -1,0 +1,11 @@
+package com.duytran.kdtrace.entity;
+
+public enum StatusProcess {
+    WAITING_RESPONSE_PRODUCER,
+    PRODUCER_REJECT,
+    CHOOSE_DELIVERYTRUCK_TRANSPORT,
+    TRANSPORT_REJECT,
+    ON_BOARDING_GET,
+    ON_BOARDING_REVEIVE,
+    REVEIVED
+}

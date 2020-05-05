@@ -5,10 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class QRCodeModel {
+public class RequestProcessModel {
+
     private Long id;
 
-    private String qr_code;
+    private Long id_product;
 
-    private String ower;
+    private Long quantity;
 }
