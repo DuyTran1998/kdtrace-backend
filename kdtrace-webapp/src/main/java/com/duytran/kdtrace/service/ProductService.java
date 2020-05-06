@@ -3,6 +3,7 @@ package com.duytran.kdtrace.service;
 import com.duytran.kdtrace.entity.Producer;
 import com.duytran.kdtrace.entity.Product;
 import com.duytran.kdtrace.entity.QRCode;
+import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.ProductMapper;
 import com.duytran.kdtrace.model.ProductModel;
 import com.duytran.kdtrace.model.ResponseModel;
@@ -58,5 +59,24 @@ public class ProductService {
         List<Product> products = productRepository.findAllByProducer_Id(producerService.getProducerInPrincipal().getId());
         List<ProductModel> productModels = ProductMapper.INSTANCE.listProducToModel(products);
         return new ResponseModel("List Model", HttpStatus.OK.value(), productModels);
+    }
+
+    @Transactional
+    public boolean checkQuanlityProducts(Long id_product, long quanlity){
+        long quanlity_products = productRepository.getQuanlityProducts(id_product);
+        if(quanlity_products >= quanlity){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    @Transactional
+    public Product getProductById(Long id){
+        Product product = productRepository.findProductById(id).orElseThrow(
+                () -> new RecordNotFoundException("Product is not exist")
+        );
+        return product;
     }
 }

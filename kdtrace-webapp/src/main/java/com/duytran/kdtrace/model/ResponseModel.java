@@ -1,8 +1,12 @@
 package com.duytran.kdtrace.model;
 
-import lombok.*;
 
-@Data
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @AllArgsConstructor
 public class ResponseModel {
     private String message;

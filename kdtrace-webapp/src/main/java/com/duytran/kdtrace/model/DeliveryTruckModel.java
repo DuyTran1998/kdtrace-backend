@@ -2,12 +2,14 @@ package com.duytran.kdtrace.model;
 
 import com.duytran.kdtrace.entity.Automaker;
 import com.duytran.kdtrace.entity.Status;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-@Data
+@Setter
+@Getter
 public class DeliveryTruckModel {
     private Long id;
 

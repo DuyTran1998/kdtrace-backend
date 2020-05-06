@@ -2,9 +2,11 @@ package com.duytran.kdtrace.model;
 
 import com.duytran.kdtrace.entity.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class UserModel {
     private Long id;
     private String username;

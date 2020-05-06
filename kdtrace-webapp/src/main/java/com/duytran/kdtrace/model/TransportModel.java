@@ -1,8 +1,10 @@
 package com.duytran.kdtrace.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class TransportModel {
     private Long id;
     private String companyName;
