@@ -7,6 +7,7 @@ import com.duytran.kdtrace.mapper.ProducerMapper;
 import com.duytran.kdtrace.model.ProducerModel;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.repository.ProducerRepository;
+import com.duytran.kdtrace.repository.UserRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,9 @@ public class ProducerService {
 
     @Autowired
     private BlockchainService blockchainService;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     // Function to create Producer Detail.
@@ -60,6 +64,7 @@ public class ProducerService {
         Producer producer = ProducerMapper.INSTANCE.producerToProducerModel(producerModel);
         producer.setUpdate_at(commonService.getDateTime());
         try{
+            blockchainService.updateProducer(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), producer, "kdtrace");
             producerRepository.save(producer);
         }catch (Exception e){
             return new ResponseModel("Update not successfully", 400, e);

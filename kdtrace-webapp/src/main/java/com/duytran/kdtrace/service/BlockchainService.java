@@ -1,6 +1,7 @@
 package com.duytran.kdtrace.service;
 
 import com.duytran.kdtrace.entity.HFUserContext;
+import com.duytran.kdtrace.entity.Producer;
 import com.duytran.kdtrace.entity.User;
 import com.duytran.kdtrace.exeption.RecordHasCreatedException;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
@@ -10,7 +11,9 @@ import com.duytran.kdtrace.repository.HFUserContextRepository;
 import com.duytran.kdtrace.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import main.HyperledgerFabric;
+import model.LedgerProducer;
 import model.UserContext;
+import com.duytran.kdtrace.mapper.LedgerUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +22,14 @@ import org.springframework.stereotype.Service;
 public class BlockchainService {
 
     private final HyperledgerFabric hyperledgerFabric;
-    private final UserRepository userRepository;
-    private final HFUserContextRepository hfUserContextRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private HFUserContextRepository hfUserContextRepository;
 
     @Autowired
-    public BlockchainService(UserRepository userRepository, HFUserContextRepository hfUserContextRepository) {
+    public BlockchainService() {
         this.hyperledgerFabric = HyperledgerFabric.newInstance();
-        this.userRepository = userRepository;
-        this.hfUserContextRepository = hfUserContextRepository;
     }
 
     public UserContextDto enrollAdmin(String organization) {
@@ -82,5 +85,17 @@ public class BlockchainService {
         }
         userRepository.save(user.hfUserContext(hfUserContext));
         return UserContextMapper.INSTANCE.toUserContextDto(hfUserContext);
+    }
+
+    public boolean updateProducer(User user, Producer producer , String channelName) {
+        try {
+            LedgerProducer ledgerProducer = LedgerUserMapper.INSTANCE.toLedgerProducer(producer);
+            ledgerProducer.setUserId(user.getId());
+            ledgerProducer.setUsername(user.getUsername());
+            ledgerProducer.setRole(user.getRole().getRoleName().name());
+            return hyperledgerFabric.updateProducer(user, ledgerProducer, producer.getOrgMsp(), channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("updateProducer: exception");
+        }
     }
 }
