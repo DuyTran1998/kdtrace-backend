@@ -1,21 +1,24 @@
 package com.duytran.kdtrace.service;
 
-import com.duytran.kdtrace.entity.HFUserContext;
-import com.duytran.kdtrace.entity.Producer;
-import com.duytran.kdtrace.entity.User;
+import com.duytran.kdtrace.entity.*;
+import com.duytran.kdtrace.entity.Process;
 import com.duytran.kdtrace.exeption.RecordHasCreatedException;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
+import com.duytran.kdtrace.mapper.LedgerMapper;
 import com.duytran.kdtrace.mapper.UserContextMapper;
 import com.duytran.kdtrace.dto.UserContextDto;
 import com.duytran.kdtrace.repository.HFUserContextRepository;
+import com.duytran.kdtrace.repository.ProductRepositoty;
 import com.duytran.kdtrace.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import main.HyperledgerFabric;
-import model.LedgerProducer;
-import model.UserContext;
-import com.duytran.kdtrace.mapper.LedgerUserMapper;
+import model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -26,6 +29,8 @@ public class BlockchainService {
     private UserRepository userRepository;
     @Autowired
     private HFUserContextRepository hfUserContextRepository;
+    @Autowired
+    private ProductRepositoty productRepositoty;
 
     @Autowired
     public BlockchainService() {
@@ -87,15 +92,107 @@ public class BlockchainService {
         return UserContextMapper.INSTANCE.toUserContextDto(hfUserContext);
     }
 
-    public boolean updateProducer(User user, Producer producer , String channelName) {
+    public boolean updateProducer(User user, Producer producer, String channelName) {
         try {
-            LedgerProducer ledgerProducer = LedgerUserMapper.INSTANCE.toLedgerProducer(producer);
+            LedgerProducer ledgerProducer = LedgerMapper.INSTANCE.toLedgerProducer(producer);
             ledgerProducer.setUserId(user.getId());
             ledgerProducer.setUsername(user.getUsername());
             ledgerProducer.setRole(user.getRole().getRoleName().name());
             return hyperledgerFabric.updateProducer(user, ledgerProducer, producer.getOrgMsp(), channelName);
         } catch (Exception e) {
             throw new RecordHasCreatedException("updateProducer: exception");
+        }
+    }
+
+    public boolean updateTransport(User user, Transport transport, String channelName) {
+        try {
+            LedgerTransport ledgerTransport = LedgerMapper.INSTANCE.toLedgerTransport(transport);
+            ledgerTransport.setUserId(user.getId());
+            ledgerTransport.setUsername(user.getUsername());
+            ledgerTransport.setRole(user.getRole().getRoleName().name());
+            return hyperledgerFabric.updateTransport(user, ledgerTransport, transport.getOrgMsp(), channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("updateTransport: exception");
+        }
+    }
+
+    public boolean updateDistributor(User user, Distributor distributor, String channelName) {
+        try {
+            LedgerDistributor ledgerDistributor = LedgerMapper.INSTANCE.toLedgerDistributor(distributor);
+            ledgerDistributor.setUserId(user.getId());
+            ledgerDistributor.setUsername(user.getUsername());
+            ledgerDistributor.setRole(user.getRole().getRoleName().name());
+            return hyperledgerFabric.updateDistributor(user, ledgerDistributor, distributor.getOrgMsp(), channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("updateDistributor: exception");
+        }
+    }
+
+
+    public boolean updateProduct(User user, Long productId, String channelName) {
+        try {
+            Product product = productRepositoty.findProductById(productId).get();
+            LedgerProduct ledgerProduct = LedgerMapper.INSTANCE.toLedgerProduct(product);
+            List<Long> listQRCodeId = new ArrayList<>();
+            product.getCodes().forEach(qrCode -> listQRCodeId.add(qrCode.getId()));
+            ledgerProduct.setCodes(listQRCodeId);
+            return hyperledgerFabric.updateProduct(user, ledgerProduct, product.getProducer().getOrgMsp(), channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("update Product: exception");
+        }
+    }
+
+    public boolean updateQRCodes(User user, Long productId, String channelName) {
+        try {
+            Product product = productRepositoty.findProductById(productId).get();
+            List<LedgerQRCode> ledgerQRCodeList = LedgerMapper.INSTANCE.toLedgerQrCodeList(product.getCodes());
+            return hyperledgerFabric.updateQRCodes(user, ledgerQRCodeList, product.getProducer().getOrgMsp(), channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("update Product: exception");
+        }
+    }
+
+    public boolean updateProcess(User user, Process process, String channelName) {
+        try {
+            LedgerProcess ledgerProcess = LedgerMapper.INSTANCE.toLedgerProcess(process);
+
+            List<Long> listQRCodeId = new ArrayList<>();
+            process.getQrCodes().forEach(qrCode -> listQRCodeId.add(qrCode.getId()));
+            ledgerProcess.setQrCodes(listQRCodeId);
+
+            LedgerDeliveryTruck deliveryTruck = LedgerMapper.INSTANCE.toLedgerDeliveryTruck(process.getDeliveryTruck());
+            deliveryTruck.setAutoMaker(process.getDeliveryTruck().getAutoMaker().name());
+            deliveryTruck.setStatus(process.getDeliveryTruck().getStatus().name());
+            ledgerProcess.setDeliveryTruck(deliveryTruck);
+            ledgerProcess.setStatusProcess(process.getStatusProcess().name());
+
+            String orgMsp = "Org1"; //default
+            switch (process.getStatusProcess()) {
+                case WAITING_RESPONSE_PRODUCER:
+                    orgMsp = "Org3";
+                    break;
+                case PRODUCER_REJECT:
+                    orgMsp = "Org1";
+                    break;
+                case CHOOSE_DELIVERYTRUCK_TRANSPORT:
+                    orgMsp = "Org3";
+                    break;
+                case TRANSPORT_REJECT:
+                    orgMsp = "Org2";
+                    break;
+                case ON_BOARDING_GET:
+                    orgMsp = "Org1";
+                    break;
+                case ON_BOARDING_REVEIVE:
+                    orgMsp = "Org2";
+                    break;
+                case REVEIVED:
+                    orgMsp = "Org1";
+                    break;
+            }
+            return hyperledgerFabric.updateProcess(user, ledgerProcess, orgMsp, channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("update Product: exception");
         }
     }
 }

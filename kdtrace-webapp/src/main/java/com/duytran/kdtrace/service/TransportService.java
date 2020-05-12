@@ -11,6 +11,7 @@ import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.model.TransportModel;
 import com.duytran.kdtrace.repository.DeliveryTruckRepository;
 import com.duytran.kdtrace.repository.TransportRepository;
+import com.duytran.kdtrace.repository.UserRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,10 @@ public class TransportService {
 
     @Autowired
     private CommonService commonService;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     public void createTransport(User user){
         Transport transport = new Transport();
@@ -62,6 +67,7 @@ public class TransportService {
         Transport transport = TransportMapper.INSTANCE.transportModelToTransport(transportModel);
         transport.setUpdate_at(commonService.getDateTime());
         try{
+            blockchainService.updateTransport(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), transport, "kdtrace");
             transportRepository.save(transport);
         }catch (Exception e){
             return new ResponseModel("Update Not Successfully", 400, e);

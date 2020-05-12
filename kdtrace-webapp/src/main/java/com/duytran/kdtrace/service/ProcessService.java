@@ -1,9 +1,7 @@
 package com.duytran.kdtrace.service;
 
-import com.duytran.kdtrace.entity.DeliveryTruck;
+import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.entity.Process;
-import com.duytran.kdtrace.entity.QRCode;
-import com.duytran.kdtrace.entity.StatusProcess;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.DeliveryTruckMapper;
 import com.duytran.kdtrace.mapper.DistributorMapper;
@@ -41,15 +39,20 @@ public class ProcessService {
     @Autowired
     private CommonService commonService;
 
+    @Autowired
+    private BlockchainService blockchainService;
+
     @Transactional
     public ResponseModel createProcess(RequestProcessModel processModel){
         if(productService.checkQuanlityProducts(processModel.getId_product(), processModel.getQuantity())){
+            Distributor distributor =  distributorService.getDistributorInPrincipal();
             Process process = new Process();
             process.setQuanlity(processModel.getQuantity());
-            process.setDistributor(distributorService.getDistributorInPrincipal());
+            process.setDistributor(distributor);
             process.setProduct(productService.getProductById(processModel.getId_product()));
             process.setStatusProcess(StatusProcess.WAITING_RESPONSE_PRODUCER);
             processRepository.save(process);
+            blockchainService.updateProcess(distributor.getUser(), process, "kdtrace");
             return new ResponseModel("Sucessfull", HttpStatus.OK.value(), processModel);
         }
         return new ResponseModel("Don't enough quanlity product to buy", HttpStatus.BAD_REQUEST.value(), processModel);

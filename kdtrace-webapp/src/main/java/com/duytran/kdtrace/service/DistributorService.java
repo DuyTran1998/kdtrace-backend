@@ -7,6 +7,7 @@ import com.duytran.kdtrace.mapper.DistributorMapper;
 import com.duytran.kdtrace.model.DistributorModel;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.repository.DistributorRepository;
+import com.duytran.kdtrace.repository.UserRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class DistributorService {
 
     @Autowired
     private CommonService commonService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public void createDistributor(User user){
         Distributor distributor = new Distributor();
@@ -55,6 +59,7 @@ public class DistributorService {
         Distributor distributor = DistributorMapper.INSTANCE.distributorModelToDistributor(distributorModel);
         distributor.setUpdate_at(commonService.getDateTime());
         try{
+            blockchainService.updateDistributor(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), distributor, "kdtrace");
             distributorRepository.save(distributor);
         }catch (Exception e){
             return new ResponseModel("Update Not Successfully", 400, e);

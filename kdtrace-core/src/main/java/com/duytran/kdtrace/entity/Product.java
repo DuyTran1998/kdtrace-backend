@@ -32,7 +32,7 @@ public class Product {
     @JoinColumn(name = "producer_id")
     private Producer producer;
 
-    private long quantity;
+    private int quantity;
 
     @Enumerated(EnumType.STRING)
     private Unit unit;

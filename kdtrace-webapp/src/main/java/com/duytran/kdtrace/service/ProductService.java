@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -33,25 +34,35 @@ public class ProductService {
     @Autowired
     ProducerService producerService;
 
+    @Autowired
+    BlockchainService blockchainService;
+
     @Transactional
     public ResponseModel createProduct(ProductModel productModel) {
         Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
         Producer producer = producerService.getProducerInPrincipal();
         product.setProducer(producer);
         productRepository.save(product);
-        generateCode(product);
+        List<QRCode> qrCodes = generateCode(product);
+        qrCodeRepository.saveAll(qrCodes);
+        product.setCodes(qrCodes);
+        productRepository.save(product);
+        blockchainService.updateProduct(producer.getUser(), product.getId(), "kdtrace");
+        blockchainService.updateQRCodes(producer.getUser(), product.getId(), "kdtrace");
         return new ResponseModel("Create Successfully", HttpStatus.OK.value(), productModel);
     }
 
     @Value("${url}")
     private String url;
 
-    public void generateCode(Product product) {
-        IntStream.rangeClosed(1, (int) product.getQuantity()).forEach(
-                i -> qrCodeRepository.save(new QRCode(product, url +
+    public List<QRCode> generateCode(Product product) {
+        List<QRCode> qrCodes = new ArrayList<>();
+        IntStream.rangeClosed(1, product.getQuantity()).forEach(
+                i -> qrCodes.add(new QRCode(product, url +
                         product.getName() + "-L" + product.getId() + "-N" + i,
                         product.getProducer().getCompanyName()))
         );
+        return qrCodes;
     }
 
     @Transactional
@@ -62,18 +73,17 @@ public class ProductService {
     }
 
     @Transactional
-    public boolean checkQuanlityProducts(Long id_product, long quanlity){
+    public boolean checkQuanlityProducts(Long id_product, long quanlity) {
         long quanlity_products = productRepository.getQuanlityProducts(id_product);
-        if(quanlity_products >= quanlity){
+        if (quanlity_products >= quanlity) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
 
     @Transactional
-    public Product getProductById(Long id){
+    public Product getProductById(Long id) {
         Product product = productRepository.findProductById(id).orElseThrow(
                 () -> new RecordNotFoundException("Product is not exist")
         );

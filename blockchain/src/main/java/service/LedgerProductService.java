@@ -4,24 +4,23 @@ import client.ChannelWrapper;
 import com.duytran.kdtrace.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import model.LedgerDistributor;
-import model.LedgerProducer;
-import model.LedgerTransport;
-import model.UserContext;
+import model.*;
 import org.hyperledger.fabric.sdk.BlockEvent;
 import util.Util;
 
+import java.util.List;
+
 @Slf4j
-public class LedgerUserService {
-    public static LedgerUserService newInstance() {
-        return new LedgerUserService();
+public class LedgerProductService {
+    public static LedgerProductService newInstance() {
+        return new LedgerProductService();
     }
 
-    public boolean updateProducer(User user, LedgerProducer ledgerProducer, String organizationName, String channelName) throws Exception{
+    public boolean updateProduct(User user, LedgerProduct ledgerProduct, String organizationName, String channelName) throws Exception{
         try {
             UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
             ObjectMapper objectMapper = new ObjectMapper();
-            String jsProducer = objectMapper.writeValueAsString(ledgerProducer);
+            String jsProduct = objectMapper.writeValueAsString(ledgerProduct);
             BlockEvent.TransactionEvent result = ChannelWrapper
                     .getChannelWrapperInstance(
                             user.getUsername(),
@@ -31,44 +30,21 @@ public class LedgerUserService {
                             organizationName,
                             userContext,
                             "process_" + channelName,
-                            "updateProducer",
-                            new String[]{jsProducer});
+                            "updateProduct",
+                            new String[]{jsProduct});
             log.info("transaction is valid : " + result.isValid());
             return result.isValid();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Exception on saving producer info");
-        }
-    }
-    public boolean updateTransport(User user, LedgerTransport ledgerTransport, String organizationName, String channelName) throws Exception{
-        try {
-            UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsTransport = objectMapper.writeValueAsString(ledgerTransport);
-            BlockEvent.TransactionEvent result = ChannelWrapper
-                    .getChannelWrapperInstance(
-                            user.getUsername(),
-                            organizationName)
-                    .invokeChainCode(
-                            channelName,
-                            organizationName,
-                            userContext,
-                            "process_" + channelName,
-                            "updateTransport",
-                            new String[]{jsTransport});
-            log.info("transaction is valid : " + result.isValid());
-            return result.isValid();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("Exception on saving transport info");
+            throw new Exception("Exception on saving product info");
         }
     }
 
-    public boolean updateDistributor(User user, LedgerDistributor ledgerDistributor, String organizationName, String channelName) throws Exception{
+    public boolean updateQRCodes(User user, List<LedgerQRCode> qrCodeList, String organizationName, String channelName) throws Exception{
         try {
             UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
             ObjectMapper objectMapper = new ObjectMapper();
-            String jsDistributor = objectMapper.writeValueAsString(ledgerDistributor);
+            String jsQRCodes = objectMapper.writeValueAsString(qrCodeList);
             BlockEvent.TransactionEvent result = ChannelWrapper
                     .getChannelWrapperInstance(
                             user.getUsername(),
@@ -78,13 +54,37 @@ public class LedgerUserService {
                             organizationName,
                             userContext,
                             "process_" + channelName,
-                            "updateDistributor",
-                            new String[]{jsDistributor});
+                            "updateQRCodes",
+                            new String[]{jsQRCodes});
             log.info("transaction is valid : " + result.isValid());
             return result.isValid();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Exception on saving distributor info");
+            throw new Exception("Exception on saving QRCode list");
+        }
+    }
+
+    public boolean updateProcess(User user, LedgerProcess ledgerProcess, String organizationName, String channelName) throws Exception{
+        try {
+            UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsProcess = objectMapper.writeValueAsString(ledgerProcess);
+            BlockEvent.TransactionEvent result = ChannelWrapper
+                    .getChannelWrapperInstance(
+                            user.getUsername(),
+                            organizationName)
+                    .invokeChainCode(
+                            channelName,
+                            organizationName,
+                            userContext,
+                            "process_" + channelName,
+                            "updateProcess",
+                            new String[]{jsProcess});
+            log.info("transaction is valid : " + result.isValid());
+            return result.isValid();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Exception on saving Process");
         }
     }
 }
