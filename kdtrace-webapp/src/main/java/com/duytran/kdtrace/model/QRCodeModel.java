@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class QRCodeModel {
+    
     private Long id;
 
     private String code;

@@ -40,4 +40,11 @@ public class Process {
     public Process(){
 
     }
+
+    public Process(Distributor distributor, Long productID, long quanlity, StatusProcess statusProcess){
+        this.distributor = distributor;
+        this.productID = productID;
+        this.quanlity = quanlity;
+        this.statusProcess = statusProcess;
+    }
 }

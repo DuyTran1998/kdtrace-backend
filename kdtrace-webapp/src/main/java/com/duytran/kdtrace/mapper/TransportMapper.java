@@ -13,7 +13,7 @@ public interface TransportMapper {
 
     TransportModel transportToTransportModel(Transport transport);
 
-    Transport transportModelToTransport(TransportModel transportModel);
+ //   Transport transportModelToTransport(TransportModel transportModel);
 
     List<TransportModel> listTransportToListTransportModel(List<Transport> transports);
 }

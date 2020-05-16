@@ -43,43 +43,62 @@ public class ProcessService {
     @Autowired
     private EmailService emailService;
 
+
     @Transactional
     public ResponseModel createProcess(RequestProcessModel processModel){
         if(productService.checkQuanlityProducts(processModel.getId_product(), processModel.getQuantity())){
-            Process process = new Process();
             Distributor distributor = distributorService.getDistributorInPrincipal();
-            process.setQuanlity(processModel.getQuantity());
-            process.setDistributor(distributor);
-            process.setProductID(processModel.getId_product());
-            process.setStatusProcess(StatusProcess.WAITING_RESPONSE_PRODUCER);
-            processRepository.save(process);
-            sendEmailToProducer(processModel.getId_product(), processModel.getQuantity(), distributor.getEmail());
-            productService.changeStatusQRCode(processModel.getId_product(), processModel.getQuantity(), StatusQRCode.WAITING);
+            Process process = new Process(distributor,
+                                          processModel.getId_product(),
+                                          processModel.getQuantity(),
+                                          StatusProcess.WAITING_RESPONSE_PRODUCER);
+
+            Process savedProcess = processRepository.save(process);
+
+            sendEmailToProducer(processModel.getId_product(),
+                                processModel.getQuantity(),
+                                savedProcess.getId(),
+                                distributor.getCompanyName(),
+                                distributor.getPhone());
+
+            productService.changeStatusQRCode(processModel.getId_product(),
+                                              processModel.getQuantity(),
+                                              StatusQRCode.WAITING);
+
             return new ResponseModel("Sucessfull", HttpStatus.OK.value(), processModel);
         }
         return new ResponseModel("Don't enough quanlity product to buy", HttpStatus.BAD_REQUEST.value(), processModel);
     }
 
-    public void sendEmailToProducer(Long productID, Long quanlity, String distributorEmail){
+    private void sendEmailToProducer(Long productID, Long quanlity, Long processID, String companyName, String phone){
         String email = producerService.getMail(productID);
-        String link = "http://localhost:8080/api/product/get?id=";
-        String content = "We want to by" + quanlity.toString() + "product have Id is" + productID.toString() + "\n" +
-                "link:" + link + productID.toString() + "\n" + "Please contact with us";
+        String link = "http://localhost:8080/api/process/get?id=" + processID;
+        String content = "Notification from " + companyName + "\n" +
+                         "We want to by " + quanlity.toString() + " products have Id: " + productID.toString() + "\n" +
+                         "link: " + link +  "\n" +
+                         "Please contact with us " + phone;
         String subject = "Offer to buy product";
-        emailService.sendEmail(distributorEmail,subject,content,email);
+        emailService.sendEmail(subject,content,email);
     }
 
     public ResponseModel getProcess(Long id){
         Process process = findProcessById(id);
         ProcessModel processModel = ProcessMapper.INSTANCE.processToProcessModel(process);
-        processModel.setDistributorModel(DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()));
-        processModel.setDeliveryTruckModel(DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(process.getDeliveryTruck()));
-        processModel.setQrCodeModels(ProductMapper.INSTANCE.qrCodeListToQRCodeModel(process.getQrCodes()));
+        processModel.updateProcessModel(DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()),
+                                        DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(process.getDeliveryTruck()),
+                                        ProductMapper.INSTANCE.qrCodeListToQRCodeModel(process.getQrCodes()));
         return new ResponseModel("Process", HttpStatus.OK.value(), processModel);
     }
 
     public ResponseModel acceptToSell(Long id){
         Process process = findProcessById(id);
+        Producer producer = producerService.getProducerInPrincipal();
+
+        if(!productService.checkExistProductByIdAndProducer(process.getProductID(), producer.getId()) ||
+                process.getStatusProcess() != StatusProcess.WAITING_RESPONSE_PRODUCER){
+            return new ResponseModel("You don't have permission", HttpStatus.FORBIDDEN.value(), id);
+        }
+
         process.setStatusProcess(StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT);
         List<QRCode> qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(process.getProductID(), "WAITING");
         qrCodes.subList(0, (int) process.getQuanlity() -1 ).forEach(
@@ -88,8 +107,30 @@ public class ProcessService {
                     qrCodeRepository.save(i);
                 }
         );
-        processRepository.save(process);
+        Process savedProcess = processRepository.save(process);
+        sendEmailResponseToDistributor(savedProcess, producer);
         return new ResponseModel("Accepted", HttpStatus.OK.value(), id);
+    }
+
+    private void sendEmailResponseToDistributor(Process process, Producer producer){
+        String link = "http://localhost:8080/api/process/get?id=" + process.getId();
+        String listCode = reverseListQRCodeToString(process.getQrCodes());
+        String content = "Notification from " + producer.getCompanyName() + "\n" +
+                "We accepted to sell " + process.getQuanlity() + " products have Id: " + process.getProductID().toString() + "\n" +
+                "List Code:" +"\n" +
+                listCode +
+                "link: " + link +  "\n" +
+                "Please contact with us " + producer.getPhone();
+        emailService.sendEmail("Response agreement with " + process.getDistributor().getCompanyName(),
+                                content, process.getDistributor().getEmail());
+    }
+
+    private String reverseListQRCodeToString(List<QRCode> qrCodes){
+        String result = "";
+        for(QRCode qrCode : qrCodes){
+            result = result.concat(qrCode.getCode() + "\n");
+        }
+        return result;
     }
 
 //    public ResponseModel chooseTransport(Long id){
@@ -128,7 +169,7 @@ public class ProcessService {
         return new ResponseModel("The Goods was receipted by distributor", HttpStatus.OK.value(), id);
     }
 
-    public Process findProcessById(Long id){
+    private Process findProcessById(Long id){
         Process process = processRepository.findProcessById(id).orElseThrow(
                 () -> new RecordNotFoundException("Not Found")
         );

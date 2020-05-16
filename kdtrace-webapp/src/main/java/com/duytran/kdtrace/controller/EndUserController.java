@@ -26,7 +26,6 @@ public class EndUserController {
         return "index";
     }
 
-
     @RequestMapping(value = "process/qrcode/{code}", method = RequestMethod.GET)
     public void qrCode(@PathVariable("code") String code, HttpServletResponse response) throws Exception{
         response.setContentType("image/png");

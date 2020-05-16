@@ -2,7 +2,6 @@ package com.duytran.kdtrace.model;
 
 import com.duytran.kdtrace.entity.Unit;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,50 +1,32 @@
 package com.duytran.kdtrace.service;
 
-import com.duytran.kdtrace.config.EmailConfig;
-import com.duytran.kdtrace.exeption.MessagingExceptionHandler;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import javax.mail.internet.InternetAddress;
 
-import java.util.Properties;
+import javax.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
-    private  EmailConfig emailConfig;
-
-    public EmailService(com.duytran.kdtrace.config.EmailConfig emailConfig){
-        this.emailConfig = emailConfig;
-    }
+    @Autowired
+    private JavaMailSender emailSender;
 
     @Async
-    public void sendEmail(String from, String subject, String content, String to){
+    public void sendEmail(String subject, String content, String to){
 
-        //  Create a mail sender
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(emailConfig.getHost());
-        mailSender.setPort(emailConfig.getPort());
-        mailSender.setUsername(emailConfig.getUsername());
-        mailSender.setPassword(emailConfig.getPassword());
+        MimeMessage message = emailSender.createMimeMessage();
 
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-
-        //  Create an email instance
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
         try{
-            mailMessage.setFrom(new InternetAddress(from).getAddress());
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content);
+            emailSender.send(message);
         }catch (Exception e){
-            throw new MessagingExceptionHandler(e.toString());
+            e.printStackTrace();
         }
-        mailMessage.setTo(to);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(content);
 
-        //  Send email
-        mailSender.send(mailMessage);
     }
 }

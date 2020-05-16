@@ -78,11 +78,10 @@ public class TransportService {
     }
 
 
-    public Transport getTransportInPrincipal(){
-        Transport transport = transportRepository.findTransportByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
+    private Transport getTransportInPrincipal(){
+        return transportRepository.findTransportByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
                 () -> new RecordNotFoundException("Don't found transport")
         );
-        return transport;
     }
 
     public ResponseModel createDeliveryTruck(DeliveryTruckModel deliveryTruckModel){
@@ -112,9 +111,8 @@ public class TransportService {
     }
 
     public DeliveryTruck findDeliveryTruckById(Long id){
-        DeliveryTruck deliveryTruck = deliveryTruckRepository.findDeliveryTruckById(id).orElseThrow(
+        return deliveryTruckRepository.findDeliveryTruckById(id).orElseThrow(
                 () -> new RecordNotFoundException("Not Found")
         );
-        return deliveryTruck;
     }
 }

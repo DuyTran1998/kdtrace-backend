@@ -3,8 +3,6 @@ package com.duytran.kdtrace.security;
 import com.duytran.kdtrace.security.jwt.JwtAuthenticationEntryPoint;
 import com.duytran.kdtrace.security.jwt.JwtAuthenticationFilter;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
     @Autowired
     UserPrincipalService userPrincipalService;
 

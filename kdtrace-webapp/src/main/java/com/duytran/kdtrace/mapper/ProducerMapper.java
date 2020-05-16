@@ -11,5 +11,5 @@ public interface ProducerMapper {
 
     ProducerModel producerToProducerModel(Producer producer);
 
-    Producer producerToProducerModel(ProducerModel producerModel);
+//    Producer producerToProducerModel(ProducerModel producerModel);
 }

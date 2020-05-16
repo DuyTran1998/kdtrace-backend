@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 public interface ProcessMapper {
     ProcessMapper INSTANCE = Mappers.getMapper(ProcessMapper.class);
 
-    QRCodeModel qrCodeToQRCodeModel(QRCode qrCode);
+ //   QRCodeModel qrCodeToQRCodeModel(QRCode qrCode);
 
     ProcessModel processToProcessModel(Process process);
 }

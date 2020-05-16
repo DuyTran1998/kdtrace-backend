@@ -31,7 +31,7 @@ public class ProcessController {
 
     @PreAuthorize(("hasRole('ROLE_PRODUCER')"))
     @PostMapping("/acceptToSell")
-    public ResponseEntity<?> acceptToSell(@RequestParam Long id){
+    public ResponseEntity<?> acceptToAgreementWithDistributor(@RequestParam Long id){
         return ResponseEntity.ok(processService.acceptToSell(id));
     }
 //    @PostMapping("/chooseTransport")

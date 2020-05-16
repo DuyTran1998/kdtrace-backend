@@ -51,7 +51,7 @@ public class ProductService {
     @Value("${url}")
     private String url;
 
-    public void generateCode(Product product) {
+    private void generateCode(Product product) {
         IntStream.rangeClosed(1, (int) product.getQuantity()).forEach(
                 i -> {
                     String code = product.getName() + "-L" + product.getId() + "-N" + i;
@@ -74,20 +74,14 @@ public class ProductService {
     @Transactional
     public boolean checkQuanlityProducts(Long id_product, long quanlity){
         long quanlity_products = productRepository.getQuanlityProducts(id_product);
-        if(quanlity_products >= quanlity){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return (quanlity_products >= quanlity);
     }
 
     @Transactional
     public Product getProductEntityById(Long id){
-        Product product = productRepository.findProductById(id).orElseThrow(
+        return productRepository.findProductById(id).orElseThrow(
                 () -> new RecordNotFoundException("Product is not exist")
         );
-        return product;
     }
 
     public ResponseModel getProductById(Long id){
@@ -104,5 +98,9 @@ public class ProductService {
                     qrCode.setStatusQRCode(statusQRCode);
                     qrCodeRepository.save(qrCode);
                 });
+    }
+
+    public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){
+        return productRepository.existsByIdAndProducer_Id(id, producer_id);
     }
 }

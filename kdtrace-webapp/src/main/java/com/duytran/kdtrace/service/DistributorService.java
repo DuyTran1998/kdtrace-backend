@@ -64,9 +64,8 @@ public class DistributorService {
 
 
     public Distributor getDistributorInPrincipal(){
-        Distributor distributor =  distributorRepository.findDistributorByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
+        return distributorRepository.findDistributorByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
                 () -> new RecordNotFoundException("Don't found distributor")
         );
-        return distributor;
     }
 }

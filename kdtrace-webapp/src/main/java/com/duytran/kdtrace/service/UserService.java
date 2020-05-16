@@ -76,8 +76,7 @@ public class UserService {
         User user = userRepository.findUserById(id).orElseThrow(
                 () ->  new RecordNotFoundException("User Not Found")
         );
-        UserModel userModel = UserMapper.INSTANCE.userToUserModel(user);
-        return userModel;
+        return UserMapper.INSTANCE.userToUserModel(user);
     }
 
     //  Update User Following by UserModel.

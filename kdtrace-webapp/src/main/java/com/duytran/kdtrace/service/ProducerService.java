@@ -6,7 +6,6 @@ import com.duytran.kdtrace.mapper.*;
 import com.duytran.kdtrace.model.ProducerModel;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.repository.ProducerRepository;
-import com.duytran.kdtrace.security.principal.UserPrincipal;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,20 +71,17 @@ public class ProducerService {
 
     public Producer getProducerInPrincipal(){
         String username = userPrincipalService.getUserCurrentLogined();
-        Producer producer = producerRepository.findProducerByUser_Username(username)
+        return producerRepository.findProducerByUser_Username(username)
                 .orElseThrow(() -> new RecordNotFoundException("Producer isn't exist"));
-        return producer;
     }
 
-    public Producer findProducerById(Long id){
-        Producer producer = producerRepository.findProducerById(id).orElseThrow(
-                () -> new RecordNotFoundException("Producer isn't exist")
-        );
-        return producer;
-    }
+//    public Producer findProducerById(Long id){
+//        return producerRepository.findProducerById(id).orElseThrow(
+//                () -> new RecordNotFoundException("Producer isn't exist")
+//        );
+//    }
 
     public String getMail(Long id){
-        String email = producerRepository.getProducerEmailByProductId(id);
-        return email;
+        return producerRepository.getProducerEmailByProductId(id);
     }
 }

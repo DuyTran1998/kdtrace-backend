@@ -17,5 +17,5 @@ public interface UserMapper {
 
     List<UserModel> userListToUserModelList(List<User> users);
 
-    List<User> userModelListToUserList(List<UserModel> userModel);
+//    List<User> userModelListToUserList(List<UserModel> userModel);
 }
