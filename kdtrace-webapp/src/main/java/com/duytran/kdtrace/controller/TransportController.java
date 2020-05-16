@@ -22,6 +22,11 @@ public class TransportController {
         return ResponseEntity.ok(transportService.getTransport());
     }
 
+    @GetMapping("getAll")
+    public ResponseEntity<?> getAllTransportCompany(){
+        return ResponseEntity.ok(transportService.getAllTransports());
+    }
+
     @PatchMapping("/update")
     public ResponseEntity<?> updateTransport(@Valid @RequestBody TransportModel transportModel){
         return ResponseEntity.ok(transportService.updateTransport(transportModel));

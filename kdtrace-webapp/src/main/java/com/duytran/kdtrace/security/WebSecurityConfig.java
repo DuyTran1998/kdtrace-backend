@@ -53,6 +53,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().authorizeRequests()
 //                .antMatchers("/api/admin/**").hasAnyRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/api/login").permitAll()
+                .antMatchers("/process/**").permitAll()
+                .antMatchers("/feedback/**").permitAll()
+                .antMatchers("/getInfo/**").permitAll()
                 .antMatchers("/api/register").permitAll()
                 .antMatchers("/v2/api-docs",
                         "/swagger-resources/**",

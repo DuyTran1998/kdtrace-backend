@@ -13,7 +13,7 @@ public class ProcessModel {
 
     private DistributorModel distributorModel;
 
-    private ProductModel productModel;
+    private Long ProductID;
 
     private DeliveryTruckModel deliveryTruckModel;
 

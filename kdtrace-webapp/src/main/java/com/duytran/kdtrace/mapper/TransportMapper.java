@@ -5,6 +5,8 @@ import com.duytran.kdtrace.model.TransportModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface TransportMapper {
     TransportMapper INSTANCE = Mappers.getMapper(TransportMapper.class);
@@ -13,4 +15,5 @@ public interface TransportMapper {
 
     Transport transportModelToTransport(TransportModel transportModel);
 
+    List<TransportModel> listTransportToListTransportModel(List<Transport> transports);
 }

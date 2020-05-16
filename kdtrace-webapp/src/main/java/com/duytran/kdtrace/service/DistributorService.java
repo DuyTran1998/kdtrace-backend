@@ -25,9 +25,12 @@ public class DistributorService {
     @Autowired
     private CommonService commonService;
 
+
+    @Transactional
     public void createDistributor(User user){
         Distributor distributor = new Distributor();
         distributor.setCompanyName("Distributor");
+        distributor.setCreate_at(commonService.getDateTime());
         distributor.setUser(user);
         distributorRepository.save(distributor);
     }
@@ -39,22 +42,27 @@ public class DistributorService {
        return new ResponseModel("Distributor Information", 200, distributorModel);
     }
 
-
+    @Transactional
     public ResponseModel updateDistriButor(DistributorModel distributorModel){
-        if(! distributorRepository.existsById(distributorModel.getId())){
-            return new ResponseModel(" Not Exist Record to Update", 400, distributorModel);
-        }
-        Distributor distributor = DistributorMapper.INSTANCE.distributorModelToDistributor(distributorModel);
-        distributor.setUpdate_at(commonService.getDateTime());
+        Distributor distributor = distributorRepository.findDistributorById(distributorModel.getId()).orElseThrow(
+                () -> new RecordNotFoundException("Distributor isn't exist")
+        );
+        distributor.updateInformation(  distributorModel.getCompanyName(),
+                                        distributorModel.getEmail(),
+                                        distributorModel.getAddress(),
+                                        distributorModel.getPhone(),
+                                        distributorModel.getAvatar(),
+                                        commonService.getDateTime());
+
         try{
             distributorRepository.save(distributor);
         }catch (Exception e){
             return new ResponseModel("Update Not Successfully", 400, e);
         }
-        return new ResponseModel("Update Successfully ", 200, distributor);
+        return new ResponseModel("Update Successfully ", 200, distributorModel);
     }
 
-    @Transactional
+
     public Distributor getDistributorInPrincipal(){
         Distributor distributor =  distributorRepository.findDistributorByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
                 () -> new RecordNotFoundException("Don't found distributor")

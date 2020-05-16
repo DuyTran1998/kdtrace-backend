@@ -48,7 +48,8 @@ public class UserService {
         if(userRepository.existsUserByUsername(registerRequest.getUsername())){
             return new ResponseModel("Username have been created", HttpStatus.CREATED.value(), registerRequest.getUsername());
         }
-        User user = new User(registerRequest.getUsername(), passwordEncoder.encode(registerRequest.getPassword()));
+        User user = new User(registerRequest.getUsername(), passwordEncoder.encode(registerRequest.getPassword()),
+                                                                                            registerRequest.getEmail());
         Role role = roleRepository.findByRoleName(RoleName.ROLE_USER).orElseThrow(
                 () -> new RecordNotFoundException("RoleName isn't exist")
         );
@@ -107,12 +108,15 @@ public class UserService {
                     //    Create the description for user have ROLE_PRODUCER
                 case ROLE_PRODUCER:
                     producerService.createProducer(user);
+                    break;
                     //    Create the description for user have ROLE_TRANSPORT
                 case ROLE_TRANSPORT:
                     transportService.createTransport(user);
+                    break;
                     //    Create the description for user have ROLE_DISTRIBUTOR
                 case ROLE_DISTRIBUTOR:
                     distributorService.createDistributor(user);
+                    break;
             }
         }
         try{
