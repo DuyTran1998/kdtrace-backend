@@ -21,6 +21,8 @@ public class Process {
 
     private Long productID;
 
+    private Long transportID;
+
     private long quanlity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "process", fetch = FetchType.LAZY)

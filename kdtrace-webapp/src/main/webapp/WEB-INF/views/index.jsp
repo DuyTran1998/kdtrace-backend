@@ -16,6 +16,7 @@
         <th>Ower</th>
         <th>Status</th>
         <th>BarCode</th>
+        <th>OTP</th>
     </tr>
     <c:forEach var="qrCode" items="${qrCodes}">
         <tr>
@@ -26,6 +27,7 @@
             <td>
                 <img src="http://localhost:8080/process/qrcode/${qrCode.code}" width="200" height="200">
             </td>
+            <td>${qrCode.otp}</td>
         </tr>
     </c:forEach>
 </table>

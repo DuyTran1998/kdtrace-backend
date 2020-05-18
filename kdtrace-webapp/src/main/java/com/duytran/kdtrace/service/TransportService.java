@@ -78,7 +78,7 @@ public class TransportService {
     }
 
 
-    private Transport getTransportInPrincipal(){
+    public Transport getTransportInPrincipal(){
         return transportRepository.findTransportByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
                 () -> new RecordNotFoundException("Don't found transport")
         );
@@ -114,5 +114,9 @@ public class TransportService {
         return deliveryTruckRepository.findDeliveryTruckById(id).orElseThrow(
                 () -> new RecordNotFoundException("Not Found")
         );
+    }
+
+    public String getEmailByTransportId(Long id){
+        return transportRepository.getEmailByTransport_Id(id);
     }
 }

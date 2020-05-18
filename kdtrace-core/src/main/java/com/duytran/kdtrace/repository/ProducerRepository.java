@@ -23,5 +23,9 @@ public interface ProducerRepository extends JpaRepository<Producer, Long> {
     @Query(value = "SELECT producers.email from producers where producers.id in " +
             "(SELECT products.producer_id from products where products.id = ?1)", nativeQuery = true)
     String getProducerEmailByProductId(Long id);
+
+    @Query(value = "SELECT producers.address from producers where producers.id in " +
+            "(SELECT products.producer_id from products where products.id = ?1)", nativeQuery = true)
+    String getProducerAddressByProductId(Long id);
 }
 
