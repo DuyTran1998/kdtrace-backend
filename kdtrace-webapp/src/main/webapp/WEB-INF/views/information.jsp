@@ -112,8 +112,5 @@
             <p>${response.distributorModel.phone}</p>
         </div>
     </div>
-
-
-
 </body>
 </html>

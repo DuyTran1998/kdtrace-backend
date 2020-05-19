@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("api/admin")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -25,8 +27,8 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUser());
     }
 
-    @PatchMapping("/update")
-    public ResponseEntity<?> updateRoleForUser(@RequestBody UserModel userModel){
-        return ResponseEntity.ok(userService.updateUser(userModel));
+    @PostMapping("/active")
+    public ResponseEntity<?> updateRoleForUser(@Valid @RequestParam Long user_id){
+        return ResponseEntity.ok(userService.activeUser(user_id));
     }
 }
