@@ -29,8 +29,8 @@ public class Role implements Serializable {
     private List<User> user = new ArrayList<>();
 
     public Role(){
-    }
 
+    }
     public Role(RoleName roleName){
         this.roleName = roleName;
     }

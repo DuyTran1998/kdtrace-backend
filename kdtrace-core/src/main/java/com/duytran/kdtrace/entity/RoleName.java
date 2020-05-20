@@ -7,9 +7,7 @@ public enum RoleName implements Serializable {
     ROLE_USER,
     ROLE_PRODUCER,
     ROLE_TRANSPORT,
-    ROLE_DISTRIBUTOR,
-    ;
-
+    ROLE_DISTRIBUTOR;
 
     @Override
     public String toString() {
