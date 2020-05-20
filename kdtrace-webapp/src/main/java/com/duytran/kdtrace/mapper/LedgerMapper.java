@@ -45,6 +45,7 @@ public interface LedgerMapper {
 
     @Mapping(target = "userId", source = "producer.user.id")
     @Mapping(target = "producerId", source = "producer.id")
+    @Mapping(target = "unit", ignore = true)
     @Mapping(target = "codes", ignore = true)
     LedgerProduct toLedgerProduct (Product product);
 
@@ -56,7 +57,7 @@ public interface LedgerMapper {
 
     @Mapping(target = "distributorId", source = "distributor.id")
     @Mapping(target = "qrCodes", ignore = true)
-    @Mapping(target = "deliveryTruck", ignore = true)
+    @Mapping(target = "deliveryTruckId", source = "deliveryTruck.id")
     @Mapping(target = "statusProcess", ignore = true)
     LedgerProcess toLedgerProcess (Process process);
 

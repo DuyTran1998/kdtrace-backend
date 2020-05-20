@@ -48,7 +48,8 @@ public class UserService {
         if(userRepository.existsUserByUsername(registerRequest.getUsername())){
             return new ResponseModel("Username have been created", HttpStatus.CREATED.value(), registerRequest.getUsername());
         }
-        User user = new User(registerRequest.getUsername(), passwordEncoder.encode(registerRequest.getPassword()));
+        User user = new User(registerRequest.getUsername(), passwordEncoder.encode(registerRequest.getPassword()),
+                                                                                            registerRequest.getEmail());
         Role role = roleRepository.findByRoleName(RoleName.ROLE_USER).orElseThrow(
                 () -> new RecordNotFoundException("RoleName isn't exist")
         );
@@ -75,11 +76,11 @@ public class UserService {
         User user = userRepository.findUserById(id).orElseThrow(
                 () ->  new RecordNotFoundException("User Not Found")
         );
-        UserModel userModel = UserMapper.INSTANCE.userToUserModel(user);
-        return userModel;
+        return UserMapper.INSTANCE.userToUserModel(user);
     }
 
     //  Update User Following by UserModel.
+    @Transactional
     public ResponseModel updateUser(UserModel userModel){
         User user = userRepository.findUserById(userModel.getId()).orElseThrow(
                 () -> new RecordNotFoundException("User Not Found")

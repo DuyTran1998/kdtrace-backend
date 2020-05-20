@@ -14,6 +14,7 @@ public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
     QRCodeModel qrCodeToQRCodeModel(QRCode qrCode);
+
     List<QRCodeModel> qrCodeListToQRCodeModel(List<QRCode> qrCodes);
 
     ProductModel productToProductModel(Product product);

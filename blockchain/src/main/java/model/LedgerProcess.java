@@ -16,7 +16,7 @@ public class LedgerProcess {
 
     private List<Long> qrCodes;
 
-    private LedgerDeliveryTruck deliveryTruck;
+    private Long deliveryTruckId;
 
     private String statusProcess;
 

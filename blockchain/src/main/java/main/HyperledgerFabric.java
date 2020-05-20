@@ -44,8 +44,11 @@ public class HyperledgerFabric {
     public boolean updateQRCodes(User user, List<LedgerQRCode> qrCodeList, String organization, String channelName) throws Exception {
         return ledgerProductService.updateQRCodes(user, qrCodeList, organization, channelName);
     }
-    public boolean updateProcess(User user, LedgerProcess ledgerProcess, String organization, String channelName) throws Exception {
-        return ledgerProductService.updateProcess(user, ledgerProcess, organization, channelName);
+    public boolean createProcess(User user, LedgerProcess ledgerProcess, String organization, String channelName) throws Exception {
+        return ledgerProductService.createProcess(user, ledgerProcess, organization, channelName);
+    }
+    public boolean updateProcess(User user, Long processId, String statusProcess, List<Long> qrCodes, String organization, String channelName) throws Exception {
+        return ledgerProductService.updateProcess(user, processId, statusProcess, qrCodes, organization, channelName);
     }
     public UserContext enrollAdmin(String organization) throws Exception {
         return caIdentityService.enrollAdmin(organization);

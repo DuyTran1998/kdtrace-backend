@@ -14,6 +14,7 @@ import com.duytran.kdtrace.repository.TransportRepository;
 import com.duytran.kdtrace.repository.UserRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,6 +49,7 @@ public class TransportService {
             throw new RuntimeException("Cannot register user identity");
         }
         transport.setCompanyName("Transport");
+        transport.setCreate_at(commonService.getDateTime());
         transport.setUser(user);
         transportRepository.save(transport);
     }
@@ -61,41 +63,55 @@ public class TransportService {
 
 
     public ResponseModel updateTransport(TransportModel transportModel){
-        if(!transportRepository.existsById(transportModel.getId())){
-            return new ResponseModel(" Not Exist Record To Update", 400, transportModel);
-        }
-        Transport transport = TransportMapper.INSTANCE.transportModelToTransport(transportModel);
-        transport.setUpdate_at(commonService.getDateTime());
+        Transport transport = transportRepository.findTransportById(transportModel.getId()).orElseThrow(
+                () -> new RecordNotFoundException("Transport isn't exist")
+        );
+
+        transport.updateInformation(transportModel.getCompanyName(),
+                                    transportModel.getEmail(),
+                                    transportModel.getAddress(),
+                                    transportModel.getPhone(),
+                                    transportModel.getAvatar(),
+                                    commonService.getDateTime());
+
         try{
             blockchainService.updateTransport(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), transport, "kdtrace");
             transportRepository.save(transport);
         }catch (Exception e){
             return new ResponseModel("Update Not Successfully", 400, e);
         }
-        return new ResponseModel("Update successfully", 200, transport);
+        return new ResponseModel("Update successfully", 200, transportModel);
     }
 
 
-    public Transport getTransportInPrincipal(){
-        Transport transport = transportRepository.findTransportByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
+    public ResponseModel getAllTransports(){
+        List<Transport> transports = transportRepository.findAll();
+        List<TransportModel> transportModels = TransportMapper.INSTANCE.listTransportToListTransportModel(transports);
+        return new ResponseModel( "List Transport Company", 200, transportModels);
+    }
+
+
+    private Transport getTransportInPrincipal(){
+        return transportRepository.findTransportByUser_Username(userPrincipalService.getUserCurrentLogined()).orElseThrow(
                 () -> new RecordNotFoundException("Don't found transport")
         );
-        return transport;
     }
 
     public ResponseModel createDeliveryTruck(DeliveryTruckModel deliveryTruckModel){
         if(deliveryTruckRepository.existsDeliveryTruckByNumberPlate(deliveryTruckModel.getNumberPlate())){
-            return new ResponseModel("The number plate is exist", 400, deliveryTruckModel);
+            return new ResponseModel("The number plate is exist", HttpStatus.BAD_REQUEST.value(),
+                                                                                                    deliveryTruckModel);
         }
         else{
             DeliveryTruck deliveryTruck = DeliveryTruckMapper.INSTANCE.deliveryTruckModelToDelivery(deliveryTruckModel);
             deliveryTruck.setTransport(getTransportInPrincipal());
             try{
+                deliveryTruck.setCreate_at(commonService.getDateTime());
                 deliveryTruckRepository.save(deliveryTruck);
             }catch (Exception e){
-                return new ResponseModel("Create not successfull", 400, e);
+                return new ResponseModel("Create not successfull", HttpStatus.BAD_REQUEST.value(), e);
             }
-            return new ResponseModel("Create successfully", 200, deliveryTruckModel);
+            return new ResponseModel("Create successfully", HttpStatus.CREATED.value(), deliveryTruckModel);
         }
     }
 
@@ -108,9 +124,8 @@ public class TransportService {
     }
 
     public DeliveryTruck findDeliveryTruckById(Long id){
-        DeliveryTruck deliveryTruck = deliveryTruckRepository.findDeliveryTruckById(id).orElseThrow(
+        return deliveryTruckRepository.findDeliveryTruckById(id).orElseThrow(
                 () -> new RecordNotFoundException("Not Found")
         );
-        return deliveryTruck;
     }
 }

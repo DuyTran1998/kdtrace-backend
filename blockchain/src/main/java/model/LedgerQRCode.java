@@ -12,5 +12,13 @@ public class LedgerQRCode {
 
     private Long processId;
 
-    private String qr_code;
+    private String code;
+
+    private String ower;
+
+    private String link;
+
+    private String statusQRCode;
+
+    private String create_at;
 }

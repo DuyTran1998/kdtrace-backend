@@ -11,6 +11,7 @@ import javax.persistence.Enumerated;
 @Setter
 @Getter
 public class DeliveryTruckModel {
+
     private Long id;
 
     private String numberPlate;

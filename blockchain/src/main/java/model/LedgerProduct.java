@@ -25,7 +25,9 @@ public class LedgerProduct {
 
     private String userId;
 
-    private int quantity;
+    private long quantity;
 
     private String unit;
+
+    private String create_at;
 }

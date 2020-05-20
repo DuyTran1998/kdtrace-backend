@@ -10,12 +10,13 @@ import java.util.Date;
 
 @Component
 @Slf4j
+@SuppressWarnings("FieldCanBeLocal")
 public class JwtTokenProvider {
     //Private - just know on server.
     private final String JWT_SECRET = "kdtrace";
 
     //Exp time token
-    private final Long JWT_EXPRIRATION = 604800000L;
+    private final Long JWT_EXPRIRATION = 86400L;
 
     //Create token from information.
     public String generateToken(Authentication authentication){

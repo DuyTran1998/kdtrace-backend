@@ -16,4 +16,6 @@ public interface ProductRepositoty extends JpaRepository<Product, Long> {
     long getQuanlityProducts(Long id_product);
 
     Optional<Product> findProductById(Long id);
+
+    boolean existsByIdAndProducer_Id(Long id, Long producer_id);
 }

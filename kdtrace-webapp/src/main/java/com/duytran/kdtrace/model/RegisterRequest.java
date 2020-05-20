@@ -8,9 +8,13 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 public class RegisterRequest {
+
     @NotBlank
     private String username;
 
     @NotBlank
     private String password;
+
+    @NotBlank
+    private String email;
 }

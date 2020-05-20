@@ -3,6 +3,7 @@ package com.duytran.kdtrace.service;
 import com.duytran.kdtrace.entity.Producer;
 import com.duytran.kdtrace.entity.Product;
 import com.duytran.kdtrace.entity.QRCode;
+import com.duytran.kdtrace.entity.StatusQRCode;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.ProductMapper;
 import com.duytran.kdtrace.model.ProductModel;
@@ -35,6 +36,9 @@ public class ProductService {
     ProducerService producerService;
 
     @Autowired
+    CommonService commonService;
+
+    @Autowired
     BlockchainService blockchainService;
 
     @Transactional
@@ -42,6 +46,7 @@ public class ProductService {
         Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
         Producer producer = producerService.getProducerInPrincipal();
         product.setProducer(producer);
+        producer.setCreate_at(commonService.getDateTime());
         productRepository.save(product);
         List<QRCode> qrCodes = generateCode(product);
         qrCodeRepository.saveAll(qrCodes);
@@ -55,38 +60,57 @@ public class ProductService {
     @Value("${url}")
     private String url;
 
-    public List<QRCode> generateCode(Product product) {
+    private List<QRCode> generateCode(Product product) {
         List<QRCode> qrCodes = new ArrayList<>();
-        IntStream.rangeClosed(1, product.getQuantity()).forEach(
-                i -> qrCodes.add(new QRCode(product, url +
-                        product.getName() + "-L" + product.getId() + "-N" + i,
-                        product.getProducer().getCompanyName()))
+        IntStream.rangeClosed(1, (int) product.getQuantity()).forEach(
+                i -> {
+                    String code = product.getName() + "-L" + product.getId() + "-N" + i;
+                    String link = url + code;
+                    qrCodes.add(new QRCode(product, code, userPrincipalService.getUserCurrentLogined(), link,
+                            StatusQRCode.AVAILABLE, commonService.getDateTime()));
+                }
         );
         return qrCodes;
     }
 
     @Transactional
     public ResponseModel getAllProducts() {
-        List<Product> products = productRepository.findAllByProducer_Id(producerService.getProducerInPrincipal().getId());
+        Long producerID = producerService.getProducerInPrincipal().getId();
+        List<Product> products = productRepository.findAllByProducer_Id(producerID);
         List<ProductModel> productModels = ProductMapper.INSTANCE.listProducToModel(products);
-        return new ResponseModel("List Model", HttpStatus.OK.value(), productModels);
+        return new ResponseModel("List Product", HttpStatus.OK.value(), productModels);
     }
 
     @Transactional
-    public boolean checkQuanlityProducts(Long id_product, long quanlity) {
+    public boolean checkQuanlityProducts(Long id_product, long quanlity){
         long quanlity_products = productRepository.getQuanlityProducts(id_product);
-        if (quanlity_products >= quanlity) {
-            return true;
-        } else {
-            return false;
-        }
+        return (quanlity_products >= quanlity);
     }
 
     @Transactional
-    public Product getProductById(Long id) {
-        Product product = productRepository.findProductById(id).orElseThrow(
+    public Product getProductEntityById(Long id){
+        return productRepository.findProductById(id).orElseThrow(
                 () -> new RecordNotFoundException("Product is not exist")
         );
-        return product;
+    }
+
+    public ResponseModel getProductById(Long id){
+        Product product = getProductEntityById(id);
+        ProductModel productModel = ProductMapper.INSTANCE.productToProductModel(product);
+        return new ResponseModel("Successfully", HttpStatus.OK.value(), productModel);
+    }
+
+    public void changeStatusQRCode(Long productID, long quanlity, StatusQRCode statusQRCode){
+        List<QRCode> qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "AVAILABLE");
+        IntStream.rangeClosed(0, (int)quanlity - 1).forEach(
+                i ->{
+                    QRCode qrCode = qrCodes.get(i);
+                    qrCode.setStatusQRCode(statusQRCode);
+                    qrCodeRepository.save(qrCode);
+                });
+    }
+
+    public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){
+        return productRepository.existsByIdAndProducer_Id(id, producer_id);
     }
 }

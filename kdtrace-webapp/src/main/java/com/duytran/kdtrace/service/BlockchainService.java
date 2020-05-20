@@ -133,6 +133,7 @@ public class BlockchainService {
         try {
             Product product = productRepositoty.findProductById(productId).get();
             LedgerProduct ledgerProduct = LedgerMapper.INSTANCE.toLedgerProduct(product);
+            ledgerProduct.setUnit(product.getUnit().toString());
             List<Long> listQRCodeId = new ArrayList<>();
             product.getCodes().forEach(qrCode -> listQRCodeId.add(qrCode.getId()));
             ledgerProduct.setCodes(listQRCodeId);
@@ -152,22 +153,29 @@ public class BlockchainService {
         }
     }
 
-    public boolean updateProcess(User user, Process process, String channelName) {
+    public boolean createProcess(User user, Process process, String channelName) {
         try {
             LedgerProcess ledgerProcess = LedgerMapper.INSTANCE.toLedgerProcess(process);
-
-            List<Long> listQRCodeId = new ArrayList<>();
-            process.getQrCodes().forEach(qrCode -> listQRCodeId.add(qrCode.getId()));
-            ledgerProcess.setQrCodes(listQRCodeId);
-
-            LedgerDeliveryTruck deliveryTruck = LedgerMapper.INSTANCE.toLedgerDeliveryTruck(process.getDeliveryTruck());
-            deliveryTruck.setAutoMaker(process.getDeliveryTruck().getAutoMaker().name());
-            deliveryTruck.setStatus(process.getDeliveryTruck().getStatus().name());
-            ledgerProcess.setDeliveryTruck(deliveryTruck);
             ledgerProcess.setStatusProcess(process.getStatusProcess().name());
 
+//            List<Long> listQRCodeId = new ArrayList<>();
+//            process.getQrCodes().forEach(qrCode -> listQRCodeId.add(qrCode.getId()));
+//            ledgerProcess.setQrCodes(listQRCodeId);
+//
+//            LedgerDeliveryTruck deliveryTruck = LedgerMapper.INSTANCE.toLedgerDeliveryTruck(process.getDeliveryTruck());
+//            deliveryTruck.setAutoMaker(process.getDeliveryTruck().getAutoMaker().name());
+//            deliveryTruck.setStatus(process.getDeliveryTruck().getStatus().name());
+//            ledgerProcess.setDeliveryTruck(deliveryTruck);
+            return hyperledgerFabric.createProcess(user, ledgerProcess, "Org3", channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("update Product: exception");
+        }
+    }
+
+    public boolean updateProcess(User user, Long processId, StatusProcess statusProcess, List<Long> qrCodes, String channelName) {
+        try {
             String orgMsp = "Org1"; //default
-            switch (process.getStatusProcess()) {
+            switch (statusProcess) {
                 case WAITING_RESPONSE_PRODUCER:
                     orgMsp = "Org3";
                     break;
@@ -175,7 +183,7 @@ public class BlockchainService {
                     orgMsp = "Org1";
                     break;
                 case CHOOSE_DELIVERYTRUCK_TRANSPORT:
-                    orgMsp = "Org3";
+                    orgMsp = "Org1";
                     break;
                 case TRANSPORT_REJECT:
                     orgMsp = "Org2";
@@ -190,7 +198,7 @@ public class BlockchainService {
                     orgMsp = "Org1";
                     break;
             }
-            return hyperledgerFabric.updateProcess(user, ledgerProcess, orgMsp, channelName);
+            return hyperledgerFabric.updateProcess(user, processId, statusProcess.name(), qrCodes, orgMsp, channelName);
         } catch (Exception e) {
             throw new RecordHasCreatedException("update Product: exception");
         }

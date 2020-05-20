@@ -15,4 +15,6 @@ public class LedgerDeliveryTruck {
     private String status;
 
     private String transportId;
+
+    private String create_at;
 }

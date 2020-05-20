@@ -19,5 +19,5 @@ public interface UserContextMapper {
 
     UserContextDto toUserContextDto(HFUserContext hfUserContext);
 
-    List<UserContextDto> toUserContextDtoList(List<HFUserContext> hfUserContexts);
+//    List<UserContextDto> toUserContextDtoList(List<HFUserContext> hfUserContexts);
 }
