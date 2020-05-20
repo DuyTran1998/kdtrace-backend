@@ -21,4 +21,6 @@ public class LedgerQRCode {
     private String statusQRCode;
 
     private String create_at;
+
+    private String otp;
 }

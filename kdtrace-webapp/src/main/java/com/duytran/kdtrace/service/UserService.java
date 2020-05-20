@@ -46,17 +46,31 @@ public class UserService {
     @Transactional
     public ResponseModel saveUser(RegisterRequest registerRequest){
         if(userRepository.existsUserByUsername(registerRequest.getUsername())){
-            return new ResponseModel("Username have been created", HttpStatus.CREATED.value(), registerRequest.getUsername());
+            return new ResponseModel("Username have been created", HttpStatus.BAD_REQUEST.value(), registerRequest.getUsername());
         }
         User user = new User(registerRequest.getUsername(), passwordEncoder.encode(registerRequest.getPassword()),
                                                                                             registerRequest.getEmail());
-        Role role = roleRepository.findByRoleName(RoleName.ROLE_USER).orElseThrow(
+        Role role = roleRepository.findByRoleName(registerRequest.getRoleName()).orElseThrow(
                 () -> new RecordNotFoundException("RoleName isn't exist")
         );
         user.setRole(role);
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        switch (savedUser.getRole().getRoleName()){
+            //    Create the description for user have ROLE_PRODUCER
+            case ROLE_PRODUCER:
+                producerService.createProducer(user);
+                break;
+            //    Create the description for user have ROLE_TRANSPORT
+            case ROLE_TRANSPORT:
+                transportService.createTransport(user);
+                break;
+            //    Create the description for user have ROLE_DISTRIBUTOR
+            case ROLE_DISTRIBUTOR:
+                distributorService.createDistributor(user);
+                break;
+        }
 
-        return new ResponseModel("Successful", HttpStatus.OK.value(), user);
+        return new ResponseModel("Successful", HttpStatus.OK.value(),  UserMapper.INSTANCE.userToUserDto(user));
     }
 
 
@@ -79,50 +93,17 @@ public class UserService {
         return UserMapper.INSTANCE.userToUserModel(user);
     }
 
-    //  Update User Following by UserModel.
-    @Transactional
-    public ResponseModel updateUser(UserModel userModel){
-        User user = userRepository.findUserById(userModel.getId()).orElseThrow(
+    //  Active User by role_admin
+    public ResponseModel activeUser(Long user_id){
+        User user = userRepository.findUserById(user_id).orElseThrow(
                 () -> new RecordNotFoundException("User Not Found")
         );
+        user.setActive(true);
 
-        //  Checking to make sure request have allow to change role of user.
-        if(userModel.getRole() == null){
-            if(user.getRole().getRoleName() == RoleName.ROLE_USER){
-                user.setActive(false);
-            }
-            else{
-                user.setActive(userModel.isActive());
-            }
-        }
-        else{
-            if(user.getRole().getRoleName() != RoleName.ROLE_USER){
-                return new ResponseModel("The account don't allow to change role.", 403, userModel);
-            }
-            Role role = roleRepository.findByRoleName(userModel.getRole().getRoleName()).orElseThrow(
-                    () -> new RecordNotFoundException("Role isn't exist")
-            );
-            user.setRole(role);
-            user.setActive(userModel.isActive());
-            switch (userModel.getRole().getRoleName()){
-                    //    Create the description for user have ROLE_PRODUCER
-                case ROLE_PRODUCER:
-                    producerService.createProducer(user);
-                    break;
-                    //    Create the description for user have ROLE_TRANSPORT
-                case ROLE_TRANSPORT:
-                    transportService.createTransport(user);
-                    break;
-                    //    Create the description for user have ROLE_DISTRIBUTOR
-                case ROLE_DISTRIBUTOR:
-                    distributorService.createDistributor(user);
-                    break;
-            }
-        }
         try{
             userRepository.save(user);
         }catch (Exception e){
-            return new ResponseModel("Update Fail", 400, userModel);
+            return new ResponseModel("Update Fail", 400, user_id);
         }
         return new ResponseModel("Update Successfull", 200, UserMapper.INSTANCE.userToUserDto(user));
     }

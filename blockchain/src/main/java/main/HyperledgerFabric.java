@@ -1,6 +1,7 @@
 package main;
 
 import com.duytran.kdtrace.entity.HFUserContext;
+import com.duytran.kdtrace.entity.StatusQRCode;
 import com.duytran.kdtrace.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import model.*;
@@ -41,8 +42,11 @@ public class HyperledgerFabric {
     public boolean updateProduct(User user, LedgerProduct ledgerProduct, String organization, String channelName) throws Exception {
         return ledgerProductService.updateProduct(user, ledgerProduct, organization, channelName);
     }
-    public boolean updateQRCodes(User user, List<LedgerQRCode> qrCodeList, String organization, String channelName) throws Exception {
-        return ledgerProductService.updateQRCodes(user, qrCodeList, organization, channelName);
+    public boolean createQRCodes(User user, List<LedgerQRCode> qrCodeList, String organization, String channelName) throws Exception {
+        return ledgerProductService.createQRCodes(user, qrCodeList, organization, channelName);
+    }
+    public boolean updateQRCodes(User user, List<Long> qrCodeIds, String statusQRCode, String orgMsp, String channelName) throws Exception {
+        return ledgerProductService.updateQRCodes(user, qrCodeIds, statusQRCode, orgMsp, channelName);
     }
     public boolean createProcess(User user, LedgerProcess ledgerProcess, String organization, String channelName) throws Exception {
         return ledgerProductService.createProcess(user, ledgerProcess, organization, channelName);

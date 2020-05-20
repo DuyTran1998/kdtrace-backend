@@ -1,6 +1,8 @@
 package com.duytran.kdtrace.controller;
 
 import com.duytran.kdtrace.generator.ZXingHelper;
+import com.duytran.kdtrace.model.EndUserResponse;
+import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.service.ProcessService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,10 @@ public class EndUserController {
     }
 
     @RequestMapping(value = "/getInfo", method = RequestMethod.GET)
-    public ResponseEntity<?> getInfo(@RequestParam String qr_code){
-        return ResponseEntity.ok(processService.getInfomation(qr_code));
+    public String getInfo(@RequestParam String qr_code, Model model){
+        EndUserResponse responseModel =  (EndUserResponse) processService.getInfomation(qr_code).getResult();
+        model.addAttribute("response", responseModel);
+        return "information";
     }
     //localhost:8080/getInfo?qr_code=OrangeVN-L1-N24
 }

@@ -38,10 +38,10 @@ public class QRCode implements Serializable {
 
     private String create_at;
 
+    private String otp;
 
     public QRCode(){
     }
-
 
     public QRCode(Product product, String code, String ower, String link, StatusQRCode statusQRCode, String create_at){
         this.product = product;

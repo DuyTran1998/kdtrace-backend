@@ -143,11 +143,19 @@ public class BlockchainService {
         }
     }
 
-    public boolean updateQRCodes(User user, Long productId, String channelName) {
+    public boolean createQRCodes(User user, Long productId, String channelName) {
         try {
             Product product = productRepositoty.findProductById(productId).get();
             List<LedgerQRCode> ledgerQRCodeList = LedgerMapper.INSTANCE.toLedgerQrCodeList(product.getCodes());
-            return hyperledgerFabric.updateQRCodes(user, ledgerQRCodeList, product.getProducer().getOrgMsp(), channelName);
+            return hyperledgerFabric.createQRCodes(user, ledgerQRCodeList, product.getProducer().getOrgMsp(), channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("update Product: exception");
+        }
+    }
+
+    public boolean updateQRCodes(User user, List<Long> qrCodeIds, StatusQRCode statusQRCode, String orgMsp, String channelName) {
+        try {
+            return hyperledgerFabric.updateQRCodes(user, qrCodeIds, statusQRCode.name(), orgMsp, channelName);
         } catch (Exception e) {
             throw new RecordHasCreatedException("update Product: exception");
         }

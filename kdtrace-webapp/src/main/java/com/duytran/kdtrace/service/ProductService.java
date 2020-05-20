@@ -1,9 +1,6 @@
 package com.duytran.kdtrace.service;
 
-import com.duytran.kdtrace.entity.Producer;
-import com.duytran.kdtrace.entity.Product;
-import com.duytran.kdtrace.entity.QRCode;
-import com.duytran.kdtrace.entity.StatusQRCode;
+import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.ProductMapper;
 import com.duytran.kdtrace.model.ProductModel;
@@ -53,7 +50,7 @@ public class ProductService {
         product.setCodes(qrCodes);
         productRepository.save(product);
         blockchainService.updateProduct(producer.getUser(), product.getId(), "kdtrace");
-        blockchainService.updateQRCodes(producer.getUser(), product.getId(), "kdtrace");
+        blockchainService.createQRCodes(producer.getUser(), product.getId(), "kdtrace");
         return new ResponseModel("Create Successfully", HttpStatus.OK.value(), productModel);
     }
 
@@ -100,14 +97,17 @@ public class ProductService {
         return new ResponseModel("Successfully", HttpStatus.OK.value(), productModel);
     }
 
-    public void changeStatusQRCode(Long productID, long quanlity, StatusQRCode statusQRCode){
+    public void changeStatusQRCode(User user, Long productID, long quanlity, StatusQRCode statusQRCode){
         List<QRCode> qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "AVAILABLE");
+        List<Long> qrCodeIds = new ArrayList<>();
         IntStream.rangeClosed(0, (int)quanlity - 1).forEach(
                 i ->{
                     QRCode qrCode = qrCodes.get(i);
                     qrCode.setStatusQRCode(statusQRCode);
+                    qrCodeIds.add(qrCode.getId());
                     qrCodeRepository.save(qrCode);
                 });
+        blockchainService.updateQRCodes(user, qrCodeIds, statusQRCode, "Org1","kdtrace");
     }
 
     public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){

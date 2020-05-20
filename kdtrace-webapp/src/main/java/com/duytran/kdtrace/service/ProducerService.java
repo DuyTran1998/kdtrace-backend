@@ -97,4 +97,8 @@ public class ProducerService {
     public String getMail(Long id){
         return producerRepository.getProducerEmailByProductId(id);
     }
+
+    public String getAddress(Long id){
+        return producerRepository.getProducerAddressByProductId(id);
+    }
 }

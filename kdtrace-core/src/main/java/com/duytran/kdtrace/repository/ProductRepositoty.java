@@ -18,4 +18,5 @@ public interface ProductRepositoty extends JpaRepository<Product, Long> {
     Optional<Product> findProductById(Long id);
 
     boolean existsByIdAndProducer_Id(Long id, Long producer_id);
+
 }
