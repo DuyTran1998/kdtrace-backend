@@ -11,4 +11,6 @@ public interface DistributorRepository extends JpaRepository<Distributor, Long> 
     Optional<Distributor> findDistributorByUser_Username(String username);
 
     boolean existsById(Long id);
+
+    Optional<Distributor> findDistributorById(Long id);
 }

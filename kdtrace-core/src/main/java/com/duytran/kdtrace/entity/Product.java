@@ -25,10 +25,10 @@ public class Product {
 
     private Date exp;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product")
     private List<QRCode> codes;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producer_id")
     private Producer producer;
 
@@ -37,6 +37,6 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Unit unit;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<Process> processes;
+    private String create_at;
+
 }

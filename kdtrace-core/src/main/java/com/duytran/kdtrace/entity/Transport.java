@@ -12,6 +12,6 @@ import java.util.List;
 @Table(name = "transports")
 public class Transport extends Company {
 
-    @OneToMany(mappedBy = "transport", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL)
     private List<DeliveryTruck> deliveryTruckList;
 }

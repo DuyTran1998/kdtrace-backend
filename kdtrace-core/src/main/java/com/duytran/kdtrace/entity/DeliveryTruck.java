@@ -34,4 +34,6 @@ public class DeliveryTruck {
     @JsonIgnore
     @OneToMany(mappedBy = "deliveryTruck", fetch = FetchType.LAZY)
     private List<Process> processes;
+
+    private String create_at;
 }

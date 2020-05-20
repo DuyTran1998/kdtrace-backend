@@ -13,7 +13,7 @@ public class ProcessModel {
 
     private DistributorModel distributorModel;
 
-    private ProductModel productModel;
+    private Long ProductID;
 
     private DeliveryTruckModel deliveryTruckModel;
 
@@ -26,4 +26,11 @@ public class ProcessModel {
     private long quanlity;
 
     private List<QRCodeModel> qrCodeModels;
+
+    public void updateProcessModel(DistributorModel distributorModel, DeliveryTruckModel deliveryTruckModel,
+                                   List<QRCodeModel> qrCodeModels){
+        this.distributorModel = distributorModel;
+        this.deliveryTruckModel = deliveryTruckModel;
+        this.qrCodeModels = qrCodeModels;
+    }
 }

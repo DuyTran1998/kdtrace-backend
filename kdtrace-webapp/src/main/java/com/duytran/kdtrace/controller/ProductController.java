@@ -14,6 +14,11 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @GetMapping("get")
+    public ResponseEntity<?> getProductById(@RequestParam Long id){
+        return ResponseEntity.ok(productService.getProductById(id));
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@Valid @RequestBody ProductModel productModel){
         return ResponseEntity.ok(productService.createProduct(productModel));

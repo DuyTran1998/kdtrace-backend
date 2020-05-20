@@ -11,5 +11,5 @@ public interface DistributorMapper {
 
     DistributorModel distributorToDistributorModel(Distributor distributor);
 
-    Distributor distributorModelToDistributor(DistributorModel distributorModel);
+ //   Distributor distributorModelToDistributor(DistributorModel distributorModel);
 }

@@ -19,9 +19,9 @@ public class Process {
     @JoinColumn(name = "distributor_id")
     private Distributor distributor;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    private Long productID;
+
+    private Long transportID;
 
     private long quanlity;
 
@@ -41,5 +41,12 @@ public class Process {
 
     public Process(){
 
+    }
+
+    public Process(Distributor distributor, Long productID, long quanlity, StatusProcess statusProcess){
+        this.distributor = distributor;
+        this.productID = productID;
+        this.quanlity = quanlity;
+        this.statusProcess = statusProcess;
     }
 }

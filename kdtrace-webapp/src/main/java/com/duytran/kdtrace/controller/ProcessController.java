@@ -31,23 +31,25 @@ public class ProcessController {
 
     @PreAuthorize(("hasRole('ROLE_PRODUCER')"))
     @PostMapping("/acceptToSell")
-    public ResponseEntity<?> acceptToSell(@RequestParam Long id){
+    public ResponseEntity<?> acceptToAgreementWithDistributor(@RequestParam Long id){
         return ResponseEntity.ok(processService.acceptToSell(id));
     }
-//    @PostMapping("/chooseTransport")
-//    public ResponseEntity<?> chooseTransport(@RequestParam Long id){
-//        return ResponseEntity.ok(processService.)
-//    }
+
+    @PreAuthorize(("hasRole('ROLE_DISTRIBUTOR')"))
+    @PostMapping("/chooseTransport")
+    public ResponseEntity<?> chooseTransport(@RequestParam Long id, @RequestParam Long transport_id){
+        return ResponseEntity.ok(processService.chooseTransport(id, transport_id));
+    }
 
 
     @PreAuthorize(("hasRole('ROLE_TRANSPORT')"))
-    @PostMapping("/confirmToDelivery")
+    @PostMapping("/confirmToGet")
     public ResponseEntity<?> confirmToDelivery(@RequestParam Long id){
         return ResponseEntity.ok(processService.confirmToGetGoods(id));
     }
 
 
-    @PreAuthorize(("hasRole('ROLE_DISTRIBUTOR')"))
+    @PreAuthorize(("hasRole('ROLE_TRANSPORT')"))
     @PostMapping("/confirmToReceipt")
     public ResponseEntity<?> confirmToReceipt(@RequestParam Long id){
         return ResponseEntity.ok(processService.confirmToReceiptGoods(id));
