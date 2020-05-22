@@ -16,9 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SplittableRandom;
+import java.util.*;
 
 @Service
 public class ProcessService {
@@ -111,7 +109,7 @@ public class ProcessService {
         process.setStatusProcess(StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT);
         List<QRCode> qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(process.getProductID(), "WAITING");
         List<Long> listQrCodeId = new ArrayList<>();
-        qrCodes.subList(0, (int) process.getQuanlity() -1 ).forEach(
+        qrCodes.subList(0, (int) process.getQuanlity() - 1).forEach(
                 i -> {
                     i.setProcess(process);
                     qrCodeRepository.save(i);
@@ -119,7 +117,8 @@ public class ProcessService {
                 }
         );
         Process savedProcess = processRepository.save(process);
-        blockchainService.updateProcess(producer.getUser(), process.getId(), StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT, listQrCodeId, "kdtrace");
+        blockchainService.updateProcess(producer.getUser(), process.getId(), StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT,
+                listQrCodeId, null, null, null, null, producer.getOrgMsp(), "kdtrace");
         sendEmailResponseToDistributor(savedProcess, producer);
         return new ResponseModel("Accepted", HttpStatus.OK.value(), id);
     }
@@ -145,6 +144,7 @@ public class ProcessService {
         return result;
     }
 
+    @Transactional
     public ResponseModel chooseTransport(Long id, Long transport_id) {
         Process process = findProcessById(id);
         Distributor distributor = distributorService.getDistributorInPrincipal();
@@ -154,6 +154,8 @@ public class ProcessService {
         }
         process.setTransportID(transport_id);
         process.setStatusProcess(StatusProcess.WAITING_RESPONSE_TRANSPORT);
+        blockchainService.updateProcess(distributor.getUser(), process.getId(), StatusProcess.WAITING_RESPONSE_TRANSPORT,
+                null, transport_id, null, null, null, distributor.getOrgMsp(), "kdtrace");
         Process savedProcess = processRepository.save(process);
         sendEmailToTransport(savedProcess);
         return new ResponseModel("Choose Transport Successfully", HttpStatus.OK.value(), id);
@@ -171,7 +173,8 @@ public class ProcessService {
         emailService.sendEmail("Deal with Transport Company to express goods", content, transport_email);
     }
 
-    public ResponseModel acceptToDelivery(Long id, Long id_deliveryTruck) {
+    @Transactional
+    public ResponseModel   acceptToDelivery(Long id, Long id_deliveryTruck) {
         Process process = findProcessById(id);
         Transport transport = transportService.getTransportInPrincipal();
         if (!transport.getId().equals(process.getTransportID()) ||
@@ -184,6 +187,9 @@ public class ProcessService {
         process.setDeliveryTruck(deliveryTruck);
         process.setStatusProcess(StatusProcess.ON_BOARDING_GET);
         Process savedProcess = processRepository.save(process);
+        blockchainService.updateDeliveryTruck(transport.getUser(), deliveryTruck, transport.getOrgMsp(), "kdtrace");
+        blockchainService.updateProcess(transport.getUser(), process.getId(), StatusProcess.ON_BOARDING_GET,
+                null, null, deliveryTruck.getId(), null, null, transport.getOrgMsp(), "kdtrace");
         sendEmailToProducerAndDistributor(savedProcess, transport.getCompanyName(), transport.getPhone(),
                 "We confirm to express",
                 "Nofication from " + transport.getCompanyName());
@@ -204,6 +210,7 @@ public class ProcessService {
         emailService.sendEmail(subject, content, process.getDistributor().getEmail());
     }
 
+    @Transactional
     public ResponseModel confirmToGetGoods(Long id) {
         Process process = findProcessById(id);
         Transport transport = transportService.getTransportInPrincipal();
@@ -214,16 +221,19 @@ public class ProcessService {
         process.setDelivery_at(commonService.getDateTime());
         process.setStatusProcess(StatusProcess.ON_BOARDING_REVEIVE);
         Process savedProcess = processRepository.save(process);
+        blockchainService.updateProcess(transport.getUser(), process.getId(), StatusProcess.ON_BOARDING_REVEIVE,
+                null, null, null, process.getDelivery_at(), null, transport.getOrgMsp(), "kdtrace");
         sendEmailToProducerAndDistributor(savedProcess, transport.getCompanyName(), transport.getPhone(),
                 "We got goods in Producer",
                 "Nofication from " + transport.getCompanyName());
         return new ResponseModel("The Goods was taken by transport", HttpStatus.OK.value(), id);
     }
 
+    @Transactional
     public ResponseModel confirmToReceiptGoods(Long id) {
         Process process = findProcessById(id);
-        Transport transport = transportService.getTransportInPrincipal();
-        if (!transport.getId().equals(process.getTransportID()) ||
+        Distributor distributor = distributorService.getDistributorInPrincipal();
+        if (!distributor.getId().equals(process.getDistributor().getId()) ||
                 process.getStatusProcess() != StatusProcess.ON_BOARDING_REVEIVE) {
             return new ResponseModel("You don't have permission", HttpStatus.METHOD_NOT_ALLOWED.value(), id);
         }
@@ -231,13 +241,18 @@ public class ProcessService {
         process.setStatusProcess(StatusProcess.REVEIVED);
         processRepository.save(process);
         List<QRCode> qrCodes = qrCodeRepository.findAllByProcess_Id(id);
+        Map<Long, String> mapOtp = new HashMap<>();
         qrCodes.forEach(
                 i -> {
                     i.setStatusQRCode(StatusQRCode.READY);
                     i.setOtp(generateOtp());
                     qrCodeRepository.save(i);
+                    mapOtp.put(i.getId(), i.getOtp());
                 }
         );
+        blockchainService.updateProcess(distributor.getUser(), process.getId(), StatusProcess.REVEIVED,
+                null, null, null, null, process.getReceipt_at(), distributor.getOrgMsp(), "kdtrace");
+        blockchainService.saveQRCodes(distributor.getUser(), null, StatusQRCode.READY, mapOtp, "Org1","kdtrace");
         return new ResponseModel("The Goods was receipted by distributor", HttpStatus.OK.value(), id);
     }
 
@@ -267,7 +282,7 @@ public class ProcessService {
                 () -> new RecordNotFoundException("Don't found QRCode with code")
         );
 
-        if(qrCode.getStatusQRCode() != StatusQRCode.READY){
+        if (qrCode.getStatusQRCode() != StatusQRCode.READY) {
             return new ResponseModel("Method is not allowed)", HttpStatus.METHOD_NOT_ALLOWED.value(), code);
         }
 

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 public class ProducerService {
 
@@ -33,6 +35,7 @@ public class ProducerService {
 
     // Function to create Producer Detail.
 
+    @Transactional
     public void createProducer(User user){
         Producer producer = new Producer();
         try {
@@ -57,7 +60,7 @@ public class ProducerService {
 
 
     // Update Information of Producer
-
+    @Transactional
     public ResponseModel updateProducer(ProducerModel producerModel){
         Producer producer =producerRepository.findProducerById(producerModel.getId()).orElseThrow(
                 () -> new RecordNotFoundException("Producer isn't exist" + producerModel.getId())

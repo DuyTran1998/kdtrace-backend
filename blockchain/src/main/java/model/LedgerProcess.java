@@ -18,6 +18,8 @@ public class LedgerProcess {
 
     private Long deliveryTruckId;
 
+    private Long transportId;
+
     private String statusProcess;
 
     private String delivery_at;

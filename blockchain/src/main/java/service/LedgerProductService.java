@@ -11,6 +11,7 @@ import org.hyperledger.fabric.sdk.BlockEvent;
 import util.Util;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class LedgerProductService {
@@ -18,7 +19,7 @@ public class LedgerProductService {
         return new LedgerProductService();
     }
 
-    public boolean updateProduct(User user, LedgerProduct ledgerProduct, String organizationName, String channelName) throws Exception{
+    public boolean updateProduct(User user, LedgerProduct ledgerProduct, String organizationName, String channelName) throws Exception {
         try {
             UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
             ObjectMapper objectMapper = new ObjectMapper();
@@ -42,7 +43,7 @@ public class LedgerProductService {
         }
     }
 
-    public boolean createQRCodes(User user, List<LedgerQRCode> qrCodeList, String organizationName, String channelName) throws Exception{
+    public boolean createQRCodes(User user, List<LedgerQRCode> qrCodeList, String organizationName, String channelName) throws Exception {
         try {
             UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
             ObjectMapper objectMapper = new ObjectMapper();
@@ -66,8 +67,16 @@ public class LedgerProductService {
         }
     }
 
-    public boolean updateQRCodes(User user, List<Long> qrCodeIds, String statusQRCode, String organizationName, String channelName) throws Exception{
+    public boolean saveQRCodes(User user, List<Long> qrCodeIds, String statusQRCode, Map<Long, String> mapOtp, String organizationName, String channelName) throws Exception {
         try {
+            String checkQrCodeIds = "";
+            String checkmapOtp = "";
+            if (qrCodeIds != null)
+                checkQrCodeIds = qrCodeIds.toString();
+            if (mapOtp != null){
+                ObjectMapper objectMapper = new ObjectMapper();
+                checkmapOtp = objectMapper.writeValueAsString(mapOtp);
+            }
             UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
             BlockEvent.TransactionEvent result = ChannelWrapper
                     .getChannelWrapperInstance(
@@ -78,8 +87,8 @@ public class LedgerProductService {
                             organizationName,
                             userContext,
                             "process_" + channelName,
-                            "updateQRCodes",
-                            new String[]{qrCodeIds.toString(), '"' + statusQRCode + '"'});
+                            "saveQRCodes",
+                            new String[]{checkQrCodeIds, '"' + statusQRCode + '"', checkmapOtp});
             log.info("transaction is valid : " + result.isValid());
             return result.isValid();
         } catch (Exception e) {
@@ -88,7 +97,7 @@ public class LedgerProductService {
         }
     }
 
-    public boolean createProcess(User user, LedgerProcess ledgerProcess, String organizationName, String channelName) throws Exception{
+    public boolean createProcess(User user, LedgerProcess ledgerProcess, String organizationName, String channelName) throws Exception {
         try {
             UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
             ObjectMapper objectMapper = new ObjectMapper();
@@ -112,8 +121,24 @@ public class LedgerProductService {
         }
     }
 
-    public boolean updateProcess(User user, Long processId, String statusProcess,  List<Long> qrCodes, String organizationName, String channelName) throws Exception{
+    public boolean updateProcess(User user, Long processId, String statusProcess,
+                                 List<Long> qrCodes, Long transportId, Long deliveryTruckId, String delivery_at, String receipt_at, String organizationName, String channelName) throws Exception {
         try {
+            String checkQrCodes = "";
+            String checkTransportId = "";
+            String checkDeliveryTruckId = "";
+            String checkDelivery_at = "";
+            String checkReceipt_at = "";
+            if (qrCodes != null)
+                checkQrCodes = qrCodes.toString();
+            if (transportId != null)
+                checkTransportId = transportId.toString();
+            if (deliveryTruckId != null)
+                checkDeliveryTruckId = deliveryTruckId.toString();
+            if (delivery_at != null)
+                checkDelivery_at = delivery_at;
+            if (receipt_at != null)
+                checkReceipt_at = receipt_at;
             UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
             BlockEvent.TransactionEvent result = ChannelWrapper
                     .getChannelWrapperInstance(
@@ -125,7 +150,8 @@ public class LedgerProductService {
                             userContext,
                             "process_" + channelName,
                             "updateProcess",
-                            new String[]{processId.toString(), '"' + statusProcess + '"', qrCodes.toString()});
+                            new String[]{processId.toString(), '"' + statusProcess + '"',
+                                    checkQrCodes, checkTransportId, checkDeliveryTruckId, '"' + checkDelivery_at + '"', '"' + checkReceipt_at + '"'});
             log.info("transaction is valid : " + result.isValid());
             return result.isValid();
         } catch (Exception e) {

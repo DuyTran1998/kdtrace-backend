@@ -97,6 +97,7 @@ public class ProductService {
         return new ResponseModel("Successfully", HttpStatus.OK.value(), productModel);
     }
 
+    @Transactional
     public void changeStatusQRCode(User user, Long productID, long quanlity, StatusQRCode statusQRCode){
         List<QRCode> qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "AVAILABLE");
         List<Long> qrCodeIds = new ArrayList<>();
@@ -107,7 +108,7 @@ public class ProductService {
                     qrCodeIds.add(qrCode.getId());
                     qrCodeRepository.save(qrCode);
                 });
-        blockchainService.updateQRCodes(user, qrCodeIds, statusQRCode, "Org1","kdtrace");
+        blockchainService.saveQRCodes(user, qrCodeIds, statusQRCode, null, "Org1","kdtrace");
     }
 
     public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){

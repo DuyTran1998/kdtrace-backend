@@ -4,10 +4,7 @@ import client.ChannelWrapper;
 import com.duytran.kdtrace.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import model.LedgerDistributor;
-import model.LedgerProducer;
-import model.LedgerTransport;
-import model.UserContext;
+import model.*;
 import org.hyperledger.fabric.sdk.BlockEvent;
 import util.Util;
 
@@ -61,6 +58,29 @@ public class LedgerUserService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Exception on saving transport info");
+        }
+    }
+    public boolean updateDeliveryTruck(User user, LedgerDeliveryTruck ledgerDeliveryTruck, String organizationName, String channelName) throws Exception{
+        try {
+            UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsDeliveryTruck = objectMapper.writeValueAsString(ledgerDeliveryTruck);
+            BlockEvent.TransactionEvent result = ChannelWrapper
+                    .getChannelWrapperInstance(
+                            user.getUsername(),
+                            organizationName)
+                    .invokeChainCode(
+                            channelName,
+                            organizationName,
+                            userContext,
+                            "process_" + channelName,
+                            "updateDeliveryTruck",
+                            new String[]{jsDeliveryTruck});
+            log.info("transaction is valid : " + result.isValid());
+            return result.isValid();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Exception on saving DeliveryTruck info");
         }
     }
 

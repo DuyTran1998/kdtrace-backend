@@ -58,6 +58,7 @@ public interface LedgerMapper {
     @Mapping(target = "distributorId", source = "distributor.id")
     @Mapping(target = "qrCodes", ignore = true)
     @Mapping(target = "deliveryTruckId", source = "deliveryTruck.id")
+    @Mapping(target = "transportId", source = "transportID")
     @Mapping(target = "statusProcess", ignore = true)
     LedgerProcess toLedgerProcess (Process process);
 

@@ -49,7 +49,7 @@ public class ProcessController {
     }
 
 
-    @PreAuthorize(("hasRole('ROLE_TRANSPORT')"))
+    @PreAuthorize(("hasRole('ROLE_DISTRIBUTOR')"))
     @PostMapping("/confirmToReceipt")
     public ResponseEntity<?> confirmToReceipt(@RequestParam Long id){
         return ResponseEntity.ok(processService.confirmToReceiptGoods(id));
