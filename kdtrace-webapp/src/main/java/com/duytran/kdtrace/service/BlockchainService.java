@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -116,6 +117,17 @@ public class BlockchainService {
         }
     }
 
+    public boolean updateDeliveryTruck(User user, DeliveryTruck deliveryTruck, String orgMsp, String channelName) {
+        try {
+            LedgerDeliveryTruck ledgerDeliveryTruck = LedgerMapper.INSTANCE.toLedgerDeliveryTruck(deliveryTruck);
+            ledgerDeliveryTruck.setAutoMaker(deliveryTruck.getAutoMaker().name());
+            ledgerDeliveryTruck.setStatus(deliveryTruck.getStatus().name());
+            return hyperledgerFabric.updateDeliveryTruck(user, ledgerDeliveryTruck, orgMsp, channelName);
+        } catch (Exception e) {
+            throw new RecordHasCreatedException("updateDeliveryTruck: exception");
+        }
+    }
+
     public boolean updateDistributor(User user, Distributor distributor, String channelName) {
         try {
             LedgerDistributor ledgerDistributor = LedgerMapper.INSTANCE.toLedgerDistributor(distributor);
@@ -153,9 +165,9 @@ public class BlockchainService {
         }
     }
 
-    public boolean updateQRCodes(User user, List<Long> qrCodeIds, StatusQRCode statusQRCode, String orgMsp, String channelName) {
+    public boolean saveQRCodes(User user, List<Long> qrCodeIds, StatusQRCode statusQRCode, Map<Long, String> mapOtp, String orgMsp, String channelName) {
         try {
-            return hyperledgerFabric.updateQRCodes(user, qrCodeIds, statusQRCode.name(), orgMsp, channelName);
+            return hyperledgerFabric.saveQRCodes(user, qrCodeIds, statusQRCode.name(), mapOtp, orgMsp, channelName);
         } catch (Exception e) {
             throw new RecordHasCreatedException("update Product: exception");
         }
@@ -180,33 +192,10 @@ public class BlockchainService {
         }
     }
 
-    public boolean updateProcess(User user, Long processId, StatusProcess statusProcess, List<Long> qrCodes, String channelName) {
+    public boolean updateProcess(User user, Long processId, StatusProcess statusProcess,
+                                 List<Long> qrCodes, Long transportId, Long deliveryTruckId, String delivery_at, String receipt_at, String orgMsp, String channelName) {
         try {
-            String orgMsp = "Org1"; //default
-            switch (statusProcess) {
-                case WAITING_RESPONSE_PRODUCER:
-                    orgMsp = "Org3";
-                    break;
-                case PRODUCER_REJECT:
-                    orgMsp = "Org1";
-                    break;
-                case CHOOSE_DELIVERYTRUCK_TRANSPORT:
-                    orgMsp = "Org1";
-                    break;
-                case TRANSPORT_REJECT:
-                    orgMsp = "Org2";
-                    break;
-                case ON_BOARDING_GET:
-                    orgMsp = "Org1";
-                    break;
-                case ON_BOARDING_REVEIVE:
-                    orgMsp = "Org2";
-                    break;
-                case REVEIVED:
-                    orgMsp = "Org1";
-                    break;
-            }
-            return hyperledgerFabric.updateProcess(user, processId, statusProcess.name(), qrCodes, orgMsp, channelName);
+            return hyperledgerFabric.updateProcess(user, processId, statusProcess.name(), qrCodes, transportId, deliveryTruckId, delivery_at, receipt_at, orgMsp, channelName);
         } catch (Exception e) {
             throw new RecordHasCreatedException("update Product: exception");
         }
