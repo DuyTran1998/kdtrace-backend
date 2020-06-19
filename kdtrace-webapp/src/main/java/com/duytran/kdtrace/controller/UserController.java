@@ -1,6 +1,5 @@
 package com.duytran.kdtrace.controller;
 
-import com.duytran.kdtrace.model.UserModel;
 import com.duytran.kdtrace.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
