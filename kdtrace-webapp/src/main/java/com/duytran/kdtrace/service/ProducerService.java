@@ -51,11 +51,11 @@ public class ProducerService {
                 () -> new RecordNotFoundException("Producer isn't exist" + producerModel.getId())
         );
 
-        producer.updateInformation( producer.getCompanyName(),
-                                    producer.getEmail(),
-                                    producer.getAddress(),
-                                    producer.getPhone(),
-                                    producer.getAvatar(),
+        producer.updateInformation( producerModel.getCompanyName(),
+                                    producerModel.getEmail(),
+                                    producerModel.getAddress(),
+                                    producerModel.getPhone(),
+                                    producerModel.getAvatar(),
                                     commonService.getDateTime());
 
         try{

@@ -1,6 +1,7 @@
 package com.duytran.kdtrace.security.principal;
 
 import com.duytran.kdtrace.entity.User;
+import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,11 +42,11 @@ public class UserPrincipalService implements UserDetailsService {
         }
     }
 
-//    public Long getUserIdCurrentLogined(){
-//        String username = getUserCurrentLogined();
-//        User user = userRepository.findByUsername(username).orElseThrow(
-//                () -> new RecordNotFoundException("User isn't exist")
-//        );
-//        return user.getId();
-//    }
+    public Long getUserIdCurrentLogined(){
+        String username = getUserCurrentLogined();
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new RecordNotFoundException("User isn't exist")
+        );
+        return user.getId();
+    }
 }

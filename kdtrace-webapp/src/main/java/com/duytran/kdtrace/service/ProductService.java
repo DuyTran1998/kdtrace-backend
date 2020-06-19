@@ -42,7 +42,7 @@ public class ProductService {
         Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
         Producer producer = producerService.getProducerInPrincipal();
         product.setProducer(producer);
-        producer.setCreate_at(commonService.getDateTime());
+        product.setCreate_at(commonService.getDateTime());
         productRepository.save(product);
         generateCode(product);
         return new ResponseModel("Create Successfully", HttpStatus.OK.value(), productModel);

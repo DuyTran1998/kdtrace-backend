@@ -1,6 +1,7 @@
 package com.duytran.kdtrace.security.jwt;
 
 public class JwtAuthenticationResponse {
+    private int status = 200;
     private String accessToken;
     private String tokenType = "Bearer";
 
@@ -22,5 +23,13 @@ public class JwtAuthenticationResponse {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }
