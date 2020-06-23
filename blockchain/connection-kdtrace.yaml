@@ -29,16 +29,31 @@ channels:
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
-#      peer0.org2.kdtrace.vn:
-#        endorsingPeer: true
-#        chaincodeQuery: true
-#        ledgerQuery: true
-#        eventSource: true
-#      peer0.org3.kdtrace.vn:
-#        endorsingPeer: true
-#        chaincodeQuery: true
-#        ledgerQuery: true
-#        eventSource: true
+      peer1.org1.kdtrace.vn:
+        endorsingPeer: true
+        chaincodeQuery: false
+        ledgerQuery: true
+        eventSource: true
+      peer0.org2.kdtrace.vn:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.org2.kdtrace.vn:
+        endorsingPeer: true
+        chaincodeQuery: false
+        ledgerQuery: true
+        eventSource: true
+      peer0.org3.kdtrace.vn:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.org3.kdtrace.vn:
+        endorsingPeer: true
+        chaincodeQuery: false
+        ledgerQuery: true
+        eventSource: true
     orderers:
       - orderer-kdtrace.orderer.io
     chaincodes:
@@ -126,7 +141,7 @@ organizations:
     certificateAuthorities:
       - ca.org1.kdtrace.vn
     adminPrivateKey:
-      path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/users/Admin@org1.kdtrace.vn/msp/keystore/0cb7812d9fa586f56c617cda0f28d219f96f15cf3d472e8ad43ebbf2f45e3ebb_sk
+      path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/users/Admin@org1.kdtrace.vn/msp/keystore/098253a55d4c57c7caa71440786a8a2f7a5624b56bfbb1b422322f4127623ad1_sk
     signedCert:
       path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/users/Admin@org1.kdtrace.vn/msp/signcerts/Admin@org1.kdtrace.vn-cert.pem
   Org2:
@@ -138,7 +153,7 @@ organizations:
     certificateAuthorities:
       - ca.org2.kdtrace.vn
     adminPrivateKey:
-      path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/users/Admin@org2.kdtrace.vn/msp/keystore/b570b11e9395936a30ed7a173f71f59687e9931eb3ade68de86c4d4fe0fc0baa_sk
+      path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/users/Admin@org2.kdtrace.vn/msp/keystore/fd267d14ac3c394008de63e57bba002d3241eeab2f69719535128fb115a1d190_sk
     signedCert:
       path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/users/Admin@org2.kdtrace.vn/msp/signcerts/Admin@org2.kdtrace.vn-cert.pem
   Org3:
@@ -150,7 +165,7 @@ organizations:
     certificateAuthorities:
       - ca.org3.kdtrace.vn
     adminPrivateKey:
-      path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/users/Admin@org3.kdtrace.vn/msp/keystore/3f2cdd5bc8e48201ce740ff38315ce560376a65bf15cb871b0ee47ee9519938b_sk
+      path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/users/Admin@org3.kdtrace.vn/msp/keystore/696eebb233831faaeec892bd9c8a9b120d9439fe3b575c9012b2bac7d6135418_sk
     signedCert:
       path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/users/Admin@org3.kdtrace.vn/msp/signcerts/Admin@org3.kdtrace.vn-cert.pem
   ordererorg:
@@ -158,7 +173,7 @@ organizations:
     cryptoPath: ordererOrganizations/orderer.io/users/Admin@orderer.io/msp
 orderers:
   orderer-kdtrace.orderer.io:
-    url: grpc://192.168.126.133:7050
+    url: grpc://192.168.126.135:7050
     grpcOptions:
       ssl-target-name-override: orderer-kdtrace.orderer.io
       keep-alive-time: 0s
@@ -171,44 +186,44 @@ orderers:
       path: crypto-config/ordererOrganizations/orderer.io/tlsca/tlsca.orderer.io-cert.pem
 peers:
   peer0.org1.kdtrace.vn:
-    url: grpc://192.168.126.133:7051
+    url: grpc://192.168.126.135:7051
     grpcOptions:
       ssl-target-name-override: peer0.org1.kdtrace.vn
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/tlsca/tlsca.org1.kdtrace.vn-cert.pem
   peer1.org1.kdtrace.vn:
-    url: grpc://192.168.126.133:7054
+    url: grpc://192.168.126.135:7054
     grpcOptions:
       ssl-target-name-override: peer1.org1.kdtrace.vn
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/tlsca/tlsca.org1.kdtrace.vn-cert.pem
   peer0.org2.kdtrace.vn:
-    url: grpc://192.168.126.133:7055
+    url: grpc://192.168.126.135:7055
     grpcOptions:
       ssl-target-name-override: peer0.org2.kdtrace.vn
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/tlsca/tlsca.org2.kdtrace.vn-cert.pem
   peer1.org2.kdtrace.vn:
-    url: grpc://192.168.126.133:7056
+    url: grpc://192.168.126.135:7056
     grpcOptions:
       ssl-target-name-override: peer1.org2.kdtrace.vn
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/tlsca/tlsca.org2.kdtrace.vn-cert.pem
   peer0.org3.kdtrace.vn:
-    url: grpc://192.168.126.133:7061
+    url: grpc://192.168.126.135:7061
     grpcOptions:
       ssl-target-name-override: peer0.org3.kdtrace.vn
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/tlsca/tlsca.org3.kdtrace.vn-cert.pem
   peer1.org3.kdtrace.vn:
-    url: grpc://192.168.126.133:7064
+    url: grpc://192.168.126.135:7064
     grpcOptions:
       ssl-target-name-override: peer1.org3.kdtrace.vn
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/tlsca/tlsca.org3.kdtrace.vn-cert.pem
 certificateAuthorities:
   ca.org1.kdtrace.vn:
-    url: http://192.168.126.133:9001
+    url: http://192.168.126.135:9001
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/tlsca/tlsca.org1.kdtrace.vn-cert.pem
       client:
@@ -221,7 +236,7 @@ certificateAuthorities:
       enrollSecret: adminpw
     caName: ca.org1.kdtrace.vn
   ca.org2.kdtrace.vn:
-    url: http://192.168.126.133:7094
+    url: http://192.168.126.135:7094
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/tlsca/tlsca.org2.kdtrace.vn-cert.pem
       client:
@@ -234,7 +249,7 @@ certificateAuthorities:
       enrollSecret: adminpw
     caName: ca.org2.kdtrace.vn
   ca.org3.kdtrace.vn:
-    url: http://192.168.126.133:9002
+    url: http://192.168.126.135:9002
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/tlsca/tlsca.org3.kdtrace.vn-cert.pem
       client:

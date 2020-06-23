@@ -40,6 +40,10 @@ public class QRCode implements Serializable {
 
     private String otp;
 
+    private Long tracking;
+
+    private String feedback;
+
     public QRCode(){
     }
 
