@@ -6,7 +6,7 @@ client:
   logging:
     level: info
   cryptoconfig:
-    path: crypto-config
+    path: blockchain/crypto-config
   credentialStore:
     path: "/tmp/"
     cryptoStore:
