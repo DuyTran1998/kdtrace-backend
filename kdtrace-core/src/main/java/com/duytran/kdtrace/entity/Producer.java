@@ -15,4 +15,6 @@ public class Producer extends Company {
 
     @OneToMany(mappedBy = "producer", cascade = CascadeType.ALL)
     private List<Product> products;
+
+    String orgMsp = "Org1";
 }

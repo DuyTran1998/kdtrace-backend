@@ -40,7 +40,7 @@ public class AuthController {
 
     @PostMapping("api/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest){
-    return ResponseEntity.ok(userService.saveUser(registerRequest ));
+        return ResponseEntity.ok(userService.saveUser(registerRequest ));
 }
 
     @PostMapping("api/login")

@@ -1,9 +1,6 @@
 package com.duytran.kdtrace.service;
 
-import com.duytran.kdtrace.entity.Producer;
-import com.duytran.kdtrace.entity.Product;
-import com.duytran.kdtrace.entity.QRCode;
-import com.duytran.kdtrace.entity.StatusQRCode;
+import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.ProductMapper;
 import com.duytran.kdtrace.model.ProductModel;
@@ -17,7 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Service
@@ -37,6 +39,9 @@ public class ProductService {
     @Autowired
     CommonService commonService;
 
+    @Autowired
+    BlockchainService blockchainService;
+
     @Transactional
     public ResponseModel createProduct(ProductModel productModel) {
         Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
@@ -44,23 +49,34 @@ public class ProductService {
         product.setProducer(producer);
         product.setCreate_at(commonService.getDateTime());
         productRepository.save(product);
-        generateCode(product);
+        List<QRCode> qrCodes = generateCode(product);
+        qrCodeRepository.saveAll(qrCodes);
+        product.setCodes(qrCodes);
+        productRepository.save(product);
+        blockchainService.updateProduct(producer.getUser(), product.getId(), "kdtrace");
+        blockchainService.createQRCodes(producer.getUser(), product.getId(), "kdtrace");
         return new ResponseModel("Create Successfully", HttpStatus.OK.value(), productModel);
     }
 
     @Value("${url}")
     private String url;
 
-    private void generateCode(Product product) {
+    private List<QRCode> generateCode(Product product) {
+        List<QRCode> qrCodes = new ArrayList<>();
         IntStream.rangeClosed(1, (int) product.getQuantity()).forEach(
                 i -> {
-                    String code = product.getName() + "-L" + product.getId() + "-N" + i;
+                    String code = null;
+                    try {
+                        code = URLEncoder.encode(product.getName() + "-L" + product.getId() + "-N" + i, StandardCharsets.UTF_8.toString());
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                     String link = url + code;
-                    QRCode qrCode = new QRCode(product, code, userPrincipalService.getUserCurrentLogined(), link,
-                            StatusQRCode.AVAILABLE, commonService.getDateTime());
-                    qrCodeRepository.save(qrCode);
+                    qrCodes.add(new QRCode(product, code, userPrincipalService.getUserCurrentLogined(), link,
+                            StatusQRCode.AVAILABLE, commonService.getDateTime()));
                 }
         );
+        return qrCodes;
     }
 
     @Transactional
@@ -90,17 +106,43 @@ public class ProductService {
         return new ResponseModel("Successfully", HttpStatus.OK.value(), productModel);
     }
 
-    public void changeStatusQRCode(Long productID, long quanlity, StatusQRCode statusQRCode){
+    @Transactional
+    public void changeStatusQRCode(User user, Long productID, long quanlity, StatusQRCode statusQRCode){
         List<QRCode> qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "AVAILABLE");
+        List<Long> qrCodeIds = new ArrayList<>();
         IntStream.rangeClosed(0, (int)quanlity - 1).forEach(
                 i ->{
                     QRCode qrCode = qrCodes.get(i);
                     qrCode.setStatusQRCode(statusQRCode);
+                    qrCodeIds.add(qrCode.getId());
                     qrCodeRepository.save(qrCode);
                 });
+        blockchainService.saveQRCodes(user, qrCodeIds, statusQRCode, null, "Org1","kdtrace");
     }
 
     public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){
         return productRepository.existsByIdAndProducer_Id(id, producer_id);
+    }
+
+    public Long trackingCode (String code, String otp){
+        QRCode qrCode = qrCodeRepository.findByCode(code).orElse(new QRCode());
+        if(otp.equals(qrCode.getOtp())){
+            if(qrCode.getTracking() == null)
+                qrCode.setTracking(1L);
+            else
+                qrCode.setTracking(qrCode.getTracking() + 1);
+            return qrCodeRepository.save(qrCode).getTracking();
+        }
+        return null;
+    }
+
+    public String updateFeedback (String code, String feedback){
+        QRCode qrCode = qrCodeRepository.findByCode(code).orElse(null);
+        if(qrCode==null){
+            return "QRCode not found!";
+        }
+        qrCode.setFeedback(feedback);
+        qrCodeRepository.save(qrCode);
+        return "Update feedback for " + qrCode.getProduct().getName() + " successfully!";
     }
 }

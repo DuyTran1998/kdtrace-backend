@@ -14,4 +14,6 @@ public class Transport extends Company {
 
     @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL)
     private List<DeliveryTruck> deliveryTruckList;
+
+    String orgMsp = "Org2";
 }

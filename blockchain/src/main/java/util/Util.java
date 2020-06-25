@@ -104,20 +104,7 @@ public class Util {
             return "almex";
         return org;
     }
-    // Filter chaincode name when create new channel
-    public static String chaincodeFilter(String channelName) {
-        if (channelName.equalsIgnoreCase("citynow-ctc"))
-            return "task_citynow-ctc";
-        if (channelName.equalsIgnoreCase("citynow-ivs"))
-            return "task_citynow-ivs";
-        if (channelName.equalsIgnoreCase("citynow"))
-            return "task_citynow";
-        if (channelName.equalsIgnoreCase("citynow-ecomtrue"))
-            return "task_citynow-ecomtrue";
-        if (channelName.equalsIgnoreCase("citynow-almex"))
-            return "task_citynow-almex";
-        return channelName;
-    }
+
 
     public static String convertToProjectPrivilegesString(Map<String, Set<String>> maps) {
         StringBuilder stringBuilder = new StringBuilder();

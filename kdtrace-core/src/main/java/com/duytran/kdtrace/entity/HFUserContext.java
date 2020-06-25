@@ -42,7 +42,7 @@ public class HFUserContext {
     @Column(name = "encoded_private_key")
     private byte[] encodedPrivateKey;
 
-    @Column(name = "certificate", length = 1024)
+    @Column(name = "certificate", length = 2048)
     private String certificate;
 
     @CreatedBy

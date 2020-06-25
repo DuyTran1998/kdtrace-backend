@@ -74,7 +74,7 @@ public class UserService {
                 break;
         }
 
-        return new ResponseModel("Successful", HttpStatus.OK.value(), user);
+        return new ResponseModel("Successful", HttpStatus.OK.value(),  UserMapper.INSTANCE.userToUserDto(user));
     }
 
 
@@ -114,7 +114,7 @@ public class UserService {
         }catch (Exception e){
             return new ResponseModel("Update Fail", 400, user_id);
         }
-        return new ResponseModel("Update Successfull", 200, user);
+        return new ResponseModel("Update Successfull", 200, UserMapper.INSTANCE.userToUserDto(user));
     }
 
 

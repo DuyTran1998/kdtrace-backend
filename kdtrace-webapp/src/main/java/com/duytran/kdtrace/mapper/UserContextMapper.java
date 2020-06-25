@@ -1,7 +1,7 @@
 package com.duytran.kdtrace.mapper;
 
 import com.duytran.kdtrace.entity.HFUserContext;
-import com.duytran.kdtrace.model.UserContextDto;
+import com.duytran.kdtrace.dto.UserContextDto;
 import model.UserContext;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -11,11 +11,13 @@ import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.model.TransportModel;
 import com.duytran.kdtrace.repository.DeliveryTruckRepository;
 import com.duytran.kdtrace.repository.TransportRepository;
+import com.duytran.kdtrace.repository.UserRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -31,11 +33,22 @@ public class TransportService {
     private DeliveryTruckRepository deliveryTruckRepository;
 
     @Autowired
+    private BlockchainService blockchainService;
+
+    @Autowired
     private CommonService commonService;
 
+    @Autowired
+    private UserRepository userRepository;
 
+    @Transactional
     public void createTransport(User user){
         Transport transport = new Transport();
+        try {
+            blockchainService.registerIdentity(user.getUsername(), transport.getOrgMsp());
+        }catch (Exception e){
+            throw new RuntimeException("Cannot register user identity");
+        }
         transport.setCompanyName("Transport");
         transport.setCreate_at(commonService.getDateTime());
         transport.setUser(user);
@@ -49,7 +62,7 @@ public class TransportService {
 
     }
 
-
+    @Transactional
     public ResponseModel updateTransport(TransportModel transportModel){
         Transport transport = transportRepository.findTransportById(transportModel.getId()).orElseThrow(
                 () -> new RecordNotFoundException("Transport isn't exist")
@@ -63,6 +76,7 @@ public class TransportService {
                                     commonService.getDateTime());
 
         try{
+            blockchainService.updateTransport(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), transport, "kdtrace");
             transportRepository.save(transport);
         }catch (Exception e){
             return new ResponseModel("Update Not Successfully", 400, e);
@@ -84,17 +98,20 @@ public class TransportService {
         );
     }
 
+    @Transactional
     public ResponseModel createDeliveryTruck(DeliveryTruckModel deliveryTruckModel){
         if(deliveryTruckRepository.existsDeliveryTruckByNumberPlate(deliveryTruckModel.getNumberPlate())){
             return new ResponseModel("The number plate is exist", HttpStatus.BAD_REQUEST.value(),
                                                                                                     deliveryTruckModel);
         }
         else{
+            Transport transport = getTransportInPrincipal();
             DeliveryTruck deliveryTruck = DeliveryTruckMapper.INSTANCE.deliveryTruckModelToDelivery(deliveryTruckModel);
-            deliveryTruck.setTransport(getTransportInPrincipal());
+            deliveryTruck.setTransport(transport);
             try{
                 deliveryTruck.setCreate_at(commonService.getDateTime());
                 deliveryTruckRepository.save(deliveryTruck);
+                blockchainService.updateDeliveryTruck(transport.getUser(), deliveryTruck, transport.getOrgMsp(), "kdtrace");
             }catch (Exception e){
                 return new ResponseModel("Create not successfull", HttpStatus.BAD_REQUEST.value(), e);
             }

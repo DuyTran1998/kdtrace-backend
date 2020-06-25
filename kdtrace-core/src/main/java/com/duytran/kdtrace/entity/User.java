@@ -45,7 +45,6 @@ public class User implements Serializable {
     @JoinColumn(name = "hf_user_context_id", referencedColumnName = "id")
     private HFUserContext hfUserContext;
 
-    private String organization = "Org1";
 
     public User(){
 

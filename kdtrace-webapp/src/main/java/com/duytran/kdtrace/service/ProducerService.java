@@ -6,10 +6,13 @@ import com.duytran.kdtrace.mapper.*;
 import com.duytran.kdtrace.model.ProducerModel;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.repository.ProducerRepository;
+import com.duytran.kdtrace.repository.UserRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 
 @Service
 public class ProducerService {
@@ -23,11 +26,23 @@ public class ProducerService {
     @Autowired
     private CommonService commonService;
 
+    @Autowired
+    private BlockchainService blockchainService;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     // Function to create Producer Detail.
 
+    @Transactional
     public void createProducer(User user){
         Producer producer = new Producer();
+        try {
+            blockchainService.registerIdentity(user.getUsername(), producer.getOrgMsp());
+        }catch (Exception e){
+            throw new RuntimeException("Cannot register user identity");
+        }
         producer.setCompanyName("Producer");
         producer.setCreate_at(commonService.getDateTime());
         producer.setUser(user);
@@ -45,7 +60,7 @@ public class ProducerService {
 
 
     // Update Information of Producer
-
+    @Transactional
     public ResponseModel updateProducer(ProducerModel producerModel){
         Producer producer =producerRepository.findProducerById(producerModel.getId()).orElseThrow(
                 () -> new RecordNotFoundException("Producer isn't exist" + producerModel.getId())
@@ -59,6 +74,7 @@ public class ProducerService {
                                     commonService.getDateTime());
 
         try{
+            blockchainService.updateProducer(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), producer, "kdtrace");
             producerRepository.save(producer);
         }catch (Exception e){
             return new ResponseModel("Update not successfully", HttpStatus.BAD_REQUEST.value(), e);

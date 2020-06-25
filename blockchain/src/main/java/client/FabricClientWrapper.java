@@ -66,7 +66,7 @@ public class FabricClientWrapper {
      */
     public Channel getChannelClient(String channelName) {
         Logger.getLogger(FabricClientWrapper.class.getName()).log(Level.INFO,"getChannelClient");
-        Logger.getLogger(FabricClientWrapper.class.getName()).log(Level.INFO,"getChannelClient: channelName=" + channelName);
+        Logger.getLogger(FabricClientWrapper.class.getName()).log(Level.INFO,"getChannel Client: channelName=" + channelName);
         Channel channel = null;
         try {
 
