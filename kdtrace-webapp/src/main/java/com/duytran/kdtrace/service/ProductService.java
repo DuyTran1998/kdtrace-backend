@@ -47,7 +47,7 @@ public class ProductService {
         Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
         Producer producer = producerService.getProducerInPrincipal();
         product.setProducer(producer);
-        producer.setCreate_at(commonService.getDateTime());
+        product.setCreate_at(commonService.getDateTime());
         productRepository.save(product);
         List<QRCode> qrCodes = generateCode(product);
         qrCodeRepository.saveAll(qrCodes);

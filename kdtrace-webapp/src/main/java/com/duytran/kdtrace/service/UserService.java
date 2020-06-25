@@ -10,6 +10,7 @@ import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.model.UserModel;
 import com.duytran.kdtrace.repository.RoleRepository;
 import com.duytran.kdtrace.repository.UserRepository;
+import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,9 @@ public class UserService {
 
     @Autowired
     private DistributorService distributorService;
+
+    @Autowired
+    private UserPrincipalService userPrincipalService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -93,12 +97,17 @@ public class UserService {
         return UserMapper.INSTANCE.userToUserModel(user);
     }
 
+    public UserModel getUserLogged(){
+        Long id = userPrincipalService.getUserIdCurrentLogined();
+        return getUserById(id);
+    }
+
     //  Active User by role_admin
     public ResponseModel activeUser(Long user_id){
         User user = userRepository.findUserById(user_id).orElseThrow(
                 () -> new RecordNotFoundException("User Not Found")
         );
-        user.setActive(true);
+        user.setActive(!user.isActive());
 
         try{
             userRepository.save(user);
@@ -110,7 +119,7 @@ public class UserService {
 
 
     public ResponseModel getAllUser(){
-        List<UserModel> userModels = UserMapper.INSTANCE.userListToUserModelList(userRepository.findAll());
+        List<UserModel> userModels = UserMapper.INSTANCE.userListToUserModelList(userRepository.findAllByOrderByIdDesc());
         return new ResponseModel("Get All of Users", 200, userModels);
     }
 }

@@ -11,6 +11,7 @@ import java.io.IOException;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException {
-        httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Username or password was wrong");
+        httpServletResponse.getWriter().append("Username or Password was wrong");
+        httpServletResponse.setStatus(401);
     }
 }

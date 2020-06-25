@@ -4,9 +4,11 @@ import com.duytran.kdtrace.security.principal.UserPrincipal;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -15,30 +17,34 @@ public class JwtTokenProvider {
     //Private - just know on server.
     private final String JWT_SECRET = "kdtrace";
 
+    private static final String AUTHORITIES_KEY = "auth";
+
     //Exp time token
-    private final Long JWT_EXPRIRATION = 86400L;
+    private final Long JWT_EXPRIRATION = 86400000L;
 
     //Create token from information.
     public String generateToken(Authentication authentication){
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
         Date now = new Date();
         Date expDate = new Date(now.getTime() + JWT_EXPRIRATION);
 
         return Jwts.builder()
-                .setSubject(Long.toString(userPrincipal.getId()))
-                .setIssuedAt(now)
-                .setExpiration(expDate)
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
+                .setExpiration(expDate)
                 .compact();
     }
 
     //decode token to have id user.
-    public Long getUserIdFromJWT(String token){
+    public String getUserNameFromJWT(String token){
         Claims claims = Jwts.parser()
                 .setSigningKey(JWT_SECRET)
                 .parseClaimsJws(token)
                 .getBody();
-        return Long.parseLong(claims.getSubject());
+        return claims.getSubject();
     }
 
     //validate token
