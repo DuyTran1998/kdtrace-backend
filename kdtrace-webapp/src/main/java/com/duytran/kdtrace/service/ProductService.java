@@ -145,4 +145,11 @@ public class ProductService {
         qrCodeRepository.save(qrCode);
         return "Update feedback for " + qrCode.getProduct().getName() + " successfully!";
     }
+
+    @Transactional
+    public ResponseModel getAllProductForDistributor(){
+        List<Product> products = productRepository.findAllByOrderByIdAsc();
+        List<ProductModel> productModels = ProductMapper.INSTANCE.listProducToModel(products);
+        return new ResponseModel("List Products For Market", HttpStatus.OK.value(), productModels);
+    }
 }

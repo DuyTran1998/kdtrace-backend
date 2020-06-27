@@ -2,6 +2,7 @@ package com.duytran.kdtrace.controller;
 
 import com.duytran.kdtrace.model.DistributorModel;
 import com.duytran.kdtrace.service.DistributorService;
+import com.duytran.kdtrace.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,9 @@ public class DistributorController {
     @Autowired
     private DistributorService distributorService;
 
+    @Autowired
+    private ProductService productService;
+
     @GetMapping("/get")
     public ResponseEntity<?> getDistributor(){
         return ResponseEntity.ok(distributorService.getDistributor());
@@ -25,5 +29,10 @@ public class DistributorController {
     @PatchMapping("/update")
     public ResponseEntity<?> updateDistributor(@Valid @RequestBody DistributorModel distributorModel){
         return ResponseEntity.ok(distributorService.updateDistriButor(distributorModel));
+    }
+
+    @GetMapping("/getAllProduct")
+    public ResponseEntity<?> getAllProducts(){
+        return ResponseEntity.ok(productService.getAllProductForDistributor());
     }
 }
