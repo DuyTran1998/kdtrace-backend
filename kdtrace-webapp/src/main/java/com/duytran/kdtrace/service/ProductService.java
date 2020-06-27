@@ -103,4 +103,11 @@ public class ProductService {
     public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){
         return productRepository.existsByIdAndProducer_Id(id, producer_id);
     }
+
+    @Transactional
+    public ResponseModel getAllProductForDistributor(){
+        List<Product> products = productRepository.findAllByOrderByIdAsc();
+        List<ProductModel> productModels = ProductMapper.INSTANCE.listProducToModel(products);
+        return new ResponseModel("List Products For Market", HttpStatus.OK.value(), productModels);
+    }
 }

@@ -96,7 +96,7 @@ public class TransportService {
                 deliveryTruck.setCreate_at(commonService.getDateTime());
                 deliveryTruckRepository.save(deliveryTruck);
             }catch (Exception e){
-                return new ResponseModel("Create not successfull", HttpStatus.BAD_REQUEST.value(), e);
+                return new ResponseModel("Don't create successfully", HttpStatus.BAD_REQUEST.value(), e);
             }
             return new ResponseModel("Create successfully", HttpStatus.CREATED.value(), deliveryTruckModel);
         }
