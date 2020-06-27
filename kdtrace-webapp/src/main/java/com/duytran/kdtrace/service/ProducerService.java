@@ -3,7 +3,7 @@ package com.duytran.kdtrace.service;
 import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.*;
-import com.duytran.kdtrace.model.ProducerModel;
+import com.duytran.kdtrace.model.ProducerInfoModel;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.repository.ProducerRepository;
 import com.duytran.kdtrace.repository.UserRepository;
@@ -54,23 +54,23 @@ public class ProducerService {
 
     public ResponseModel getProducer(){
         Producer producer = getProducerInPrincipal();
-        ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(producer);
-        return new ResponseModel("Producer Information", 200, producerModel);
+        ProducerInfoModel producerInfoModel = ProducerMapper.INSTANCE.producerToProducerInfoModel(producer);
+        return new ResponseModel("Producer Information", 200, producerInfoModel);
     }
 
 
     // Update Information of Producer
     @Transactional
-    public ResponseModel updateProducer(ProducerModel producerModel){
-        Producer producer =producerRepository.findProducerById(producerModel.getId()).orElseThrow(
-                () -> new RecordNotFoundException("Producer isn't exist" + producerModel.getId())
+    public ResponseModel updateProducer(ProducerInfoModel producerInfoModel){
+        Producer producer =producerRepository.findProducerById(producerInfoModel.getId()).orElseThrow(
+                () -> new RecordNotFoundException("Producer isn't exist" + producerInfoModel.getId())
         );
 
-        producer.updateInformation( producerModel.getCompanyName(),
-                                    producerModel.getEmail(),
-                                    producerModel.getAddress(),
-                                    producerModel.getPhone(),
-                                    producerModel.getAvatar(),
+        producer.updateInformation( producerInfoModel.getCompanyName(),
+                                    producerInfoModel.getEmail(),
+                                    producerInfoModel.getAddress(),
+                                    producerInfoModel.getPhone(),
+                                    producerInfoModel.getAvatar(),
                                     commonService.getDateTime());
 
         try{
@@ -79,7 +79,7 @@ public class ProducerService {
         }catch (Exception e){
             return new ResponseModel("Update not successfully", HttpStatus.BAD_REQUEST.value(), e);
         }
-        return new ResponseModel("Update sucessfully", 200, producerModel);
+        return new ResponseModel("Update sucessfully", 200, producerInfoModel);
     }
 
 

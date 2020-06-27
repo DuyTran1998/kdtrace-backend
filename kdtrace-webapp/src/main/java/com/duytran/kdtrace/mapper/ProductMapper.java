@@ -21,5 +21,5 @@ public interface ProductMapper {
 
     Product productModelToProduct(ProductModel productModel);
 
-    List<ProductModel> listProducToModel(List<Product> products);
+    List<ProductModel> listProductToModel(List<Product> products);
 }

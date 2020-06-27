@@ -2,9 +2,10 @@ package com.duytran.kdtrace.service;
 
 import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
+import com.duytran.kdtrace.mapper.ProducerMapper;
 import com.duytran.kdtrace.mapper.ProductMapper;
-import com.duytran.kdtrace.model.ProductModel;
-import com.duytran.kdtrace.model.ResponseModel;
+import com.duytran.kdtrace.model.*;
+import com.duytran.kdtrace.repository.ProducerRepository;
 import com.duytran.kdtrace.repository.ProductRepositoty;
 import com.duytran.kdtrace.repository.QRCodeRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
@@ -19,7 +20,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 @Service
@@ -41,6 +42,9 @@ public class ProductService {
 
     @Autowired
     BlockchainService blockchainService;
+
+    @Autowired
+    ProducerRepository producerRepository;
 
     @Transactional
     public ResponseModel createProduct(ProductModel productModel) {
@@ -83,7 +87,7 @@ public class ProductService {
     public ResponseModel getAllProducts() {
         Long producerID = producerService.getProducerInPrincipal().getId();
         List<Product> products = productRepository.findAllByProducer_Id(producerID);
-        List<ProductModel> productModels = ProductMapper.INSTANCE.listProducToModel(products);
+        List<ProductModel> productModels = ProductMapper.INSTANCE.listProductToModel(products);
         return new ResponseModel("List Product", HttpStatus.OK.value(), productModels);
     }
 
@@ -122,7 +126,7 @@ public class ProductService {
 
     public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){
         return productRepository.existsByIdAndProducer_Id(id, producer_id);
-    }
+     }
 
     public Long trackingCode (String code, String otp){
         QRCode qrCode = qrCodeRepository.findByCode(code).orElse(new QRCode());
@@ -149,7 +153,28 @@ public class ProductService {
     @Transactional
     public ResponseModel getAllProductForDistributor(){
         List<Product> products = productRepository.findAllByOrderByIdAsc();
-        List<ProductModel> productModels = ProductMapper.INSTANCE.listProducToModel(products);
+        List<ProductModel> productModels = ProductMapper.INSTANCE.listProductToModel(products);
         return new ResponseModel("List Products For Market", HttpStatus.OK.value(), productModels);
+    }
+
+    @Transactional
+    public ResponseModel getAllOrderByProducer() {
+        List<Producer> producers = producerRepository.findAll();
+        List<ProducerModel> producerModels = new ArrayList<>();
+        producers.forEach(producer -> {
+            if(producer.getUser().isActive() && producer.getProducts() != null) {
+                ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(producer);
+                producerModel.getProductModels().forEach(productModel -> {
+                    Predicate<QRCodeModel> isAVAILABLE = qrCodeModel -> (qrCodeModel.getStatusQRCode() != StatusQRCode.AVAILABLE);
+                    productModel.getCodes().removeIf(isAVAILABLE);
+                });
+                Predicate<ProductModel> nullProductAVAILABLE = productModel -> (productModel.getCodes().size() == 0);
+                producerModel.getProductModels().removeIf(nullProductAVAILABLE);
+                producerModels.add(producerModel);
+            }
+        });
+        Predicate<ProducerModel> nullProducerAVAILABLE = producerModel -> (producerModel.getProductModels().size() == 0);
+        producerModels.removeIf(nullProducerAVAILABLE);
+        return new ResponseModel("Get all product successfully", 200, producerModels);
     }
 }

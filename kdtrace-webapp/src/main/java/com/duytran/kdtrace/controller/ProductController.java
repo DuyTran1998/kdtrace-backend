@@ -1,6 +1,7 @@
 package com.duytran.kdtrace.controller;
 
 import com.duytran.kdtrace.model.ProductModel;
+import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,4 +30,8 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
+    @GetMapping("/getAllOrderByProducer")
+    public ResponseModel getAllOrderByProducer() {
+        return productService.getAllOrderByProducer();
+    }
 }

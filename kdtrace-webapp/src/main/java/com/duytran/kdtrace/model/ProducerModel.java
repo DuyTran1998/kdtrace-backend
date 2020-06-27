@@ -3,19 +3,10 @@ package com.duytran.kdtrace.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
-public class ProducerModel {
-
-    private Long id;
-
-    private String companyName;
-
-    private String email;
-
-    private String address;
-
-    private String phone;
-
-    private String avatar;
+public class ProducerModel extends ProducerInfoModel{
+    private List<ProductModel> productModels;
 }

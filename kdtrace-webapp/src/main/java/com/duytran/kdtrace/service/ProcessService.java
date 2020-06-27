@@ -291,7 +291,7 @@ public class ProcessService {
         Product product = productService.getProductEntityById(process.getProductID());
         product.setCodes(null);
         EndUserResponse response = new EndUserResponse(ProductMapper.INSTANCE.productToProductModel(product),
-                ProducerMapper.INSTANCE.producerToProducerModel(product.getProducer()),
+                ProducerMapper.INSTANCE.producerToProducerInfoModel(product.getProducer()),
                 process.getDelivery_at(),
                 TransportMapper.INSTANCE.transportToTransportModel(deliveryTruck.getTransport()),
                 DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(deliveryTruck),

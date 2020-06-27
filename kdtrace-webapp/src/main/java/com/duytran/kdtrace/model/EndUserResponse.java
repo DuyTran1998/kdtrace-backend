@@ -9,7 +9,7 @@ public class EndUserResponse {
 
     private ProductModel productModel;
 
-    private ProducerModel producerModel;
+    private ProducerInfoModel producerModel;
 
     private String delivery_time;
 
@@ -25,7 +25,7 @@ public class EndUserResponse {
 
     }
 
-    public EndUserResponse(ProductModel productModel, ProducerModel producerModel, String delivery_time,
+    public EndUserResponse(ProductModel productModel, ProducerInfoModel producerModel, String delivery_time,
                            TransportModel transportModel, DeliveryTruckModel deliveryTruckModel, String receipt_time,
                            DistributorModel distributorModel){
         this.productModel = productModel;
