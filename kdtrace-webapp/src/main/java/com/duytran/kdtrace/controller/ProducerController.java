@@ -1,6 +1,6 @@
 package com.duytran.kdtrace.controller;
 
-import com.duytran.kdtrace.model.ProducerModel;
+import com.duytran.kdtrace.model.ProducerInfoModel;
 import com.duytran.kdtrace.service.ProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class ProducerController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<?> updateProducer(@RequestBody ProducerModel producerModel){
-        return ResponseEntity.ok(producerService.updateProducer(producerModel));
+    public ResponseEntity<?> updateProducer(@RequestBody ProducerInfoModel producerInfoModel){
+        return ResponseEntity.ok(producerService.updateProducer(producerInfoModel));
     }
 }
