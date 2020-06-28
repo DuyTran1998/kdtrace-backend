@@ -71,7 +71,9 @@ public class ProducerService {
                                     producerInfoModel.getAddress(),
                                     producerInfoModel.getPhone(),
                                     producerInfoModel.getAvatar(),
-                                    commonService.getDateTime());
+                                    commonService.getDateTime(),
+                                    producerInfoModel.getWebsite(),
+                                    producerInfoModel.getTin());
 
         try{
             blockchainService.updateProducer(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), producer, "kdtrace");

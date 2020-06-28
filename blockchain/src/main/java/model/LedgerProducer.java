@@ -28,6 +28,10 @@ public class LedgerProducer {
 
     private String avatar;
 
+    private String website;
+
+    private String tin;
+
     private String create_at;
 
     private String update_at;

@@ -34,6 +34,10 @@ public abstract class Company implements Serializable {
 
     private String avatar;
 
+    private String website;
+
+    private String tin;
+
     @Column(updatable = false)
     private String create_at;
 
@@ -46,12 +50,14 @@ public abstract class Company implements Serializable {
     public Company(){
     }
 
-    public void updateInformation(String companyName, String email, String address, String phone, String avatar, String update_at){
+    public void updateInformation(String companyName, String email, String address, String phone, String avatar, String update_at, String website, String tin){
         this.companyName = companyName;
         this.email = email;
         this.address = address;
         this.phone = phone;
         this.avatar = avatar;
         this.update_at = update_at;
+        this.website = website;
+        this.tin = tin;
     }
 }

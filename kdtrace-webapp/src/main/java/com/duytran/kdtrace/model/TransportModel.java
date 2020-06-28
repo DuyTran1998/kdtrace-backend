@@ -20,4 +20,8 @@ public class TransportModel {
     private String avatar;
 
     private String update_at;
+
+    private String website;
+
+    private String tin;
 }

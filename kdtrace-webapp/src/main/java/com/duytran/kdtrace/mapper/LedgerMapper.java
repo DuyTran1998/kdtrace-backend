@@ -21,6 +21,8 @@ public interface LedgerMapper {
     @Mapping(target = "avatar", source = "avatar")
     @Mapping(target = "create_at", source = "create_at")
     @Mapping(target = "update_at", source = "update_at")
+    @Mapping(target = "website", source = "website")
+    @Mapping(target = "tin", source = "tin")
     LedgerProducer toLedgerProducer (Producer producer);
 
     @Mapping(target = "transportId", source = "id")
@@ -31,6 +33,8 @@ public interface LedgerMapper {
     @Mapping(target = "avatar", source = "avatar")
     @Mapping(target = "create_at", source = "create_at")
     @Mapping(target = "update_at", source = "update_at")
+    @Mapping(target = "website", source = "website")
+    @Mapping(target = "tin", source = "tin")
     LedgerTransport toLedgerTransport (Transport transport);
 
     @Mapping(target = "distributorId", source = "id")
@@ -41,6 +45,8 @@ public interface LedgerMapper {
     @Mapping(target = "avatar", source = "avatar")
     @Mapping(target = "create_at", source = "create_at")
     @Mapping(target = "update_at", source = "update_at")
+    @Mapping(target = "website", source = "website")
+    @Mapping(target = "tin", source = "tin")
     LedgerDistributor toLedgerDistributor (Distributor distributor);
 
     @Mapping(target = "userId", source = "producer.user.id")
