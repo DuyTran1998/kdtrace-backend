@@ -18,4 +18,8 @@ public class ProducerInfoModel {
     private String phone;
 
     private String avatar;
+
+    private String website;
+
+    private String tin;
 }

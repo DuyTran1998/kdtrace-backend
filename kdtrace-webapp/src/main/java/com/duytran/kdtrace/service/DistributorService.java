@@ -63,7 +63,9 @@ public class DistributorService {
                                         distributorModel.getAddress(),
                                         distributorModel.getPhone(),
                                         distributorModel.getAvatar(),
-                                        commonService.getDateTime());
+                                        commonService.getDateTime(),
+                                        distributorModel.getWebsite(),
+                                        distributorModel.getTin());
 
         try{
             blockchainService.updateDistributor(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), distributor, "kdtrace");

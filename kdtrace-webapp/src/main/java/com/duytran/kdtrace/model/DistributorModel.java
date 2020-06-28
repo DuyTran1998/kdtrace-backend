@@ -19,4 +19,8 @@ public class DistributorModel {
     private String phone;
 
     private String avatar;
+
+    private String website;
+
+    private String tin;
 }

@@ -73,7 +73,9 @@ public class TransportService {
                                     transportModel.getAddress(),
                                     transportModel.getPhone(),
                                     transportModel.getAvatar(),
-                                    commonService.getDateTime());
+                                    commonService.getDateTime(),
+                                    transportModel.getWebsite(),
+                                    transportModel.getTin());
 
         try{
             blockchainService.updateTransport(userRepository.findByUsername(userPrincipalService.getUserCurrentLogined()).get(), transport, "kdtrace");
