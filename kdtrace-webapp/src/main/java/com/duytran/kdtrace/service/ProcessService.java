@@ -4,10 +4,7 @@ import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.entity.Process;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.*;
-import com.duytran.kdtrace.model.EndUserResponse;
-import com.duytran.kdtrace.model.ProcessModel;
-import com.duytran.kdtrace.model.RequestProcessModel;
-import com.duytran.kdtrace.model.ResponseModel;
+import com.duytran.kdtrace.model.*;
 import com.duytran.kdtrace.repository.DeliveryTruckRepository;
 import com.duytran.kdtrace.repository.ProcessRepository;
 import com.duytran.kdtrace.repository.QRCodeRepository;
@@ -299,4 +296,13 @@ public class ProcessService {
                 DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()));
         return new ResponseModel("Successfully", HttpStatus.OK.value(), response);
     }
+
+    @Transactional
+    public ResponseModel getAllProcessByDistributor() {
+        Distributor distributor = distributorService.getDistributorInPrincipal();
+        List<Process> processes = processRepository.findProcessesByDistributor(distributor);
+        List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
+        return new ResponseModel("List Process By Distributor", HttpStatus.OK.value(), processModels);
+    }
+
 }

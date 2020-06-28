@@ -61,4 +61,10 @@ public class ProcessController {
     public ResponseEntity<?> acceptToDelivery(@RequestParam Long id, @RequestParam Long id_deliveryTruck){
         return ResponseEntity.ok(processService.acceptToDelivery(id, id_deliveryTruck));
     }
+
+    @PreAuthorize(("hasRole('ROLE_DISTRIBUTOR')"))
+    @GetMapping("/getAllByDistributor")
+    public ResponseEntity<?> getAllByDistributor(){
+        return ResponseEntity.ok(processService.getAllProcessByDistributor());
+    }
 }
