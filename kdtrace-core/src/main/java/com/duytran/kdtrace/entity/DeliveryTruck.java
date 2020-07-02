@@ -25,7 +25,7 @@ public class DeliveryTruck {
     private Automaker autoMaker;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusDeliveryTruck statusDeliveryTruck;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "transport_id")

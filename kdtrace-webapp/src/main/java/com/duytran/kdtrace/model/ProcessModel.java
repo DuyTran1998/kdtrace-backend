@@ -11,11 +11,9 @@ import java.util.List;
 public class ProcessModel {
     private Long id;
 
-    private DistributorModel distributorModel;
-
     private Long ProductID;
 
-    private DeliveryTruckModel deliveryTruckModel;
+    private Long transportID;
 
     private StatusProcess statusProcess;
 
@@ -26,6 +24,14 @@ public class ProcessModel {
     private long quanlity;
 
     private List<QRCodeModel> qrCodeModels;
+
+    private ProducerModel producerModel;
+
+    private TransportModel transportModel;
+
+    private DeliveryTruckModel deliveryTruckModel;
+
+    private DistributorModel distributorModel;
 
     public void updateProcessModel(DistributorModel distributorModel, DeliveryTruckModel deliveryTruckModel,
                                    List<QRCodeModel> qrCodeModels){

@@ -1,7 +1,7 @@
 package com.duytran.kdtrace.model;
 
 import com.duytran.kdtrace.entity.Automaker;
-import com.duytran.kdtrace.entity.Status;
+import com.duytran.kdtrace.entity.StatusDeliveryTruck;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +20,5 @@ public class DeliveryTruckModel {
     private Automaker autoMaker;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusDeliveryTruck statusDeliveryTruck;
 }

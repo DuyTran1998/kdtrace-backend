@@ -5,6 +5,7 @@ import com.duytran.kdtrace.entity.QRCode;
 import com.duytran.kdtrace.model.ProcessModel;
 import com.duytran.kdtrace.model.QRCodeModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -15,6 +16,10 @@ public interface ProcessMapper {
 
  //   QRCodeModel qrCodeToQRCodeModel(QRCode qrCode);
 
+    @Mapping(target = "transportModel", source = "deliveryTruck.transport")
+    @Mapping(target = "deliveryTruckModel", source = "deliveryTruck")
+    @Mapping(target = "distributorModel", source = "distributor")
     ProcessModel processToProcessModel(Process process);
+
     List<ProcessModel> toProcessModelList (List<Process> processes);
 }
