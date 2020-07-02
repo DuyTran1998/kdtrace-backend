@@ -13,4 +13,6 @@ public interface ProcessRepository extends JpaRepository<Process, Long> {
     Optional<Process> findProcessById(Long id);
 
     List<Process> findProcessesByDistributor(Distributor distributor);
+    List<Process> findByProductIDIn(List<Long> productIdList);
+    List<Process> findProcessesByTransportID (Long transportID);
 }

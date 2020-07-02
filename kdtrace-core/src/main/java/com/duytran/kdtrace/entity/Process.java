@@ -39,14 +39,17 @@ public class Process {
 
     private String receipt_at;
 
+    private String create_at;
+
     public Process(){
 
     }
 
-    public Process(Distributor distributor, Long productID, long quanlity, StatusProcess statusProcess){
+    public Process(Distributor distributor, Long productID, long quanlity, StatusProcess statusProcess, String create_at){
         this.distributor = distributor;
         this.productID = productID;
         this.quanlity = quanlity;
         this.statusProcess = statusProcess;
+        this.create_at = create_at;
     }
 }

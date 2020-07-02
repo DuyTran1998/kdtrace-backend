@@ -1,6 +1,6 @@
 package com.duytran.kdtrace.entity;
 
-public enum Status {
+public enum StatusDeliveryTruck {
     AVAILABLE,
     ON_DELIVERY
 }

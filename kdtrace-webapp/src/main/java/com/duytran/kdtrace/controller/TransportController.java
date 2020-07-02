@@ -12,12 +12,12 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/transport")
-@PreAuthorize("hasRole('ROLE_TRANSPORT')")
 public class TransportController {
     @Autowired
     private TransportService transportService;
 
     @GetMapping("/get")
+    @PreAuthorize("hasRole('ROLE_TRANSPORT')")
     public ResponseEntity<?> getTransport(){
         return ResponseEntity.ok(transportService.getTransport());
     }
@@ -28,16 +28,19 @@ public class TransportController {
     }
 
     @PatchMapping("/update")
+    @PreAuthorize("hasRole('ROLE_TRANSPORT')")
     public ResponseEntity<?> updateTransport(@Valid @RequestBody TransportModel transportModel){
         return ResponseEntity.ok(transportService.updateTransport(transportModel));
     }
 
     @PostMapping("/deliveryTruck/create")
+    @PreAuthorize("hasRole('ROLE_TRANSPORT')")
     public ResponseEntity<?> createDeliveryTruck(@Valid @RequestBody DeliveryTruckModel deliveryTruckModel){
         return ResponseEntity.ok(transportService.createDeliveryTruck(deliveryTruckModel));
     }
 
     @GetMapping("/deliveryTruck/getAll")
+    @PreAuthorize("hasRole('ROLE_TRANSPORT')")
     public ResponseEntity<?> getAllDeveiryTruck(){
         return ResponseEntity.ok(transportService.getDeliveryTruckList());
     }

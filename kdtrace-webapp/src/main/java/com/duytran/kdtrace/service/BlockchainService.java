@@ -15,7 +15,6 @@ import main.HyperledgerFabric;
 import model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +120,7 @@ public class BlockchainService {
         try {
             LedgerDeliveryTruck ledgerDeliveryTruck = LedgerMapper.INSTANCE.toLedgerDeliveryTruck(deliveryTruck);
             ledgerDeliveryTruck.setAutoMaker(deliveryTruck.getAutoMaker().name());
-            ledgerDeliveryTruck.setStatus(deliveryTruck.getStatus().name());
+            ledgerDeliveryTruck.setStatus(deliveryTruck.getStatusDeliveryTruck().name());
             return hyperledgerFabric.updateDeliveryTruck(user, ledgerDeliveryTruck, orgMsp, channelName);
         } catch (Exception e) {
             throw new RecordHasCreatedException("updateDeliveryTruck: exception");

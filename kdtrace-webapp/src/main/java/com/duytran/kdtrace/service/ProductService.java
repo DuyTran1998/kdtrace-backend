@@ -71,7 +71,7 @@ public class ProductService {
                 i -> {
                     String code = null;
                     try {
-                        code = URLEncoder.encode(product.getName() + "-L" + product.getId() + "-N" + i, StandardCharsets.UTF_8.toString());
+                        code = URLEncoder.encode("P" + product.getId() + "-N" + i, StandardCharsets.UTF_8.toString());
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -112,7 +112,16 @@ public class ProductService {
 
     @Transactional
     public void changeStatusQRCode(User user, Long productID, long quanlity, StatusQRCode statusQRCode){
-        List<QRCode> qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "AVAILABLE");
+        Product product = productRepository.findProductById(productID).get();
+        List<QRCode> qrCodes;
+        if (statusQRCode == StatusQRCode.WAITING){
+            product.setQuantity(product.getQuantity() - quanlity);
+            qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "AVAILABLE");
+        } else{
+            product.setQuantity(product.getQuantity() + quanlity);
+            qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "WAITING");
+        }
+
         List<Long> qrCodeIds = new ArrayList<>();
         IntStream.rangeClosed(0, (int)quanlity - 1).forEach(
                 i ->{
@@ -122,6 +131,7 @@ public class ProductService {
                     qrCodeRepository.save(qrCode);
                 });
         blockchainService.saveQRCodes(user, qrCodeIds, statusQRCode, null, "Org1","kdtrace");
+        productRepository.save(product);
     }
 
     public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){
