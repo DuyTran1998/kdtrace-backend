@@ -18,10 +18,13 @@ import java.util.stream.Collectors;
 public class ProcessService {
     @Autowired
     private ProcessRepository processRepository;
+
     @Autowired
     private ProductService productService;
+
     @Autowired
     private DistributorService distributorService;
+
     @Autowired
     private QRCodeRepository qrCodeRepository;
     @Autowired
@@ -37,7 +40,8 @@ public class ProcessService {
     @Autowired
     private DeliveryTruckRepository deliveryTruckRepository;
     @Autowired
-    private ProducerRepository producerRepository;
+    private TransportRepository transportRepository;
+
     @Autowired
     private ProductRepositoty productRepositoty;
 
@@ -84,9 +88,18 @@ public class ProcessService {
     public ResponseModel getProcess(Long id) {
         Process process = findProcessById(id);
         ProcessModel processModel = ProcessMapper.INSTANCE.processToProcessModel(process);
+        if(process.getTransportID() != null){
+            Transport transport = transportRepository.findTransportById(process.getTransportID()).orElseThrow(
+                    () -> new RecordNotFoundException("Not Found")
+            );
+            TransportModel transportModel = TransportMapper.INSTANCE.transportToTransportModel(transport);
+            processModel.setTransportModel(transportModel);
+        }
+        Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
+        ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(product.getProducer());
         processModel.updateProcessModel(DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()),
                 DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(process.getDeliveryTruck()),
-                ProductMapper.INSTANCE.qrCodeListToQRCodeModel(process.getQrCodes()));
+                ProductMapper.INSTANCE.qrCodeListToQRCodeModel(process.getQrCodes()), producerModel);
         return new ResponseModel("Process", HttpStatus.OK.value(), processModel);
     }
 
