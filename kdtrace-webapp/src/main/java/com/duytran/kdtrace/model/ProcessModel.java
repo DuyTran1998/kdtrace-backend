@@ -23,6 +23,8 @@ public class ProcessModel {
 
     private long quanlity;
 
+    private String create_at;
+
     private List<QRCodeModel> qrCodeModels;
 
     private ProducerModel producerModel;
