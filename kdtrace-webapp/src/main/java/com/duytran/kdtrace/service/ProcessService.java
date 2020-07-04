@@ -18,10 +18,13 @@ import java.util.stream.Collectors;
 public class ProcessService {
     @Autowired
     private ProcessRepository processRepository;
+
     @Autowired
     private ProductService productService;
+
     @Autowired
     private DistributorService distributorService;
+
     @Autowired
     private QRCodeRepository qrCodeRepository;
     @Autowired
@@ -37,7 +40,8 @@ public class ProcessService {
     @Autowired
     private DeliveryTruckRepository deliveryTruckRepository;
     @Autowired
-    private ProducerRepository producerRepository;
+    private TransportRepository transportRepository;
+
     @Autowired
     private ProductRepositoty productRepositoty;
 
@@ -84,9 +88,18 @@ public class ProcessService {
     public ResponseModel getProcess(Long id) {
         Process process = findProcessById(id);
         ProcessModel processModel = ProcessMapper.INSTANCE.processToProcessModel(process);
+        if (process.getTransportID() != null) {
+            Transport transport = transportRepository.findTransportById(process.getTransportID()).orElseThrow(
+                    () -> new RecordNotFoundException("Not Found")
+            );
+            TransportModel transportModel = TransportMapper.INSTANCE.transportToTransportModel(transport);
+            processModel.setTransportModel(transportModel);
+        }
+        Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
+        ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(product.getProducer());
         processModel.updateProcessModel(DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()),
                 DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(process.getDeliveryTruck()),
-                ProductMapper.INSTANCE.qrCodeListToQRCodeModel(process.getQrCodes()));
+                ProductMapper.INSTANCE.qrCodeListToQRCodeModel(process.getQrCodes()), producerModel);
         return new ResponseModel("Process", HttpStatus.OK.value(), processModel);
     }
 
@@ -117,7 +130,7 @@ public class ProcessService {
     }
 
     @Transactional
-    public ResponseModel refuseToSell(Long id) {
+    public ResponseModel rejectToSell(Long id) {
         Process process = findProcessById(id);
         Producer producer = producerService.getProducerInPrincipal();
 
@@ -133,7 +146,7 @@ public class ProcessService {
         processRepository.save(process);
         blockchainService.updateProcess(producer.getUser(), process.getId(), StatusProcess.PRODUCER_REJECT,
                 null, null, null, null, null, producer.getOrgMsp(), "kdtrace");
-        return new ResponseModel("Refuse To Sell", HttpStatus.OK.value(), id);
+        return new ResponseModel("reject To Sell", HttpStatus.OK.value(), id);
     }
 
     private void sendEmailResponseToDistributor(Process process, Producer producer) {
@@ -213,7 +226,7 @@ public class ProcessService {
     }
 
     @Transactional
-    public ResponseModel refuseToDelivery(Long processId) {
+    public ResponseModel rejectToDelivery(Long processId) {
         Process process = findProcessById(processId);
         Transport transport = transportService.getTransportInPrincipal();
         if (!transport.getId().equals(process.getTransportID()) ||
@@ -223,7 +236,7 @@ public class ProcessService {
         process.setStatusProcess(StatusProcess.TRANSPORT_REJECT);
         process.setTransportID(null);
         processRepository.save(process);
-        return new ResponseModel("Refuse To Delivery", HttpStatus.OK.value(), processId);
+        return new ResponseModel("reject To Delivery", HttpStatus.OK.value(), processId);
     }
 
     private void sendEmailToProducerAndDistributor(Process process, String nameCompany, String phone, String topic, String subject) {
@@ -310,7 +323,7 @@ public class ProcessService {
     }
 
     private Process findProcessById(Long id) {
-        return processRepository.findProcessById(id).orElseThrow(
+        return processRepository.findProcessByDelFlagFalseAndId(id).orElseThrow(
                 () -> new RecordNotFoundException("Not Found")
         );
     }
@@ -345,7 +358,7 @@ public class ProcessService {
     @Transactional
     public ResponseModel getAllProcessByDistributor() {
         Distributor distributor = distributorService.getDistributorInPrincipal();
-        List<Process> processes = processRepository.findProcessesByDistributor(distributor);
+        List<Process> processes = processRepository.findProcessesByDelFlagFalseAndDistributor(distributor);
         List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
         processModels.forEach(processModel -> {
             Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
@@ -360,7 +373,8 @@ public class ProcessService {
     public ResponseModel getAllProcessByProducer() {
         Producer producer = producerService.getProducerInPrincipal();
         ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(producer);
-        List<Process> processes = processRepository.findByProductIDIn(
+        List<Process> processes = processRepository.findByDelFlagFalseAndStatusProcessNotLikeAndProductIDIn(
+                StatusProcess.PRODUCER_REJECT,
                 producer.getProducts().stream()
                         .map(product -> product.getId())
                         .collect(Collectors.toList()));
@@ -375,7 +389,8 @@ public class ProcessService {
     @Transactional
     public ResponseModel getAllProcessByTransport() {
         Transport transport = transportService.getTransportInPrincipal();
-        List<Process> processes = processRepository.findProcessesByTransportID(transport.getId());
+        List<Process> processes = processRepository.findProcessesByDelFlagFalseAndStatusProcessNotLikeAndTransportID(
+                StatusProcess.TRANSPORT_REJECT, transport.getId());
         List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
         processModels.forEach(processModel -> {
             Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
@@ -384,5 +399,25 @@ public class ProcessService {
             processModel.setProducerModel(producerModel);
         });
         return new ResponseModel("List Process By Transport", HttpStatus.OK.value(), processModels);
+    }
+
+    @Transactional
+    public ResponseModel deleteProcessById(Long processId) {
+        Process process = findProcessById(processId);
+        Distributor distributor = distributorService.getDistributorInPrincipal();
+        if (!distributor.getId().equals(process.getDistributor().getId()) ||
+                !(process.getStatusProcess() == StatusProcess.WAITING_RESPONSE_PRODUCER ||
+                        process.getStatusProcess() == StatusProcess.PRODUCER_REJECT)) {
+            return new ResponseModel("You don't have permission", HttpStatus.METHOD_NOT_ALLOWED.value(), processId);
+        }
+        if(process.getStatusProcess().equals(StatusProcess.WAITING_RESPONSE_PRODUCER)){
+            productService.changeStatusQRCode(distributor.getUser(),
+                    process.getProductID(),
+                    process.getQuanlity(),
+                    StatusQRCode.AVAILABLE);
+        }
+        process.setDelFlag(true);
+        processRepository.save(process);
+        return new ResponseModel("Delete process successfully!", HttpStatus.OK.value(), null);
     }
 }
