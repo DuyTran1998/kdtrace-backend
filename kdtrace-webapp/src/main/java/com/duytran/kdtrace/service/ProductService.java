@@ -92,56 +92,56 @@ public class ProductService {
     }
 
     @Transactional
-    public boolean checkQuanlityProducts(Long id_product, long quanlity){
+    public boolean checkQuanlityProducts(Long id_product, long quanlity) {
         long quanlity_products = productRepository.getQuanlityProducts(id_product);
         return (quanlity_products >= quanlity);
     }
 
     @Transactional
-    public Product getProductEntityById(Long id){
+    public Product getProductEntityById(Long id) {
         return productRepository.findProductById(id).orElseThrow(
                 () -> new RecordNotFoundException("Product is not exist")
         );
     }
 
-    public ResponseModel getProductById(Long id){
+    public ResponseModel getProductById(Long id) {
         Product product = getProductEntityById(id);
         ProductModel productModel = ProductMapper.INSTANCE.productToProductModel(product);
         return new ResponseModel("Successfully", HttpStatus.OK.value(), productModel);
     }
 
     @Transactional
-    public void changeStatusQRCode(User user, Long productID, long quanlity, StatusQRCode statusQRCode){
+    public void changeStatusQRCode(User user, Long productID, long quanlity, StatusQRCode statusQRCode) {
         Product product = productRepository.findProductById(productID).get();
         List<QRCode> qrCodes;
-        if (statusQRCode == StatusQRCode.WAITING){
+        if (statusQRCode == StatusQRCode.WAITING) {
             product.setQuantity(product.getQuantity() - quanlity);
             qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "AVAILABLE");
-        } else{
+        } else {
             product.setQuantity(product.getQuantity() + quanlity);
             qrCodes = qrCodeRepository.getListQRCodeByProductIdAndStatusQRCode(productID, "WAITING");
         }
 
         List<Long> qrCodeIds = new ArrayList<>();
-        IntStream.rangeClosed(0, (int)quanlity - 1).forEach(
-                i ->{
+        IntStream.rangeClosed(0, (int) quanlity - 1).forEach(
+                i -> {
                     QRCode qrCode = qrCodes.get(i);
                     qrCode.setStatusQRCode(statusQRCode);
                     qrCodeIds.add(qrCode.getId());
                     qrCodeRepository.save(qrCode);
                 });
-        blockchainService.saveQRCodes(user, qrCodeIds, statusQRCode, null, "Org1","kdtrace");
+        blockchainService.saveQRCodes(user, qrCodeIds, statusQRCode, null, "Org1", "kdtrace");
         productRepository.save(product);
     }
 
-    public boolean checkExistProductByIdAndProducer(Long id, Long producer_id){
+    public boolean checkExistProductByIdAndProducer(Long id, Long producer_id) {
         return productRepository.existsByIdAndProducer_Id(id, producer_id);
-     }
+    }
 
-    public Long trackingCode (String code, String otp){
+    public Long trackingCode(String code, String otp) {
         QRCode qrCode = qrCodeRepository.findByCode(code).orElse(new QRCode());
-        if(otp.equals(qrCode.getOtp())){
-            if(qrCode.getTracking() == null)
+        if (otp.equals(qrCode.getOtp())) {
+            if (qrCode.getTracking() == null)
                 qrCode.setTracking(1L);
             else
                 qrCode.setTracking(qrCode.getTracking() + 1);
@@ -150,9 +150,9 @@ public class ProductService {
         return null;
     }
 
-    public String updateFeedback (String code, String feedback){
+    public String updateFeedback(String code, String feedback) {
         QRCode qrCode = qrCodeRepository.findByCode(code).orElse(null);
-        if(qrCode==null){
+        if (qrCode == null) {
             return "QRCode not found!";
         }
         qrCode.setFeedback(feedback);
@@ -161,9 +161,15 @@ public class ProductService {
     }
 
     @Transactional
-    public ResponseModel getAllProductForDistributor(){
+    public ResponseModel getAllProductForDistributor() {
         List<Product> products = productRepository.findAllByOrderByIdAsc();
         List<ProductModel> productModels = ProductMapper.INSTANCE.listProductToModel(products);
+        productModels.forEach(productModel -> {
+            Predicate<QRCodeModel> isNotAVAILABLE = qrCodeModel -> (qrCodeModel.getStatusQRCode() != StatusQRCode.AVAILABLE);
+            productModel.getCodes().removeIf(isNotAVAILABLE);
+        });
+        Predicate<ProductModel> notContainsAVAILABLE = productModel -> (productModel.getCodes().size() == 0);
+        productModels.removeIf(notContainsAVAILABLE);
         return new ResponseModel("List Products For Market", HttpStatus.OK.value(), productModels);
     }
 
@@ -172,7 +178,7 @@ public class ProductService {
         List<Producer> producers = producerRepository.findAll();
         List<ProducerModel> producerModels = new ArrayList<>();
         producers.forEach(producer -> {
-            if(producer.getUser().isActive() && producer.getProducts() != null) {
+            if (producer.getUser().isActive() && producer.getProducts() != null) {
                 ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(producer);
                 producerModel.getProductModels().forEach(productModel -> {
                     Predicate<QRCodeModel> isAVAILABLE = qrCodeModel -> (qrCodeModel.getStatusQRCode() != StatusQRCode.AVAILABLE);
