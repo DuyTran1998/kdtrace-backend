@@ -1,5 +1,7 @@
 package com.duytran.kdtrace.repository;
 
+import com.duytran.kdtrace.entity.Role;
+import com.duytran.kdtrace.entity.RoleName;
 import com.duytran.kdtrace.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,5 +17,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     boolean existsUserByUsername(String username);
 
-    List<User> findAllByOrderByIdDesc();
+    List<User> findAllByRole_RoleNameNotInOrderByIdDesc(List<RoleName> roleNames);
 }

@@ -29,31 +29,31 @@ channels:
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
-      peer1.org1.kdtrace.vn:
-        endorsingPeer: true
-        chaincodeQuery: false
-        ledgerQuery: true
-        eventSource: true
-      peer0.org2.kdtrace.vn:
-        endorsingPeer: true
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: true
-      peer1.org2.kdtrace.vn:
-        endorsingPeer: true
-        chaincodeQuery: false
-        ledgerQuery: true
-        eventSource: true
-      peer0.org3.kdtrace.vn:
-        endorsingPeer: true
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: true
-      peer1.org3.kdtrace.vn:
-        endorsingPeer: true
-        chaincodeQuery: false
-        ledgerQuery: true
-        eventSource: true
+#      peer1.org1.kdtrace.vn:
+#        endorsingPeer: true
+#        chaincodeQuery: false
+#        ledgerQuery: true
+#        eventSource: true
+#      peer0.org2.kdtrace.vn:
+#        endorsingPeer: true
+#        chaincodeQuery: true
+#        ledgerQuery: true
+#        eventSource: true
+#      peer1.org2.kdtrace.vn:
+#        endorsingPeer: true
+#        chaincodeQuery: false
+#        ledgerQuery: true
+#        eventSource: true
+#      peer0.org3.kdtrace.vn:
+#        endorsingPeer: true
+#        chaincodeQuery: true
+#        ledgerQuery: true
+#        eventSource: true
+#      peer1.org3.kdtrace.vn:
+#        endorsingPeer: true
+#        chaincodeQuery: false
+#        ledgerQuery: true
+#        eventSource: true
     orderers:
       - orderer-kdtrace.orderer.io
     chaincodes:

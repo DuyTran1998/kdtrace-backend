@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -107,6 +108,8 @@ public class UserService {
         User user = userRepository.findUserById(user_id).orElseThrow(
                 () -> new RecordNotFoundException("User Not Found")
         );
+        if (user.getRole().getRoleName() == RoleName.ROLE_ADMIN)
+            return new ResponseModel("Fail to update", 400, null);
         user.setActive(!user.isActive());
 
         try{
@@ -119,7 +122,8 @@ public class UserService {
 
 
     public ResponseModel getAllUser(){
-        List<UserModel> userModels = UserMapper.INSTANCE.userListToUserModelList(userRepository.findAllByOrderByIdDesc());
+        List<UserModel> userModels = UserMapper.INSTANCE.userListToUserModelList(
+                userRepository.findAllByRole_RoleNameNotInOrderByIdDesc(Arrays.asList(new RoleName[]{RoleName.ROLE_ADMIN})));
         return new ResponseModel("Get All of Users", 200, userModels);
     }
 }

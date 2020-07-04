@@ -41,6 +41,8 @@ public class Process {
 
     private String create_at;
 
+    private boolean delFlag;
+
     public Process(){
 
     }
