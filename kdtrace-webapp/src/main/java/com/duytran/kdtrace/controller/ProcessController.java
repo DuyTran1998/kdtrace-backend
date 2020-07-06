@@ -90,7 +90,7 @@ public class ProcessController {
     }
 
     @PreAuthorize(("hasRole('ROLE_DISTRIBUTOR')"))
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     public ResponseEntity<?> deleteProcess(@RequestParam Long id) {
         return ResponseEntity.ok(processService.deleteProcessById(id));
     }

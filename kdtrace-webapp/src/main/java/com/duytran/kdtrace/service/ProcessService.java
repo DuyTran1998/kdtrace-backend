@@ -18,13 +18,10 @@ import java.util.stream.Collectors;
 public class ProcessService {
     @Autowired
     private ProcessRepository processRepository;
-
     @Autowired
     private ProductService productService;
-
     @Autowired
     private DistributorService distributorService;
-
     @Autowired
     private QRCodeRepository qrCodeRepository;
     @Autowired
@@ -41,7 +38,6 @@ public class ProcessService {
     private DeliveryTruckRepository deliveryTruckRepository;
     @Autowired
     private TransportRepository transportRepository;
-
     @Autowired
     private ProductRepositoty productRepositoty;
 
@@ -96,7 +92,9 @@ public class ProcessService {
             processModel.setTransportModel(transportModel);
         }
         Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
+        processModel.setProductModel(ProductMapper.INSTANCE.productToProductModel(product));
         ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(product.getProducer());
+        producerModel.setProductModels(null);
         processModel.updateProcessModel(DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()),
                 DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(process.getDeliveryTruck()),
                 ProductMapper.INSTANCE.qrCodeListToQRCodeModel(process.getQrCodes()), producerModel);
@@ -336,23 +334,23 @@ public class ProcessService {
         QRCode qrCode = qrCodeRepository.findByCode(code).orElseThrow(
                 () -> new RecordNotFoundException("Don't found QRCode with code")
         );
-
         if (qrCode.getStatusQRCode() != StatusQRCode.READY) {
             return new ResponseModel("Method is not allowed)", HttpStatus.METHOD_NOT_ALLOWED.value(), code);
         }
+        return this.getProcess(qrCode.getProcess().getId());
 
-        Process process = qrCode.getProcess();
-        DeliveryTruck deliveryTruck = transportService.findDeliveryTruckById(process.getDeliveryTruck().getId());
-        Product product = productService.getProductEntityById(process.getProductID());
-        product.setCodes(null);
-        EndUserResponse response = new EndUserResponse(ProductMapper.INSTANCE.productToProductModel(product),
-                ProducerMapper.INSTANCE.producerToProducerInfoModel(product.getProducer()),
-                process.getDelivery_at(),
-                TransportMapper.INSTANCE.transportToTransportModel(deliveryTruck.getTransport()),
-                DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(deliveryTruck),
-                process.getReceipt_at(),
-                DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()));
-        return new ResponseModel("Successfully", HttpStatus.OK.value(), response);
+//        Process process = qrCode.getProcess();
+//        DeliveryTruck deliveryTruck = transportService.findDeliveryTruckById(process.getDeliveryTruck().getId());
+//        Product product = productService.getProductEntityById(process.getProductID());
+//        product.setCodes(null);
+//        EndUserResponse response = new EndUserResponse(ProductMapper.INSTANCE.productToProductModel(product),
+//                ProducerMapper.INSTANCE.producerToProducerInfoModel(product.getProducer()),
+//                process.getDelivery_at(),
+//                TransportMapper.INSTANCE.transportToTransportModel(deliveryTruck.getTransport()),
+//                DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(deliveryTruck),
+//                process.getReceipt_at(),
+//                DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()));
+//        return new ResponseModel("Successfully", HttpStatus.OK.value(), response);
     }
 
     @Transactional
@@ -362,6 +360,7 @@ public class ProcessService {
         List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
         processModels.forEach(processModel -> {
             Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
+            processModel.setProductModel(ProductMapper.INSTANCE.productToProductModel(product));
             ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(product.getProducer());
             producerModel.setProductModels(null);
             processModel.setProducerModel(producerModel);
@@ -380,6 +379,8 @@ public class ProcessService {
                         .collect(Collectors.toList()));
         List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
         processModels.forEach(processModel -> {
+            Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
+            processModel.setProductModel(ProductMapper.INSTANCE.productToProductModel(product));
             producerModel.setProductModels(null);
             processModel.setProducerModel(producerModel);
         });
@@ -394,6 +395,7 @@ public class ProcessService {
         List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
         processModels.forEach(processModel -> {
             Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
+            processModel.setProductModel(ProductMapper.INSTANCE.productToProductModel(product));
             ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(product.getProducer());
             producerModel.setProductModels(null);
             processModel.setProducerModel(producerModel);
