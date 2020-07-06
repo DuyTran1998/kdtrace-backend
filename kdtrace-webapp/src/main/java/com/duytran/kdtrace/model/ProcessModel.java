@@ -35,6 +35,8 @@ public class ProcessModel {
 
     private DistributorModel distributorModel;
 
+    private ProductModel productModel;
+
     public void updateProcessModel(DistributorModel distributorModel, DeliveryTruckModel deliveryTruckModel,
                                    List<QRCodeModel> qrCodeModels, ProducerModel producerModel){
         this.distributorModel = distributorModel;
