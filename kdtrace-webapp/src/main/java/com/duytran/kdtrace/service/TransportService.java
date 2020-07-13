@@ -1,12 +1,14 @@
 package com.duytran.kdtrace.service;
 
 import com.duytran.kdtrace.entity.DeliveryTruck;
+import com.duytran.kdtrace.entity.StatusDeliveryTruck;
 import com.duytran.kdtrace.entity.Transport;
 import com.duytran.kdtrace.entity.User;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.DeliveryTruckMapper;
 import com.duytran.kdtrace.mapper.TransportMapper;
 import com.duytran.kdtrace.model.DeliveryTruckModel;
+import com.duytran.kdtrace.model.ProductModel;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.model.TransportModel;
 import com.duytran.kdtrace.repository.DeliveryTruckRepository;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Service
 public class TransportService {
@@ -115,9 +118,9 @@ public class TransportService {
                 deliveryTruckRepository.save(deliveryTruck);
                 blockchainService.updateDeliveryTruck(transport.getUser(), deliveryTruck, transport.getOrgMsp(), "kdtrace");
             }catch (Exception e){
-                return new ResponseModel("Don't create successfully", HttpStatus.BAD_REQUEST.value(), e);
+                return new ResponseModel("Fail to create truck !", HttpStatus.BAD_REQUEST.value(), e);
             }
-            return new ResponseModel("Create successfully", HttpStatus.CREATED.value(), deliveryTruckModel);
+            return new ResponseModel("Create successfully !", HttpStatus.CREATED.value(), deliveryTruckModel);
         }
     }
 
@@ -127,6 +130,16 @@ public class TransportService {
         List<DeliveryTruckModel> deliveryTruckModelList = DeliveryTruckMapper.INSTANCE
                                                         .deliveryTruckListToDeliveryTruckModelList(deliveryTruckList);
         return new ResponseModel("Delivery Truck List", 200, deliveryTruckModelList);
+    }
+
+    public ResponseModel getDeliveryTruckListAvailable(){
+        Long id = getTransportInPrincipal().getId();
+        List<DeliveryTruck> deliveryTruckList = deliveryTruckRepository.findAllByTransport_Id(id);
+        Predicate<DeliveryTruck> notAVAILABLE = deliveryTruck -> (deliveryTruck.getStatusDeliveryTruck() != StatusDeliveryTruck.AVAILABLE);
+        deliveryTruckList.removeIf(notAVAILABLE);
+        List<DeliveryTruckModel> deliveryTruckModelList = DeliveryTruckMapper.INSTANCE
+                .deliveryTruckListToDeliveryTruckModelList(deliveryTruckList);
+        return new ResponseModel("Delivery Truck list with status is AVAILABLE", 200, deliveryTruckModelList);
     }
 
     public DeliveryTruck findDeliveryTruckById(Long id){
