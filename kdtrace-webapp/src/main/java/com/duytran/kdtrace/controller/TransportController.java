@@ -44,4 +44,10 @@ public class TransportController {
     public ResponseEntity<?> getAllDeveiryTruck(){
         return ResponseEntity.ok(transportService.getDeliveryTruckList());
     }
+
+    @GetMapping("/deliveryTruck/getAllAvailable")
+    @PreAuthorize("hasRole('ROLE_TRANSPORT')")
+    public ResponseEntity<?> getAllDeveiryTruckIsAvailable(){
+        return ResponseEntity.ok(transportService.getDeliveryTruckListAvailable());
+    }
 }

@@ -65,9 +65,9 @@ public class ProcessService {
                     processModel.getQuantity(),
                     StatusQRCode.WAITING);
 
-            return new ResponseModel("Sucessfull", HttpStatus.OK.value(), processModel);
+            return new ResponseModel("Create transaction successfully", HttpStatus.OK.value(), processModel);
         }
-        return new ResponseModel("Don't enough quanlity product to buy", HttpStatus.BAD_REQUEST.value(), processModel);
+        return new ResponseModel("Don't enough amount of product to create transaction", HttpStatus.BAD_REQUEST.value(), processModel);
     }
 
     private void sendEmailToProducer(Long productID, Long quanlity, Long processID, String companyName, String phone) {
@@ -124,7 +124,7 @@ public class ProcessService {
         blockchainService.updateProcess(producer.getUser(), process.getId(), StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT,
                 listQrCodeId, null, null, null, null, producer.getOrgMsp(), "kdtrace");
         sendEmailResponseToDistributor(savedProcess, producer);
-        return new ResponseModel("Accepted", HttpStatus.OK.value(), id);
+        return new ResponseModel("You have accepted for transaction from " + process.getDistributor().getCompanyName(), HttpStatus.OK.value(), id);
     }
 
     @Transactional
@@ -144,7 +144,7 @@ public class ProcessService {
         processRepository.save(process);
         blockchainService.updateProcess(producer.getUser(), process.getId(), StatusProcess.PRODUCER_REJECT,
                 null, null, null, null, null, producer.getOrgMsp(), "kdtrace");
-        return new ResponseModel("reject To Sell", HttpStatus.OK.value(), id);
+        return new ResponseModel("You have rejected for transaction from Distributor: " + process.getDistributor().getCompanyName(), HttpStatus.OK.value(), id);
     }
 
     private void sendEmailResponseToDistributor(Process process, Producer producer) {
@@ -183,7 +183,7 @@ public class ProcessService {
                 null, transport_id, null, null, null, distributor.getOrgMsp(), "kdtrace");
         Process savedProcess = processRepository.save(process);
         sendEmailToTransport(savedProcess);
-        return new ResponseModel("Choose Transport Successfully", HttpStatus.OK.value(), id);
+        return new ResponseModel("Send your request to Transport: "+ transportRepository.getOne(transport_id).getCompanyName() +" successfully !", HttpStatus.OK.value(), id);
     }
 
     private void sendEmailToTransport(Process process) {
@@ -220,7 +220,7 @@ public class ProcessService {
         sendEmailToProducerAndDistributor(savedProcess, transport.getCompanyName(), transport.getPhone(),
                 "We confirm to express",
                 "Nofication from " + transport.getCompanyName());
-        return new ResponseModel("Accepted", HttpStatus.OK.value(), id);
+        return new ResponseModel("You have accepted to delivery !", HttpStatus.OK.value(), id);
     }
 
     @Transactional
@@ -234,7 +234,7 @@ public class ProcessService {
         process.setStatusProcess(StatusProcess.TRANSPORT_REJECT);
         process.setTransportID(null);
         processRepository.save(process);
-        return new ResponseModel("reject To Delivery", HttpStatus.OK.value(), processId);
+        return new ResponseModel("You have rejected to delivery !", HttpStatus.OK.value(), processId);
     }
 
     private void sendEmailToProducerAndDistributor(Process process, String nameCompany, String phone, String topic, String subject) {
@@ -273,7 +273,7 @@ public class ProcessService {
         sendEmailToProducerAndDistributor(savedProcess, transport.getCompanyName(), transport.getPhone(),
                 "We got goods in Producer",
                 "Nofication from " + transport.getCompanyName());
-        return new ResponseModel("The Goods was taken by transport", HttpStatus.OK.value(), id);
+        return new ResponseModel("The Goods was taken successfully!", HttpStatus.OK.value(), id);
     }
 
     @Transactional
@@ -306,7 +306,7 @@ public class ProcessService {
                 null, null, null, null, process.getReceipt_at(), distributor.getOrgMsp(), "kdtrace");
         blockchainService.saveQRCodes(distributor.getUser(), null, StatusQRCode.READY, mapOtp, distributor.getOrgMsp(), "kdtrace");
         blockchainService.updateDeliveryTruck(distributor.getUser(), deliveryTruck, distributor.getOrgMsp(), "kdtrace");
-        return new ResponseModel("The Goods was receipted by distributor", HttpStatus.OK.value(), id);
+        return new ResponseModel("The Goods was receipted successfully !", HttpStatus.OK.value(), id);
     }
 
     private String generateOtp() {
