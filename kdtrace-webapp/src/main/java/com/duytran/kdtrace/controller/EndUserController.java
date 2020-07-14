@@ -20,20 +20,21 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequestMapping("/api/enduser")
 public class EndUserController {
     @Autowired
     private ProcessService processService;
     @Autowired
     private ProductService productService;
 
-    @RequestMapping(value = {"process"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/process"}, method = RequestMethod.GET)
     public String index(Model model, @RequestParam Long id) {
         //Long a = new Long(2);
         model.addAttribute("qrCodes", processService.getQRCodeByProcessId(id));
         return "index";
     }
 
-    @RequestMapping(value = "process/qrcode/{code}", method = RequestMethod.GET)
+    @RequestMapping(value = "/process/qrcode/{code}", method = RequestMethod.GET)
     public void qrCode(@PathVariable("code") String code, HttpServletResponse response) throws Exception {
         response.setContentType("image/png");
         String link = "http://localhost:8080/getInfo?qr_code=" + code;
