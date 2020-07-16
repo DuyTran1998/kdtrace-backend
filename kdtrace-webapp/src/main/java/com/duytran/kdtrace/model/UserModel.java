@@ -21,4 +21,6 @@ public class UserModel {
     private String email;
 
     private Role role;
+
+    private String createAt;
 }

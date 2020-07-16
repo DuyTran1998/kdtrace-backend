@@ -1,4 +1,4 @@
-package com.duytran.kdtrace.bootrap;
+package com.duytran.kdtrace.bootstrap;
 
 import com.duytran.kdtrace.entity.HFUserContext;
 import com.duytran.kdtrace.repository.HFUserContextRepository;

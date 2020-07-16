@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ProcessRepository extends JpaRepository<Process, Long> {
     Optional<Process> findProcessByDelFlagFalseAndId(Long id);
 
-    List<Process> findProcessesByDelFlagFalseAndDistributor(Distributor distributor);
-    List<Process> findByDelFlagFalseAndStatusProcessNotLikeAndProductIDIn(StatusProcess statusProcess, List<Long> productIdList);
-    List<Process> findProcessesByDelFlagFalseAndStatusProcessNotLikeAndTransportID(StatusProcess statusProcess, Long transportID);
+    List<Process> findProcessesByDelFlagFalseAndDistributorOrderByUpdateAtDesc(Distributor distributor);
+    List<Process> findByDelFlagFalseAndStatusProcessNotLikeAndProductIDInOrderByUpdateAtDesc(StatusProcess statusProcess, List<Long> productIdList);
+    List<Process> findProcessesByDelFlagFalseAndStatusProcessNotLikeAndTransportIDOrderByUpdateAtDesc(StatusProcess statusProcess, Long transportID);
 }

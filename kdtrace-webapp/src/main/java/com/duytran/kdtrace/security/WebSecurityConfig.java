@@ -48,18 +48,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
-//                .antMatchers("/api/admin/**").hasAnyRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/api/login").permitAll()
-                .antMatchers("/api/enduser/process/**").permitAll()
                 .antMatchers("/api/enduser/feedback/**").permitAll()
                 .antMatchers("/api/enduser/get-product-info/**").permitAll()
                 .antMatchers("/api/enduser/tracking-code/**").permitAll()
-                .antMatchers("/api/enduser/feedback/").permitAll()
                 .antMatchers("/api/register").permitAll()
-                .antMatchers("/v2/api-docs",
-                        "/swagger-resources/**",
-                        "/swagger-ui.html",
-                        "/webjars/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

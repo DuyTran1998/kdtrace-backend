@@ -94,4 +94,10 @@ public class ProcessController {
     public ResponseEntity<?> deleteProcess(@RequestParam Long id) {
         return ResponseEntity.ok(processService.deleteProcessById(id));
     }
+
+    @PreAuthorize(("hasRole('ROLE_DISTRIBUTOR')"))
+    @GetMapping("/getAllForWarehouse")
+    public ResponseEntity<?> getAllForWarehouse() {
+        return ResponseEntity.ok(processService.getAllProcessReceivedByDistributor());
+    }
 }

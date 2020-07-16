@@ -2,14 +2,18 @@ package com.duytran.kdtrace.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "processes")
+@EntityListeners(AuditingEntityListener.class)
 public class Process {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +44,9 @@ public class Process {
     private String receipt_at;
 
     private String create_at;
+
+    @LastModifiedDate
+    private LocalDateTime updateAt;
 
     private boolean delFlag;
 
