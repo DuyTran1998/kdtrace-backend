@@ -1,9 +1,11 @@
 package com.duytran.kdtrace.model;
 
 import com.duytran.kdtrace.entity.StatusProcess;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -36,6 +38,9 @@ public class ProcessModel {
     private DistributorModel distributorModel;
 
     private ProductModel productModel;
+
+    @JsonFormat(pattern="yyyy/MM/dd HH:mm:ss")
+    private LocalDateTime updateAt;
 
     public void updateProcessModel(DistributorModel distributorModel, DeliveryTruckModel deliveryTruckModel,
                                    List<QRCodeModel> qrCodeModels, ProducerModel producerModel){

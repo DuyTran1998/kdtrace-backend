@@ -17,4 +17,10 @@ public class QRCodeModel {
     private String link;
 
     private StatusQRCode statusQRCode;
+
+    private String otp;
+
+    private Long tracking;
+
+    private String feedback;
 }

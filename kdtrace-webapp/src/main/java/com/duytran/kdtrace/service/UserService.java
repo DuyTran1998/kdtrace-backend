@@ -1,15 +1,12 @@
 package com.duytran.kdtrace.service;
 
-import com.duytran.kdtrace.entity.Role;
-import com.duytran.kdtrace.entity.RoleName;
-import com.duytran.kdtrace.entity.User;
+import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.UserMapper;
 import com.duytran.kdtrace.model.RegisterRequest;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.model.UserModel;
-import com.duytran.kdtrace.repository.RoleRepository;
-import com.duytran.kdtrace.repository.UserRepository;
+import com.duytran.kdtrace.repository.*;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +42,20 @@ public class UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ProducerRepository producerRepository;
+    @Autowired
+    private TransportRepository transportRepository;
+    @Autowired
+    private DistributorRepository distributorRepository;
+
 
     // Create new account for user.
 
     @Transactional
     public ResponseModel saveUser(RegisterRequest registerRequest){
         if(userRepository.existsUserByUsername(registerRequest.getUsername())){
-            return new ResponseModel("Username have been created", HttpStatus.BAD_REQUEST.value(), registerRequest.getUsername());
+            return new ResponseModel("Username have been created", HttpStatus.METHOD_NOT_ALLOWED.value(), registerRequest.getUsername());
         }
         User user = new User(registerRequest.getUsername(), passwordEncoder.encode(registerRequest.getPassword()),
                                                                                             registerRequest.getEmail());
@@ -75,7 +79,7 @@ public class UserService {
                 break;
         }
 
-        return new ResponseModel("Successful", HttpStatus.OK.value(),  UserMapper.INSTANCE.userToUserDto(user));
+        return new ResponseModel("Register successfully", HttpStatus.OK.value(),  UserMapper.INSTANCE.userToUserDto(user));
     }
 
 
@@ -117,13 +121,30 @@ public class UserService {
         }catch (Exception e){
             return new ResponseModel("Update Fail", 400, user_id);
         }
-        return new ResponseModel("Update Successfull", 200, UserMapper.INSTANCE.userToUserDto(user));
+        return new ResponseModel("Update user: "+ user.getUsername() +" successfully", 200, UserMapper.INSTANCE.userToUserDto(user));
     }
 
 
     public ResponseModel getAllUser(){
         List<UserModel> userModels = UserMapper.INSTANCE.userListToUserModelList(
                 userRepository.findAllByRole_RoleNameNotInOrderByIdDesc(Arrays.asList(new RoleName[]{RoleName.ROLE_ADMIN})));
+        userModels.forEach(userModel -> {
+            switch (userModel.getRole().getRoleName()){
+                case ROLE_PRODUCER:
+                    Producer producer = producerRepository.findProducerByUser_Username(userModel.getUsername()).orElse(new Producer());
+                    userModel.setCreateAt(producer.getCreate_at());
+                    break;
+                case ROLE_TRANSPORT:
+                    Transport transport = transportRepository.findTransportByUser_Username(userModel.getUsername()).orElse(new Transport());
+                    userModel.setCreateAt(transport.getCreate_at());
+                    break;
+                case ROLE_DISTRIBUTOR:
+                    Distributor distributor = distributorRepository.findDistributorByUser_Username(userModel.getUsername()).orElse(new Distributor());
+                    userModel.setCreateAt(distributor.getCreate_at());
+                    break;
+            }
+        });
+
         return new ResponseModel("Get All of Users", 200, userModels);
     }
 }

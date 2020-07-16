@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,7 +68,7 @@ public class ProcessService {
 
             return new ResponseModel("Create transaction successfully", HttpStatus.OK.value(), processModel);
         }
-        return new ResponseModel("Don't enough amount of product to create transaction", HttpStatus.BAD_REQUEST.value(), processModel);
+        return new ResponseModel("Don't have enough amount of product to create transaction", HttpStatus.BAD_REQUEST.value(), processModel);
     }
 
     private void sendEmailToProducer(Long productID, Long quanlity, Long processID, String companyName, String phone) {
@@ -124,7 +125,7 @@ public class ProcessService {
         blockchainService.updateProcess(producer.getUser(), process.getId(), StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT,
                 listQrCodeId, null, null, null, null, producer.getOrgMsp(), "kdtrace");
         sendEmailResponseToDistributor(savedProcess, producer);
-        return new ResponseModel("You have accepted for transaction from " + process.getDistributor().getCompanyName(), HttpStatus.OK.value(), id);
+        return new ResponseModel("You accepted for transaction from " + process.getDistributor().getCompanyName(), HttpStatus.OK.value(), id);
     }
 
     @Transactional
@@ -144,7 +145,7 @@ public class ProcessService {
         processRepository.save(process);
         blockchainService.updateProcess(producer.getUser(), process.getId(), StatusProcess.PRODUCER_REJECT,
                 null, null, null, null, null, producer.getOrgMsp(), "kdtrace");
-        return new ResponseModel("You have rejected for transaction from Distributor: " + process.getDistributor().getCompanyName(), HttpStatus.OK.value(), id);
+        return new ResponseModel("You rejected for transaction from Distributor: " + process.getDistributor().getCompanyName(), HttpStatus.OK.value(), id);
     }
 
     private void sendEmailResponseToDistributor(Process process, Producer producer) {
@@ -177,13 +178,17 @@ public class ProcessService {
                         process.getStatusProcess() == StatusProcess.TRANSPORT_REJECT)) {
             return new ResponseModel("You don't have permission", HttpStatus.METHOD_NOT_ALLOWED.value(), id);
         }
+        Transport transport = transportRepository.findTransportById(transport_id).orElse(new Transport());
+        if(transport.getUser() == null){
+            return new ResponseModel("Transport does not exist, reselect!", HttpStatus.METHOD_NOT_ALLOWED.value(), id);
+        }
         process.setTransportID(transport_id);
         process.setStatusProcess(StatusProcess.WAITING_RESPONSE_TRANSPORT);
         blockchainService.updateProcess(distributor.getUser(), process.getId(), StatusProcess.WAITING_RESPONSE_TRANSPORT,
                 null, transport_id, null, null, null, distributor.getOrgMsp(), "kdtrace");
         Process savedProcess = processRepository.save(process);
         sendEmailToTransport(savedProcess);
-        return new ResponseModel("Send your request to Transport: "+ transportRepository.getOne(transport_id).getCompanyName() +" successfully !", HttpStatus.OK.value(), id);
+        return new ResponseModel("Send your request to Transport: "+ transport.getCompanyName() +" successfully !", HttpStatus.OK.value(), id);
     }
 
     private void sendEmailToTransport(Process process) {
@@ -220,7 +225,7 @@ public class ProcessService {
         sendEmailToProducerAndDistributor(savedProcess, transport.getCompanyName(), transport.getPhone(),
                 "We confirm to express",
                 "Nofication from " + transport.getCompanyName());
-        return new ResponseModel("You have accepted to delivery !", HttpStatus.OK.value(), id);
+        return new ResponseModel("You accepted to delivery !", HttpStatus.OK.value(), id);
     }
 
     @Transactional
@@ -234,7 +239,7 @@ public class ProcessService {
         process.setStatusProcess(StatusProcess.TRANSPORT_REJECT);
         process.setTransportID(null);
         processRepository.save(process);
-        return new ResponseModel("You have rejected to delivery !", HttpStatus.OK.value(), processId);
+        return new ResponseModel("You rejected to delivery !", HttpStatus.OK.value(), processId);
     }
 
     private void sendEmailToProducerAndDistributor(Process process, String nameCompany, String phone, String topic, String subject) {
@@ -266,9 +271,9 @@ public class ProcessService {
         qrCodeRepository.saveAll(qrCodes);
 
         process.setDelivery_at(commonService.getDateTime());
-        process.setStatusProcess(StatusProcess.ON_BOARDING_REVEIVE);
+        process.setStatusProcess(StatusProcess.ON_BOARDING_RECEIVE);
         Process savedProcess = processRepository.save(process);
-        blockchainService.updateProcess(transport.getUser(), process.getId(), StatusProcess.ON_BOARDING_REVEIVE,
+        blockchainService.updateProcess(transport.getUser(), process.getId(), StatusProcess.ON_BOARDING_RECEIVE,
                 null, null, null, process.getDelivery_at(), null, transport.getOrgMsp(), "kdtrace");
         sendEmailToProducerAndDistributor(savedProcess, transport.getCompanyName(), transport.getPhone(),
                 "We got goods in Producer",
@@ -281,11 +286,11 @@ public class ProcessService {
         Process process = findProcessById(id);
         Distributor distributor = distributorService.getDistributorInPrincipal();
         if (!distributor.getId().equals(process.getDistributor().getId()) ||
-                process.getStatusProcess() != StatusProcess.ON_BOARDING_REVEIVE) {
+                process.getStatusProcess() != StatusProcess.ON_BOARDING_RECEIVE) {
             return new ResponseModel("You don't have permission", HttpStatus.METHOD_NOT_ALLOWED.value(), id);
         }
         process.setReceipt_at(commonService.getDateTime());
-        process.setStatusProcess(StatusProcess.REVEIVED);
+        process.setStatusProcess(StatusProcess.RECEIVED);
         processRepository.save(process);
         List<QRCode> qrCodes = qrCodeRepository.findAllByProcess_Id(id);
         Map<Long, String> mapOtp = new HashMap<>();
@@ -302,7 +307,7 @@ public class ProcessService {
         deliveryTruck.setStatusDeliveryTruck(StatusDeliveryTruck.AVAILABLE);
         deliveryTruckRepository.save(deliveryTruck);
 
-        blockchainService.updateProcess(distributor.getUser(), process.getId(), StatusProcess.REVEIVED,
+        blockchainService.updateProcess(distributor.getUser(), process.getId(), StatusProcess.RECEIVED,
                 null, null, null, null, process.getReceipt_at(), distributor.getOrgMsp(), "kdtrace");
         blockchainService.saveQRCodes(distributor.getUser(), null, StatusQRCode.READY, mapOtp, distributor.getOrgMsp(), "kdtrace");
         blockchainService.updateDeliveryTruck(distributor.getUser(), deliveryTruck, distributor.getOrgMsp(), "kdtrace");
@@ -356,7 +361,7 @@ public class ProcessService {
     @Transactional
     public ResponseModel getAllProcessByDistributor() {
         Distributor distributor = distributorService.getDistributorInPrincipal();
-        List<Process> processes = processRepository.findProcessesByDelFlagFalseAndDistributor(distributor);
+        List<Process> processes = processRepository.findProcessesByDelFlagFalseAndDistributorOrderByUpdateAtDesc(distributor);
         List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
         processModels.forEach(processModel -> {
             Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
@@ -369,10 +374,27 @@ public class ProcessService {
     }
 
     @Transactional
+    public ResponseModel getAllProcessReceivedByDistributor() {
+        Distributor distributor = distributorService.getDistributorInPrincipal();
+        List<Process> processes = processRepository.findProcessesByDelFlagFalseAndDistributorOrderByUpdateAtDesc(distributor);
+        List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
+        processModels.forEach(processModel -> {
+            Product product = productRepositoty.findProductById(processModel.getProductID()).orElse(new Product());
+            processModel.setProductModel(ProductMapper.INSTANCE.productToProductModel(product));
+            ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(product.getProducer());
+            producerModel.setProductModels(null);
+            processModel.setProducerModel(producerModel);
+        });
+        Predicate<ProcessModel> notProcessRECEIVED = processModel -> (processModel.getStatusProcess() != StatusProcess.RECEIVED);
+        processModels.removeIf(notProcessRECEIVED);
+        return new ResponseModel("List Process with status is RECEIVED By Distributor", HttpStatus.OK.value(), processModels);
+    }
+
+    @Transactional
     public ResponseModel getAllProcessByProducer() {
         Producer producer = producerService.getProducerInPrincipal();
         ProducerModel producerModel = ProducerMapper.INSTANCE.producerToProducerModel(producer);
-        List<Process> processes = processRepository.findByDelFlagFalseAndStatusProcessNotLikeAndProductIDIn(
+        List<Process> processes = processRepository.findByDelFlagFalseAndStatusProcessNotLikeAndProductIDInOrderByUpdateAtDesc(
                 StatusProcess.PRODUCER_REJECT,
                 producer.getProducts().stream()
                         .map(product -> product.getId())
@@ -390,7 +412,7 @@ public class ProcessService {
     @Transactional
     public ResponseModel getAllProcessByTransport() {
         Transport transport = transportService.getTransportInPrincipal();
-        List<Process> processes = processRepository.findProcessesByDelFlagFalseAndStatusProcessNotLikeAndTransportID(
+        List<Process> processes = processRepository.findProcessesByDelFlagFalseAndStatusProcessNotLikeAndTransportIDOrderByUpdateAtDesc(
                 StatusProcess.TRANSPORT_REJECT, transport.getId());
         List<ProcessModel> processModels = ProcessMapper.INSTANCE.toProcessModelList(processes);
         processModels.forEach(processModel -> {
