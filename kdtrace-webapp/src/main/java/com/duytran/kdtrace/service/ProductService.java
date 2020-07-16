@@ -110,6 +110,14 @@ public class ProductService {
         return new ResponseModel("Successfully", HttpStatus.OK.value(), productModel);
     }
 
+    public ResponseModel getProductByIdWithAvailable(Long id) {
+        Product product = getProductEntityById(id);
+        ProductModel productModel = ProductMapper.INSTANCE.productToProductModel(product);
+        Predicate<QRCodeModel> isNotAVAILABLE = qrCodeModel -> (qrCodeModel.getStatusQRCode() != StatusQRCode.AVAILABLE);
+        productModel.getCodes().removeIf(isNotAVAILABLE);
+        return new ResponseModel("Successfully", HttpStatus.OK.value(), productModel);
+    }
+
     @Transactional
     public void changeStatusQRCode(User user, Long productID, long quanlity, StatusQRCode statusQRCode) {
         Product product = productRepository.findProductById(productID).get();

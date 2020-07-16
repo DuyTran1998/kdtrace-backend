@@ -34,4 +34,9 @@ public class ProductController {
     public ResponseModel getAllOrderByProducer() {
         return productService.getAllOrderByProducer();
     }
+
+    @GetMapping("getWithAvailable")
+    public ResponseEntity<?> getProductByIdWithAvailable(@RequestParam Long id){
+        return ResponseEntity.ok(productService.getProductByIdWithAvailable(id));
+    }
 }
