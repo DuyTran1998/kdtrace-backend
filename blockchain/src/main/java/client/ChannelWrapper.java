@@ -197,7 +197,7 @@ public class ChannelWrapper {
             transactionProposalRequest.setChaincodeID(ChaincodeID.newBuilder().setName(chaincodeName).build());
             transactionProposalRequest.setFcn(fcn);
             transactionProposalRequest.setArgs(args);
-            transactionProposalRequest.setProposalWaitTime(10000);
+            transactionProposalRequest.setProposalWaitTime(20000);
             Map<String, byte[]> tm = new HashMap<>();
             tm.put("HyperLedgerFabric", "Java - SDK".getBytes(UTF_8));
             tm.put("method", fcn.getBytes(UTF_8));

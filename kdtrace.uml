@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.delivery_truck</OriginalElement>
+  <nodes>
+    <node x="113.88727693774695" y="964.1495709031468">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.processes</node>
+    <node x="222.0360536612633" y="315.1697455608347">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.users</node>
+    <node x="528.4415774920816" y="280.4300680519309">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.hf_user_context</node>
+    <node x="17.5" y="598.0">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.transports</node>
+    <node x="215.50000000000003" y="598.0">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.distributors</node>
+    <node x="-55.71502689284131" y="403.3923984332258">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.roles</node>
+    <node x="346.46729904527206" y="963.678253937058">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.qrcodes</node>
+    <node x="566.1679607682877" y="966.9190845933796">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.products</node>
+    <node x="-142.6850303376459" y="965.471608356474">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.delivery_truck</node>
+    <node x="413.49999999999994" y="598.0">767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.producers</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.users" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.hf_user_context">
+      <point x="41.5" y="-102.5" />
+      <point x="346.00326184851406" y="249.2086266525933" />
+      <point x="618.1921170091821" y="250.5731778190488" />
+      <point x="0.0" y="146.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.qrcodes" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.processes">
+      <point x="-42.25" y="-146.5" />
+      <point x="379.6579942118007" y="1301.8894335833681" />
+      <point x="202.6679168389345" y="1302.4558502155812" />
+      <point x="0.0" y="146.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.qrcodes" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.products">
+      <point x="42.25" y="-146.5" />
+      <point x="470.6768393290582" y="1300.346968674695" />
+      <point x="640.7549622006015" y="1298.4741905113553" />
+      <point x="0.0" y="124.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.delivery_truck" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.transports">
+      <point x="0.0" y="-91.5" />
+      <point x="0.0" y="157.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.producers" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.users">
+      <point x="0.0" y="-157.5" />
+      <point x="502.5" y="568.7034050179211" />
+      <point x="359.83333333333337" y="568.7034050179211" />
+      <point x="55.33333333333337" y="102.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.products" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.producers">
+      <point x="0.0" y="-124.5" />
+      <point x="0.0" y="157.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.distributors" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.users">
+      <point x="0.0" y="-157.5" />
+      <point x="0.0" y="102.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.processes" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.delivery_truck">
+      <point x="-44.5" y="-146.5" />
+      <point x="89.94351261980444" y="1210.9959986044896" />
+      <point x="-39.362038113983886" y="1210.4016283439207" />
+      <point x="0.0" y="91.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.processes" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.distributors">
+      <point x="44.5" y="-146.5" />
+      <point x="311.5123129035664" y="904.9738257675933" />
+      <point x="331.2678974064851" y="894.733278844844" />
+      <point x="0.0" y="157.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.users" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.roles">
+      <point x="-41.5" y="-102.5" />
+      <point x="263.18362060915194" y="282.4606095739218" />
+      <point x="23.31426881817587" y="281.5029046949318" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.transports" target="767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.users">
+      <point x="0.0" y="-157.5" />
+      <point x="106.5" y="568.7034050179211" />
+      <point x="249.16666666666669" y="568.7034050179211" />
+      <point x="-55.33333333333334" y="102.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.2924908424908426" x="367.7627887204194" y="1013.4540172877994" />
+  <SelectedNodes>
+    <node>767473b5-edc4-4852-9dcd-7209297dba28.TABLE:postgres.kdtrace_20200705.qrcodes</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+
