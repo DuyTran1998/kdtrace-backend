@@ -9,19 +9,27 @@ import com.duytran.kdtrace.repository.ProducerRepository;
 import com.duytran.kdtrace.repository.ProductRepositoty;
 import com.duytran.kdtrace.repository.QRCodeRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 
 @Service
 public class ProductService {
@@ -47,19 +55,34 @@ public class ProductService {
     ProducerRepository producerRepository;
 
     @Transactional
-    public ResponseModel createProduct(ProductModel productModel) {
-        Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
-        Producer producer = producerService.getProducerInPrincipal();
-        product.setProducer(producer);
-        product.setCreate_at(commonService.getDateTime());
-        productRepository.save(product);
-        List<QRCode> qrCodes = generateCode(product);
-        qrCodeRepository.saveAll(qrCodes);
-        product.setCodes(qrCodes);
-        productRepository.save(product);
-        blockchainService.updateProduct(producer.getUser(), product.getId(), "kdtrace");
-        blockchainService.createQRCodes(producer.getUser(), product.getId(), "kdtrace");
-        return new ResponseModel("Create Successfully", HttpStatus.OK.value(), productModel);
+    public ResponseModel createProduct(Long id, MultipartFile[] multipartFiles) throws IOException {
+//        Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
+//        Producer producer = producerService.getProducerInPrincipal();
+//        product.setProducer(producer);
+//        product.setCreate_at(commonService.getDateTime());
+//        product.setImage(saveImage(multipartFiles, product.getId()));
+//        productRepository.save(product);
+//        List<QRCode> qrCodes = generateCode(product);
+//        qrCodeRepository.saveAll(qrCodes);
+//        product.setCodes(qrCodes);
+//        productRepository.save(product);
+//        blockchainService.updateProduct(producer.getUser(), product.getId(), "kdtrace");
+//        blockchainService.createQRCodes(producer.getUser(), product.getId(), "kdtrace");
+
+        return new ResponseModel("Create Successfully", HttpStatus.OK.value(), saveImage(multipartFiles, id));
+    }
+
+    private String saveImage(MultipartFile[] multipartFiles, Long id) throws IOException {
+        String directory = "image-store/" + id;
+        Path dest = Files.createDirectories(Paths.get(directory));
+
+        for (MultipartFile file : multipartFiles) {
+            String fileName = UUID.randomUUID().toString().replace("-", "") + "." +
+                    FilenameUtils.getExtension(file.getOriginalFilename());
+            file.transferTo(Files.createFile(dest.resolve(fileName)));
+            return "https://kdtrace.xyz/" + directory + "/" + fileName;
+        }
+        return null;
     }
 
     @Value("${url}")

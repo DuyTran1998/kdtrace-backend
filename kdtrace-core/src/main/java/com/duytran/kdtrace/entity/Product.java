@@ -39,4 +39,5 @@ public class Product {
 
     private String create_at;
 
+    private String image;
 }
