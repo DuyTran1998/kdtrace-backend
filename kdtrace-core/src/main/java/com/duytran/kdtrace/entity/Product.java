@@ -39,4 +39,6 @@ public class Product {
 
     private String create_at;
 
+    @Column(name = "image", length = 2048)
+    private String image;
 }
