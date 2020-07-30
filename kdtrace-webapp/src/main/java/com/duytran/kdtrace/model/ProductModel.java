@@ -36,4 +36,6 @@ public class ProductModel {
 
     @Enumerated(EnumType.STRING)
     private Unit unit;
+
+    private String image;
 }
