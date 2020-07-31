@@ -4,6 +4,7 @@ import com.duytran.kdtrace.model.ProductModel;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +23,10 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
     public ResponseEntity<?> createProduct(
-            @Valid @RequestBody ProductModel productModel,
-            @RequestPart("file") MultipartFile[] multipartFiles) throws IOException {
+            @RequestPart ProductModel productModel,
+            @RequestPart(value = "files", required = false) MultipartFile[] multipartFiles) throws IOException {
         return ResponseEntity.ok(productService.createProduct(productModel, multipartFiles));
     }
 

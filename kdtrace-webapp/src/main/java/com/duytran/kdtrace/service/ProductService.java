@@ -60,8 +60,8 @@ public class ProductService {
         Producer producer = producerService.getProducerInPrincipal();
         product.setProducer(producer);
         product.setCreate_at(commonService.getDateTime());
-        product.setImage(saveImage(multipartFiles, product.getId()));
         productRepository.save(product);
+        product.setImage(saveImage(multipartFiles, product.getId()));
         List<QRCode> qrCodes = generateCode(product);
         qrCodeRepository.saveAll(qrCodes);
         product.setCodes(qrCodes);
