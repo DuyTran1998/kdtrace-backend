@@ -6,6 +6,7 @@ import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.*;
 import com.duytran.kdtrace.model.*;
 import com.duytran.kdtrace.repository.*;
+import model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,10 @@ public class ProcessService {
     private TransportRepository transportRepository;
     @Autowired
     private ProductRepositoty productRepositoty;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ProducerRepository producerRepository;
 
 
     @Transactional
@@ -342,20 +347,34 @@ public class ProcessService {
         if (qrCode.getStatusQRCode() != StatusQRCode.READY) {
             return new ResponseModel("Method is not allowed)", HttpStatus.METHOD_NOT_ALLOWED.value(), code);
         }
-        return this.getProcess(qrCode.getProcess().getId());
+        User user = userRepository.findByUsername("enduser-kdtrace").orElse(new User());
+        LedgerQRCode ledgerQRCode = blockchainService.getQRCode(user, qrCode.getId());
+        LedgerProcess ledgerProcess = blockchainService.getProcess(user, ledgerQRCode.getProcessId());
+        LedgerProduct ledgerProduct = blockchainService.getProduct(user, ledgerQRCode.getProductId());
+        LedgerProducer ledgerProducer = blockchainService.getProducer(user, producerRepository.findProducerById(ledgerProduct.getProducerId()).get().getUser().getId());
+        LedgerTransport ledgerTransport = blockchainService.getTransport(user, transportRepository.findTransportById(ledgerProcess.getTransportId()).get().getUser().getId());
+        LedgerDeliveryTruck ledgerDeliveryTruck = blockchainService.getDeliveryTruck(user, ledgerProcess.getDeliveryTruckId());
+        LedgerDistributor ledgerDistributor = blockchainService.getDistributor(user, qrCode.getProcess().getDistributor().getUser().getId());
 
-//        Process process = qrCode.getProcess();
-//        DeliveryTruck deliveryTruck = transportService.findDeliveryTruckById(process.getDeliveryTruck().getId());
-//        Product product = productService.getProductEntityById(process.getProductID());
-//        product.setCodes(null);
-//        EndUserResponse response = new EndUserResponse(ProductMapper.INSTANCE.productToProductModel(product),
-//                ProducerMapper.INSTANCE.producerToProducerInfoModel(product.getProducer()),
-//                process.getDelivery_at(),
-//                TransportMapper.INSTANCE.transportToTransportModel(deliveryTruck.getTransport()),
-//                DeliveryTruckMapper.INSTANCE.deliveryTruckToDeliveryTruckModel(deliveryTruck),
-//                process.getReceipt_at(),
-//                DistributorMapper.INSTANCE.distributorToDistributorModel(process.getDistributor()));
-//        return new ResponseModel("Successfully", HttpStatus.OK.value(), response);
+        ProcessModel processModel = new ProcessModel(
+                ledgerProcess.getId(),
+                ledgerProduct.getId(),
+                ledgerTransport.getTransportId(),
+                StatusProcess.valueOf(ledgerProcess.getStatusProcess()),
+                ledgerProcess.getDelivery_at(),
+                ledgerProcess.getReceipt_at(),
+                qrCode.getProcess().getQuanlity(),
+                ledgerProcess.getCreate_at(),
+                new ArrayList<>(),
+                LedgerMapper.INSTANCE.toProducerModel(ledgerProducer),
+                LedgerMapper.INSTANCE.toTransportModel(ledgerTransport),
+                LedgerMapper.INSTANCE.toDeliveryTruckModel(ledgerDeliveryTruck),
+                LedgerMapper.INSTANCE.toDistributorModel(ledgerDistributor),
+                LedgerMapper.INSTANCE.toProductModel(ledgerProduct),
+                qrCode.getProcess().getUpdateAt()
+        );
+        processModel.getProductModel().setImage(qrCode.getProduct().getImage());
+        return new ResponseModel("Process", HttpStatus.OK.value(), processModel);
     }
 
     @Transactional

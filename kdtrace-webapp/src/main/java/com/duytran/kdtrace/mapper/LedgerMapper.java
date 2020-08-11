@@ -2,6 +2,7 @@ package com.duytran.kdtrace.mapper;
 
 import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.entity.Process;
+import com.duytran.kdtrace.model.*;
 import model.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -73,4 +74,14 @@ public interface LedgerMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "transportId", source = "transport.id")
     LedgerDeliveryTruck toLedgerDeliveryTruck (DeliveryTruck deliveryTruck);
+
+    @Mapping(target = "codes", ignore = true)
+    ProductModel toProductModel(LedgerProduct ledgerProduct);
+    @Mapping(target = "id", source = "producerId")
+    ProducerModel toProducerModel(LedgerProducer ledgerProducer);
+    @Mapping(target = "id", source = "transportId")
+    TransportModel toTransportModel(LedgerTransport ledgerTransport);
+    DeliveryTruckModel toDeliveryTruckModel(LedgerDeliveryTruck ledgerDeliveryTruck);
+    @Mapping(target = "id", source = "distributorId")
+    DistributorModel toDistributorModel(LedgerDistributor ledgerDistributor);
 }

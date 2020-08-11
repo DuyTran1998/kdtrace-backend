@@ -21,7 +21,7 @@ public class LedgerProduct {
 
     private List<Long> codes;
 
-    private String producerId;
+    private Long producerId;
 
     private String userId;
 
