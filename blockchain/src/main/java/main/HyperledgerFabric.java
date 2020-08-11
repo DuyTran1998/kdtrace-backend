@@ -1,9 +1,9 @@
 package main;
 
 import com.duytran.kdtrace.entity.HFUserContext;
-import com.duytran.kdtrace.entity.StatusProcess;
-import com.duytran.kdtrace.entity.StatusQRCode;
+import com.duytran.kdtrace.entity.QRCode;
 import com.duytran.kdtrace.entity.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import model.*;
 import service.CAIdentityService;
@@ -79,15 +79,63 @@ public class HyperledgerFabric {
         return caIdentityService.registerIdentity(organization, user, adminContext);
     }
 
-//    public UserContext updateIdentity(String organizationName, User user, HFUserContext adminHfUserContext) {
-//        UserContext adminContext = Util.toUserContextFromHFUserContext(adminHfUserContext);
-//        String organization = Util.organizationFilter(organizationName);
-//        try {
-//            return new CAClientWrapper(organization).updateIdentity(adminContext, user);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new RuntimeException("Error updating " + user.getUsername() + "'s identity into network");
-//        }
-//    }
+    public String queryRecord(User user, String key, String organization, String channelName) throws Exception {
+        return ledgerUserService.queryRecord(user, key, organization, channelName);
+    }
 
+    public LedgerQRCode getQRCode(User user, String key, String organization, String channelName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        LedgerQRCode ledgerQRCode = mapper.readValue(
+                ledgerUserService.queryRecord(user, key, organization, channelName),
+                LedgerQRCode.class);
+        return ledgerQRCode;
+    }
+
+    public LedgerProcess getProcess(User user, String key, String organization, String channelName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        LedgerProcess ledgerProcess = mapper.readValue(
+                ledgerUserService.queryRecord(user, key, organization, channelName),
+                LedgerProcess.class);
+        return ledgerProcess;
+    }
+
+    public LedgerProduct getProduct(User user, String key, String organization, String channelName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        LedgerProduct ledgerProduct = mapper.readValue(
+                ledgerUserService.queryRecord(user, key, organization, channelName),
+                LedgerProduct.class);
+        return ledgerProduct;
+    }
+
+    public LedgerProducer getProducer(User user, String key, String organization, String channelName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        LedgerProducer ledgerProducer = mapper.readValue(
+                ledgerUserService.queryRecord(user, key, organization, channelName),
+                LedgerProducer.class);
+        return ledgerProducer;
+    }
+
+    public LedgerTransport getTransport(User user, String key, String organization, String channelName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        LedgerTransport ledgerTransport = mapper.readValue(
+                ledgerUserService.queryRecord(user, key, organization, channelName),
+                LedgerTransport.class);
+        return ledgerTransport;
+    }
+
+    public LedgerDeliveryTruck getDeliveryTruck(User user, String key, String organization, String channelName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        LedgerDeliveryTruck ledgerDeliveryTruck = mapper.readValue(
+                ledgerUserService.queryRecord(user, key, organization, channelName),
+                LedgerDeliveryTruck.class);
+        return ledgerDeliveryTruck;
+    }
+
+    public LedgerDistributor getDistributor(User user, String key, String organization, String channelName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        LedgerDistributor ledgerDistributor = mapper.readValue(
+                ledgerUserService.queryRecord(user, key, organization, channelName),
+                LedgerDistributor.class);
+        return ledgerDistributor;
+    }
 }

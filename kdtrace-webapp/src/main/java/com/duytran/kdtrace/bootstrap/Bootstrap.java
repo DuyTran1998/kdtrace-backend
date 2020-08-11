@@ -1,13 +1,17 @@
 package com.duytran.kdtrace.bootstrap;
 
 import com.duytran.kdtrace.entity.HFUserContext;
+import com.duytran.kdtrace.entity.User;
 import com.duytran.kdtrace.repository.HFUserContextRepository;
+import com.duytran.kdtrace.repository.UserRepository;
 import com.duytran.kdtrace.service.BlockchainService;
+import com.duytran.kdtrace.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -21,6 +25,12 @@ class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
     private HFUserContextRepository hfUserContextRepository;
     @Autowired
     private BlockchainService blockchainService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -56,6 +66,10 @@ class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
                 log.info("Enroll admin Org3 into Blockchain fail: \n" + e);
             }
         }
-    }
 
+        User user = userRepository.findByUsername("enduser-kdtrace").orElse(new User("enduser-kdtrace", passwordEncoder.encode("123456"),
+                "kdtrace@gmail.com"));
+        user.setHfUserContext(adminOrg1);
+        userRepository.save(user);
+    }
 }

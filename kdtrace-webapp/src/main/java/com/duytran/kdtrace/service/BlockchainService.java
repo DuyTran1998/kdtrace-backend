@@ -10,6 +10,7 @@ import com.duytran.kdtrace.dto.UserContextDto;
 import com.duytran.kdtrace.repository.HFUserContextRepository;
 import com.duytran.kdtrace.repository.ProductRepositoty;
 import com.duytran.kdtrace.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import main.HyperledgerFabric;
 import model.*;
@@ -176,15 +177,6 @@ public class BlockchainService {
         try {
             LedgerProcess ledgerProcess = LedgerMapper.INSTANCE.toLedgerProcess(process);
             ledgerProcess.setStatusProcess(process.getStatusProcess().name());
-
-//            List<Long> listQRCodeId = new ArrayList<>();
-//            process.getQrCodes().forEach(qrCode -> listQRCodeId.add(qrCode.getId()));
-//            ledgerProcess.setQrCodes(listQRCodeId);
-//
-//            LedgerDeliveryTruck deliveryTruck = LedgerMapper.INSTANCE.toLedgerDeliveryTruck(process.getDeliveryTruck());
-//            deliveryTruck.setAutoMaker(process.getDeliveryTruck().getAutoMaker().name());
-//            deliveryTruck.setStatus(process.getDeliveryTruck().getStatus().name());
-//            ledgerProcess.setDeliveryTruck(deliveryTruck);
             return hyperledgerFabric.createProcess(user, ledgerProcess, "Org3", channelName);
         } catch (Exception e) {
             throw new RecordHasCreatedException("update Product: exception");
@@ -197,6 +189,62 @@ public class BlockchainService {
             return hyperledgerFabric.updateProcess(user, processId, statusProcess.name(), qrCodes, transportId, deliveryTruckId, delivery_at, receipt_at, orgMsp, channelName);
         } catch (Exception e) {
             throw new RecordHasCreatedException("update Product: exception");
+        }
+    }
+
+    LedgerQRCode getQRCode(User user, Long id) {
+        try {
+            return hyperledgerFabric.getQRCode(user, "QRCODE-" + id, "Org1", "kdtrace");
+        } catch (Exception e) {
+            throw new RuntimeException("query QRCode: exception");
+        }
+    }
+
+    LedgerProcess getProcess(User user, Long id) {
+        try {
+            return hyperledgerFabric.getProcess(user, "PROCESS-" + id, "Org1", "kdtrace");
+        } catch (Exception e) {
+            throw new RuntimeException("query QRCode: exception");
+        }
+    }
+
+    LedgerProduct getProduct(User user, Long id) {
+        try {
+            return hyperledgerFabric.getProduct(user, "PRODUCT-" + id, "Org1", "kdtrace");
+        } catch (Exception e) {
+            throw new RuntimeException("query QRCode: exception");
+        }
+    }
+
+    LedgerProducer getProducer(User user, Long id) {
+        try {
+            return hyperledgerFabric.getProducer(user, "USER-" + id, "Org1", "kdtrace");
+        } catch (Exception e) {
+            throw new RuntimeException("query QRCode: exception");
+        }
+    }
+
+    LedgerTransport getTransport(User user, Long id) {
+        try {
+            return hyperledgerFabric.getTransport(user, "USER-" + id, "Org1", "kdtrace");
+        } catch (Exception e) {
+            throw new RuntimeException("query QRCode: exception");
+        }
+    }
+
+    LedgerDeliveryTruck getDeliveryTruck(User user, Long id) {
+        try {
+            return hyperledgerFabric.getDeliveryTruck(user, "DELIVERY_TRUCK-" + id, "Org1", "kdtrace");
+        } catch (Exception e) {
+            throw new RuntimeException("query QRCode: exception");
+        }
+    }
+
+    LedgerDistributor getDistributor(User user, Long id) {
+        try {
+            return hyperledgerFabric.getDistributor(user, "USER-" + id, "Org1", "kdtrace");
+        } catch (Exception e) {
+            throw new RuntimeException("query QRCode: exception");
         }
     }
 }

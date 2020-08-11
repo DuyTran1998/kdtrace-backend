@@ -107,4 +107,26 @@ public class LedgerUserService {
             throw new Exception("Exception on saving distributor info");
         }
     }
+
+    public String queryRecord(User user, String key, String organizationName, String channelName) throws Exception {
+        try {
+            UserContext userContext = Util.toUserContextFromHFUserContext(user.getHfUserContext());
+            BlockEvent.TransactionEvent result = ChannelWrapper
+                    .getChannelWrapperInstance(
+                            user.getUsername(),
+                            organizationName)
+                    .invokeChainCode(
+                            channelName,
+                            organizationName,
+                            userContext,
+                            "process_" + channelName,
+                            "query",
+                            new String[]{key});
+            log.info("transaction is valid : " + result.isValid());
+            return new String(result.getTransactionActionInfo(0).getProposalResponsePayload());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Exception on query Record info");
+        }
+    }
 }
