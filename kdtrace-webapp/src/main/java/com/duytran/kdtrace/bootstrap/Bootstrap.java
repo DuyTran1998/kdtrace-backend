@@ -67,9 +67,17 @@ class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
             }
         }
 
-        User user = userRepository.findByUsername("enduser-kdtrace").orElse(new User("enduser-kdtrace", passwordEncoder.encode("123456"),
-                "kdtrace@gmail.com"));
-        user.setHfUserContext(adminOrg1);
-        userRepository.save(user);
+        User user1 = userRepository.findByUsername("enduser-kdtrace1").orElse(
+                new User("enduser-kdtrace1", passwordEncoder.encode("123456"), "kdtrace@gmail.com"));
+        user1.setHfUserContext(adminOrg1);
+        User user2 = userRepository.findByUsername("enduser-kdtrace2").orElse(
+                new User("enduser-kdtrace2", passwordEncoder.encode("123456"), "kdtrace@gmail.com"));
+        user2.setHfUserContext(adminOrg2);
+        User user3 = userRepository.findByUsername("enduser-kdtrace3").orElse(
+                new User("enduser-kdtrace3", passwordEncoder.encode("123456"), "kdtrace@gmail.com"));
+        user3.setHfUserContext(adminOrg3);
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
     }
 }
