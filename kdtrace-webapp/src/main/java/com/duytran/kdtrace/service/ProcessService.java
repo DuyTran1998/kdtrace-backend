@@ -347,14 +347,23 @@ public class ProcessService {
         if (qrCode.getStatusQRCode() != StatusQRCode.READY) {
             return new ResponseModel("Method is not allowed)", HttpStatus.METHOD_NOT_ALLOWED.value(), code);
         }
-        User user = userRepository.findByUsername("enduser-kdtrace").orElse(new User());
-        LedgerQRCode ledgerQRCode = blockchainService.getQRCode(user, qrCode.getId());
-        LedgerProcess ledgerProcess = blockchainService.getProcess(user, ledgerQRCode.getProcessId());
-        LedgerProduct ledgerProduct = blockchainService.getProduct(user, ledgerQRCode.getProductId());
-        LedgerProducer ledgerProducer = blockchainService.getProducer(user, producerRepository.findProducerById(ledgerProduct.getProducerId()).get().getUser().getId());
-        LedgerTransport ledgerTransport = blockchainService.getTransport(user, transportRepository.findTransportById(ledgerProcess.getTransportId()).get().getUser().getId());
-        LedgerDeliveryTruck ledgerDeliveryTruck = blockchainService.getDeliveryTruck(user, ledgerProcess.getDeliveryTruckId());
-        LedgerDistributor ledgerDistributor = blockchainService.getDistributor(user, qrCode.getProcess().getDistributor().getUser().getId());
+        User user1 = userRepository.findByUsername("enduser-kdtrace1").orElse(new User());
+        User user2 = userRepository.findByUsername("enduser-kdtrace2").orElse(new User());
+        User user3 = userRepository.findByUsername("enduser-kdtrace3").orElse(new User());
+        LedgerQRCode ledgerQRCode = blockchainService.getQRCode(
+                user1, qrCode.getId(), "Org1");
+        LedgerProcess ledgerProcess = blockchainService.getProcess(
+                user3, ledgerQRCode.getProcessId(), "Org3");
+        LedgerProduct ledgerProduct = blockchainService.getProduct(
+                user1, ledgerQRCode.getProductId(), "Org1");
+        LedgerProducer ledgerProducer = blockchainService.getProducer(
+                user1, producerRepository.findProducerById(ledgerProduct.getProducerId()).get().getUser().getId(), "Org1");
+        LedgerTransport ledgerTransport = blockchainService.getTransport(
+                user2, transportRepository.findTransportById(ledgerProcess.getTransportId()).get().getUser().getId(), "Org2");
+        LedgerDeliveryTruck ledgerDeliveryTruck = blockchainService.getDeliveryTruck(
+                user2, ledgerProcess.getDeliveryTruckId(), "Org2");
+        LedgerDistributor ledgerDistributor = blockchainService.getDistributor(
+                user3, qrCode.getProcess().getDistributor().getUser().getId(), "Org3");
 
         ProcessModel processModel = new ProcessModel(
                 ledgerProcess.getId(),

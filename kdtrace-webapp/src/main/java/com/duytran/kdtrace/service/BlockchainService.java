@@ -192,57 +192,57 @@ public class BlockchainService {
         }
     }
 
-    LedgerQRCode getQRCode(User user, Long id) {
+    LedgerQRCode getQRCode(User user, Long id, String Org) {
         try {
-            return hyperledgerFabric.getQRCode(user, "QRCODE-" + id, "Org1", "kdtrace");
+            return hyperledgerFabric.getQRCode(user, "QRCODE-" + id, Org, "kdtrace");
         } catch (Exception e) {
             throw new RuntimeException("query QRCode: exception");
         }
     }
 
-    LedgerProcess getProcess(User user, Long id) {
+    LedgerProcess getProcess(User user, Long id, String Org) {
         try {
-            return hyperledgerFabric.getProcess(user, "PROCESS-" + id, "Org1", "kdtrace");
+            return hyperledgerFabric.getProcess(user, "PROCESS-" + id, Org, "kdtrace");
         } catch (Exception e) {
             throw new RuntimeException("query QRCode: exception");
         }
     }
 
-    LedgerProduct getProduct(User user, Long id) {
+    LedgerProduct getProduct(User user, Long id, String Org) {
         try {
-            return hyperledgerFabric.getProduct(user, "PRODUCT-" + id, "Org1", "kdtrace");
+            return hyperledgerFabric.getProduct(user, "PRODUCT-" + id, Org, "kdtrace");
         } catch (Exception e) {
             throw new RuntimeException("query QRCode: exception");
         }
     }
 
-    LedgerProducer getProducer(User user, Long id) {
+    LedgerProducer getProducer(User user, Long id, String Org) {
         try {
-            return hyperledgerFabric.getProducer(user, "USER-" + id, "Org1", "kdtrace");
+            return hyperledgerFabric.getProducer(user, "USER-" + id, Org, "kdtrace");
         } catch (Exception e) {
             throw new RuntimeException("query QRCode: exception");
         }
     }
 
-    LedgerTransport getTransport(User user, Long id) {
+    LedgerTransport getTransport(User user, Long id, String Org) {
         try {
-            return hyperledgerFabric.getTransport(user, "USER-" + id, "Org1", "kdtrace");
+            return hyperledgerFabric.getTransport(user, "USER-" + id, Org, "kdtrace");
         } catch (Exception e) {
             throw new RuntimeException("query QRCode: exception");
         }
     }
 
-    LedgerDeliveryTruck getDeliveryTruck(User user, Long id) {
+    LedgerDeliveryTruck getDeliveryTruck(User user, Long id, String Org) {
         try {
-            return hyperledgerFabric.getDeliveryTruck(user, "DELIVERY_TRUCK-" + id, "Org1", "kdtrace");
+            return hyperledgerFabric.getDeliveryTruck(user, "DELIVERY_TRUCK-" + id, Org, "kdtrace");
         } catch (Exception e) {
             throw new RuntimeException("query QRCode: exception");
         }
     }
 
-    LedgerDistributor getDistributor(User user, Long id) {
+    LedgerDistributor getDistributor(User user, Long id, String Org) {
         try {
-            return hyperledgerFabric.getDistributor(user, "USER-" + id, "Org1", "kdtrace");
+            return hyperledgerFabric.getDistributor(user, "USER-" + id, Org, "kdtrace");
         } catch (Exception e) {
             throw new RuntimeException("query QRCode: exception");
         }
