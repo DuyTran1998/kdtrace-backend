@@ -3,6 +3,7 @@ package com.duytran.kdtrace.service;
 import com.duytran.kdtrace.entity.*;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.UserMapper;
+import com.duytran.kdtrace.model.ProducerInfoModel;
 import com.duytran.kdtrace.model.RegisterRequest;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.model.UserModel;
@@ -146,5 +147,20 @@ public class UserService {
         });
 
         return new ResponseModel("Get All of Users", 200, userModels);
+    }
+
+    public ResponseModel getProfile(String username, String role){
+        switch (role) {
+            case "ROLE_PRODUCER":
+                return new ResponseModel("Producer Profile", 200,
+                                            producerService.getProducerByUserName(username));
+            case "ROLE_TRANSPORT":
+                return new ResponseModel("Transport Profile", 200,
+                                            transportService.getTransporByUserName(username));
+            case "ROLE_DISTRIBUTOR":
+                return new ResponseModel("Distributor Profile", 200,
+                                            distributorService.getDistributorByUserName(username));
+        }
+        return null;
     }
 }

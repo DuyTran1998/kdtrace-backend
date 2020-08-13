@@ -16,8 +16,6 @@ public interface ProducerRepository extends JpaRepository<Producer, Long> {
 
     Optional<Producer> findProducerByUser_Username(String username);
 
-    boolean existsProducerById(Long id);
-
     Optional<Producer> findProducerById(Long id);
 
     @Query(value = "SELECT producers.email from producers where producers.id in " +

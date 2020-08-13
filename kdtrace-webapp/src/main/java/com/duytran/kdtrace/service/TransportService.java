@@ -65,6 +65,15 @@ public class TransportService {
 
     }
 
+    public TransportModel getTransporByUserName(String username){
+        Transport transport = transportRepository.findTransportByUser_Username(username).orElseThrow(
+                () -> new RecordNotFoundException("Transport isn't found")
+        );
+        TransportModel transportModel = TransportMapper.INSTANCE.transportToTransportModel(transport);
+        return transportModel;
+
+    }
+
     @Transactional
     public ResponseModel updateTransport(TransportModel transportModel){
         Transport transport = transportRepository.findTransportById(transportModel.getId()).orElseThrow(
