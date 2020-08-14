@@ -69,15 +69,21 @@ class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
         User user1 = userRepository.findByUsername("enduser-kdtrace1").orElse(
                 new User("enduser-kdtrace1", passwordEncoder.encode("123456"), "kdtrace@gmail.com"));
-        user1.setHfUserContext(adminOrg1);
+        if(user1.getHfUserContext() == null || user1.getHfUserContext().getCertificate() != adminOrg1.getCertificate()){
+            user1.setHfUserContext(adminOrg1);
+            userRepository.save(user1);
+        }
         User user2 = userRepository.findByUsername("enduser-kdtrace2").orElse(
                 new User("enduser-kdtrace2", passwordEncoder.encode("123456"), "kdtrace@gmail.com"));
-        user2.setHfUserContext(adminOrg2);
+        if(user2.getHfUserContext() == null || user2.getHfUserContext().getCertificate() != adminOrg2.getCertificate()){
+            user2.setHfUserContext(adminOrg2);
+            userRepository.save(user2);
+        }
         User user3 = userRepository.findByUsername("enduser-kdtrace3").orElse(
                 new User("enduser-kdtrace3", passwordEncoder.encode("123456"), "kdtrace@gmail.com"));
-        user3.setHfUserContext(adminOrg3);
-        userRepository.save(user1);
-        userRepository.save(user2);
-        userRepository.save(user3);
+        if (user3.getHfUserContext() == null || user3.getHfUserContext().getCertificate() != adminOrg3.getCertificate()){
+            user3.setHfUserContext(adminOrg3);
+            userRepository.save(user3);
+        }
     }
 }
