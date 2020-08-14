@@ -53,6 +53,14 @@ public class DistributorService {
        return new ResponseModel("Distributor Information", 200, distributorModel);
     }
 
+    public DistributorModel getDistributorByUserName(String username){
+        Distributor distributor = distributorRepository.findDistributorByUser_Username(username).orElseThrow(
+                () -> new RecordNotFoundException("Distributor isn't found")
+        );
+        DistributorModel distributorModel = DistributorMapper.INSTANCE.distributorToDistributorModel(distributor);
+        return distributorModel;
+    }
+
     @Transactional
     public ResponseModel updateDistriButor(DistributorModel distributorModel){
         Distributor distributor = distributorRepository.findDistributorById(distributorModel.getId()).orElseThrow(

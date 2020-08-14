@@ -30,4 +30,9 @@ public class UserController {
     public ResponseEntity<?> updateRoleForUser(@Valid @RequestParam Long user_id){
         return ResponseEntity.ok(userService.activeUser(user_id));
     }
+
+    @GetMapping("getProfile")
+    public ResponseEntity<?> getProfile(@RequestParam String username, String role){
+        return ResponseEntity.ok(userService.getProfile(username, role));
+    }
 }

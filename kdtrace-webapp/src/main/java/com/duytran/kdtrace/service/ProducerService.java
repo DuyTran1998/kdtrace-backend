@@ -58,6 +58,14 @@ public class ProducerService {
         return new ResponseModel("Producer Information", 200, producerInfoModel);
     }
 
+    public ProducerInfoModel getProducerByUserName(String username){
+        Producer producer = producerRepository.findProducerByUser_Username(username).orElseThrow(
+                () -> new RecordNotFoundException("Producer not found")
+        );
+        ProducerInfoModel producerInfoModel = ProducerMapper.INSTANCE.producerToProducerInfoModel(producer);
+        return producerInfoModel;
+    }
+
 
     // Update Information of Producer
     @Transactional
