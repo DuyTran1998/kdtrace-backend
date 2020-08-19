@@ -35,7 +35,7 @@ public class RoleDBInit implements CommandLineRunner {
             Role roleExpress = new Role(RoleName.ROLE_TRANSPORT);
             Role roleDistributor = new Role(RoleName.ROLE_DISTRIBUTOR);
 
-            userRepository.save( new User("duytran", passwordEncoder.encode("123456"), true, roleAdmin));
+            userRepository.save( new User("admin", passwordEncoder.encode("123456"), true, roleAdmin));
 
             roleRepository.save(roleUser);
             roleRepository.save(roleTransport);
