@@ -143,7 +143,7 @@ organizations:
     certificateAuthorities:
       - ca.org1.kdtrace.vn
     adminPrivateKey:
-      path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/users/Admin@org1.kdtrace.vn/msp/keystore/333ccaa3bb2ed4ef6976a4cd0580910fc3c7534a8f44a53f6530dc5cf3336856_sk
+      path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/users/Admin@org1.kdtrace.vn/msp/keystore/1eb2461d18581b9de28d73df504dfbc9802c0a7cdfd57b38b93edadc942ad58b_sk
     signedCert:
       path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/users/Admin@org1.kdtrace.vn/msp/signcerts/Admin@org1.kdtrace.vn-cert.pem
   Org2:
@@ -155,7 +155,7 @@ organizations:
     certificateAuthorities:
       - ca.org2.kdtrace.vn
     adminPrivateKey:
-      path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/users/Admin@org2.kdtrace.vn/msp/keystore/1b4f8b095f53d2c140fe9ff4a0a87146b64001260f5ab54944c83c05d035dbc4_sk
+      path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/users/Admin@org2.kdtrace.vn/msp/keystore/f4ddac9a5f88556f4e18ef6a748e2c7ffa09705bdaf8b9d5db11fe2df1a91287_sk
     signedCert:
       path: blockchain/crypto-config/peerOrganizations/org2.kdtrace.vn/users/Admin@org2.kdtrace.vn/msp/signcerts/Admin@org2.kdtrace.vn-cert.pem
   Org3:
@@ -167,7 +167,7 @@ organizations:
     certificateAuthorities:
       - ca.org3.kdtrace.vn
     adminPrivateKey:
-      path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/users/Admin@org3.kdtrace.vn/msp/keystore/7ba4372a5560acf2ee4a720c84469983286236a82e9d10052419bafd933c1e47_sk
+      path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/users/Admin@org3.kdtrace.vn/msp/keystore/e6fa03d0767cd6fb232269c08ff55c2434804ab7d7cf66b9c26479163b26af2c_sk
     signedCert:
       path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/users/Admin@org3.kdtrace.vn/msp/signcerts/Admin@org3.kdtrace.vn-cert.pem
   ordererorg:
