@@ -1,7 +1,7 @@
 package com.duytran.kdtrace.controller;
 
 
-import com.duytran.kdtrace.model.RequestFeedback;
+import com.duytran.kdtrace.model.RequestReport;
 import com.duytran.kdtrace.model.ResponseModel;
 import com.duytran.kdtrace.service.ProcessService;
 import com.duytran.kdtrace.service.ProductService;
@@ -34,9 +34,9 @@ public class EndUserController {
                 productService.trackingCode(code, otp));
     }
 
-    @RequestMapping(value = "/feedback", method = RequestMethod.POST)
-    public ResponseModel updateFeedback(@RequestBody RequestFeedback requestFeedback) {
+    @RequestMapping(value = "/report", method = RequestMethod.POST)
+    public ResponseModel updateReport(@RequestBody RequestReport requestReport) {
         return new ResponseModel(null, 200,
-                productService.updateFeedback(requestFeedback.getCode(), requestFeedback.getFeedback()));
+                productService.updateReport(requestReport));
     }
 }
