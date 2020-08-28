@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,7 +21,6 @@ public class QRCode implements Serializable {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-
     private Product product;
 
     private String code;
@@ -42,7 +42,8 @@ public class QRCode implements Serializable {
 
     private Long tracking;
 
-    private String feedback;
+    @OneToMany(mappedBy = "code")
+    private List<Report> reports;
 
     public QRCode(){
     }

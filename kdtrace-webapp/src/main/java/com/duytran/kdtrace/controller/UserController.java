@@ -1,5 +1,6 @@
 package com.duytran.kdtrace.controller;
 
+import com.duytran.kdtrace.service.ProductService;
 import com.duytran.kdtrace.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private ProductService productService;
 
     @GetMapping("/get")
     public ResponseEntity<?> getUserById(@RequestParam Long id){
@@ -34,5 +37,10 @@ public class UserController {
     @GetMapping("getProfile")
     public ResponseEntity<?> getProfile(@RequestParam String username, String role){
         return ResponseEntity.ok(userService.getProfile(username, role));
+    }
+
+    @GetMapping("getAllReports")
+    public ResponseEntity<?> getAllReports(){
+        return ResponseEntity.ok(productService.getAllReports());
     }
 }

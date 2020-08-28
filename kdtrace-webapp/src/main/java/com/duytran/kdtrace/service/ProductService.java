@@ -1,6 +1,7 @@
 package com.duytran.kdtrace.service;
 
 import com.duytran.kdtrace.entity.*;
+import com.duytran.kdtrace.exeption.MessagingExceptionHandler;
 import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.ProducerMapper;
 import com.duytran.kdtrace.mapper.ProductMapper;
@@ -8,6 +9,7 @@ import com.duytran.kdtrace.model.*;
 import com.duytran.kdtrace.repository.ProducerRepository;
 import com.duytran.kdtrace.repository.ProductRepositoty;
 import com.duytran.kdtrace.repository.QRCodeRepository;
+import com.duytran.kdtrace.repository.ReportRepository;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,9 @@ public class ProductService {
 
     @Autowired
     ProducerRepository producerRepository;
+
+    @Autowired
+    ReportRepository reportRepository;
 
     @Transactional
     public ResponseModel createProduct(ProductModel productModel, MultipartFile[] multipartFiles) throws IOException {
@@ -181,14 +186,26 @@ public class ProductService {
         return null;
     }
 
-    public String updateFeedback(String code, String feedback) {
-        QRCode qrCode = qrCodeRepository.findByCode(code).orElse(null);
-        if (qrCode == null) {
+    public String updateReport(RequestReport requestReport) {
+        QRCode qrCode = qrCodeRepository.findByCode(requestReport.getCode()).orElse(null);
+        if (qrCode == null || qrCode.getStatusQRCode()!= StatusQRCode.READY) {
             return "QRCode not found!";
         }
-        qrCode.setFeedback(feedback);
-        qrCodeRepository.save(qrCode);
-        return "Update feedback for " + qrCode.getProduct().getName() + " successfully!";
+        Report report = ProductMapper.INSTANCE.requestReportToReport(requestReport);
+        report.setProductLink(qrCode.getLink() );
+        report.setTime(commonService.getDateTime());
+        report.setCode(qrCode);
+        reportRepository.save(report);
+        return "Submit report for " + qrCode.getProduct().getName() + " successfully. I will check and overcome that is concerned. Thank you!";
+    }
+
+    public ResponseModel getAllReports() {
+        try {
+            List<Report> reports = reportRepository.findAll();
+            return new ResponseModel("Get all report successfully!", HttpStatus.OK.value(), reports);
+        }catch (Exception e){
+            throw new MessagingExceptionHandler("Fail to get all Record");
+        }
     }
 
     @Transactional
