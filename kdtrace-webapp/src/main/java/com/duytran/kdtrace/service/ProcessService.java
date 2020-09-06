@@ -133,6 +133,25 @@ public class ProcessService {
         return new ResponseModel("You accepted for transaction from " + process.getDistributor().getCompanyName(), HttpStatus.OK.value(), id);
     }
 
+    public ResponseModel replaceTransport(Long id) {
+        Process process = findProcessById(id);
+        Distributor distributor = distributorService.getDistributorInPrincipal();
+        if (!distributor.getId().equals(process.getDistributor().getId()) ||
+                !(process.getStatusProcess() == StatusProcess.WAITING_RESPONSE_TRANSPORT)) {
+            return new ResponseModel("You don't have permission", HttpStatus.METHOD_NOT_ALLOWED.value(), id);
+        }
+        process.setTransportID(null);
+        process.setStatusProcess(StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT);
+        processRepository.save(process);
+        List<Long> listQrCodeId = new ArrayList<>();
+        process.getQrCodes().forEach(
+                i -> listQrCodeId.add(i.getId())
+        );
+        blockchainService.updateProcess(distributor.getUser(), process.getId(), StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT,
+                listQrCodeId, null, null, null, null, distributor.getOrgMsp(), "kdtrace");
+        return new ResponseModel("Delele transport sucessfully", HttpStatus.OK.value(), id);
+    }
+
     @Transactional
     public ResponseModel rejectToSell(Long id) {
         Process process = findProcessById(id);
@@ -184,7 +203,7 @@ public class ProcessService {
             return new ResponseModel("You don't have permission", HttpStatus.METHOD_NOT_ALLOWED.value(), id);
         }
         Transport transport = transportRepository.findTransportById(transport_id).orElse(new Transport());
-        if(transport.getUser() == null){
+        if (transport.getUser() == null) {
             return new ResponseModel("Transport does not exist, reselect!", HttpStatus.METHOD_NOT_ALLOWED.value(), id);
         }
         process.setTransportID(transport_id);
@@ -193,7 +212,7 @@ public class ProcessService {
                 null, transport_id, null, null, null, distributor.getOrgMsp(), "kdtrace");
         Process savedProcess = processRepository.save(process);
         sendEmailToTransport(savedProcess);
-        return new ResponseModel("Send your request to Transport: "+ transport.getCompanyName() +" successfully !", HttpStatus.OK.value(), id);
+        return new ResponseModel("Send your request to Transport: " + transport.getCompanyName() + " successfully !", HttpStatus.OK.value(), id);
     }
 
     private void sendEmailToTransport(Process process) {
@@ -462,7 +481,7 @@ public class ProcessService {
                         process.getStatusProcess() == StatusProcess.PRODUCER_REJECT)) {
             return new ResponseModel("You don't have permission", HttpStatus.METHOD_NOT_ALLOWED.value(), processId);
         }
-        if(process.getStatusProcess().equals(StatusProcess.WAITING_RESPONSE_PRODUCER)){
+        if (process.getStatusProcess().equals(StatusProcess.WAITING_RESPONSE_PRODUCER)) {
             productService.changeStatusQRCode(distributor.getUser(),
                     process.getProductID(),
                     process.getQuanlity(),

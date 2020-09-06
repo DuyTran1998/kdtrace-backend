@@ -66,6 +66,12 @@ public class ProcessController {
     }
 
     @PreAuthorize(("hasRole('ROLE_DISTRIBUTOR')"))
+    @PostMapping("/replaceTransport")
+    public ResponseEntity<?> replaceTransport(@RequestParam Long id) {
+        return ResponseEntity.ok(processService.replaceTransport(id));
+    }
+
+    @PreAuthorize(("hasRole('ROLE_DISTRIBUTOR')"))
     @PostMapping("/confirmToReceipt")
     public ResponseEntity<?> confirmToReceipt(@RequestParam Long id) {
         return ResponseEntity.ok(processService.confirmToReceiptGoods(id));
