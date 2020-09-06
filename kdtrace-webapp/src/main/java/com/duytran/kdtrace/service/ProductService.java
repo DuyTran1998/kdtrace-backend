@@ -19,18 +19,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 
 @Service
@@ -196,7 +199,7 @@ public class ProductService {
         report.setTime(commonService.getDateTime());
         report.setCode(qrCode);
         reportRepository.save(report);
-        return "Submit report for " + qrCode.getProduct().getName() + " successfully. I will check and overcome that is concerned. Thank you!";
+        return "Submit report for " + qrCode.getProduct().getName() + " successfully. Management department will check and overcome that is concerned. Thank you!";
     }
 
     public ResponseModel getAllReports() {
@@ -218,6 +221,12 @@ public class ProductService {
         });
         Predicate<ProductModel> notContainsAVAILABLE = productModel -> (productModel.getCodes().size() == 0);
         productModels.removeIf(notContainsAVAILABLE);
+
+        Predicate<ProductModel> productExp = productModel -> (Duration.between(
+                LocalDate.parse(commonService.getDateTime().substring(0, 10).replace("/", "-"), DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay(),
+                LocalDate.parse(productModel.getExp().toString().substring(0, 10), DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay()
+        ).toDays() <= 0);
+        productModels.removeIf(productExp);
         return new ResponseModel("List Products For Market", HttpStatus.OK.value(), productModels);
     }
 
