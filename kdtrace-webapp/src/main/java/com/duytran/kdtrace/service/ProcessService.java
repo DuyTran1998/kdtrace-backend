@@ -133,6 +133,14 @@ public class ProcessService {
         return new ResponseModel("You accepted for transaction from " + process.getDistributor().getCompanyName(), HttpStatus.OK.value(), id);
     }
 
+    public ResponseModel replaceTransport(Long id) {
+        Process process = findProcessById(id);
+        process.setTransportID(null);
+        process.setStatusProcess(StatusProcess.CHOOSE_DELIVERYTRUCK_TRANSPORT);
+        Process savedProcess = processRepository.save(process);
+        return new ResponseModel("Delele transport sucessfully", HttpStatus.OK.value(), id);
+    }
+
     @Transactional
     public ResponseModel rejectToSell(Long id) {
         Process process = findProcessById(id);
