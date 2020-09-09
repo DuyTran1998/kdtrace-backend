@@ -23,4 +23,6 @@ public class UserModel {
     private Role role;
 
     private String createAt;
+
+    private Float rate;
 }

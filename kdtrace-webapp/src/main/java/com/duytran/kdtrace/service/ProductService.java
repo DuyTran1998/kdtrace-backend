@@ -196,11 +196,9 @@ public class ProductService {
     public ResponseModel getAllProductForDistributor() {
         List<Product> products = productRepository.findAllByOrderByIdAsc();
         List<ProductModel> productModels = ProductMapper.INSTANCE.listProductToModel(products);
-        String name = products.get(0).getProducer().getCompanyName();
         productModels.forEach(productModel -> {
             Predicate<QRCodeModel> isNotAVAILABLE = qrCodeModel -> (qrCodeModel.getStatusQRCode() != StatusQRCode.AVAILABLE);
             productModel.getCodes().removeIf(isNotAVAILABLE);
-            productModel.setCompanyName(name);
         });
         Predicate<ProductModel> notContainsAVAILABLE = productModel -> (productModel.getCodes().size() == 0);
         productModels.removeIf(notContainsAVAILABLE);
@@ -232,5 +230,13 @@ public class ProductService {
         Predicate<ProducerModel> nullProducerAVAILABLE = producerModel -> (producerModel.getProductModels().size() == 0);
         producerModels.removeIf(nullProducerAVAILABLE);
         return new ResponseModel("Get all product successfully", 200, producerModels);
+    }
+
+    public List<String> getAllProducerName(){
+        List<String> producerName = new ArrayList<>();
+        producerRepository.findAll().forEach(producer -> {
+            producerName.add(producer.getCompanyName());
+        });
+        return producerName;
     }
 }

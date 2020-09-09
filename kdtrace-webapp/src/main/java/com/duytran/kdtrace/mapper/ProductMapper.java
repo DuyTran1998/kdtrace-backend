@@ -22,6 +22,7 @@ public interface ProductMapper {
 
     List<QRCodeModel> qrCodeListToQRCodeModel(List<QRCode> qrCodes);
 
+    @Mapping(target = "companyName", source = "producer.companyName")
     ProductModel productToProductModel(Product product);
 
     Product productModelToProduct(ProductModel productModel);
