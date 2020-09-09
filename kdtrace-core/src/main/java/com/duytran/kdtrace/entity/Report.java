@@ -26,6 +26,8 @@ public class Report implements Serializable {
 
     private String reportContent;
 
+    private Float rate;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "code")

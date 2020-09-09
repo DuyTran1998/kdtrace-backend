@@ -183,31 +183,6 @@ public class ProductService {
         return productRepository.existsByIdAndProducer_Id(id, producer_id);
     }
 
-    public Long trackingCode(String code, String otp) {
-        QRCode qrCode = qrCodeRepository.findByCode(code).orElse(new QRCode());
-        if (otp.equals(qrCode.getOtp())) {
-            if (qrCode.getTracking() == null)
-                qrCode.setTracking(1L);
-            else
-                qrCode.setTracking(qrCode.getTracking() + 1);
-            return qrCodeRepository.save(qrCode).getTracking();
-        }
-        return null;
-    }
-
-    public String updateReport(RequestReport requestReport) {
-        QRCode qrCode = qrCodeRepository.findByCode(requestReport.getCode()).orElse(null);
-        if (qrCode == null || qrCode.getStatusQRCode()!= StatusQRCode.READY) {
-            return "QRCode not found!";
-        }
-        Report report = ProductMapper.INSTANCE.requestReportToReport(requestReport);
-        report.setProductLink(qrCode.getLink() );
-        report.setTime(commonService.getDateTime());
-        report.setCode(qrCode);
-        reportRepository.save(report);
-        return "Submit report for " + qrCode.getProduct().getName() + " successfully. Management department will check and overcome that is concerned. Thank you!";
-    }
-
     public ResponseModel getAllReports() {
         try {
             List<Report> reports = reportRepository.findAll();

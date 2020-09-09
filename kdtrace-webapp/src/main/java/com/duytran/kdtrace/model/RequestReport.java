@@ -20,4 +20,7 @@ public class RequestReport {
 
     @NotNull
     private String reportContent;
+
+    @NotNull
+    private Float rate;
 }

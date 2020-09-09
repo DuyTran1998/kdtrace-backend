@@ -23,4 +23,6 @@ public class DistributorModel {
     private String website;
 
     private String tin;
+
+    private Float rate;
 }

@@ -1,8 +1,10 @@
 package com.duytran.kdtrace.controller;
 
 
+import com.duytran.kdtrace.entity.RoleName;
 import com.duytran.kdtrace.model.RequestReport;
 import com.duytran.kdtrace.model.ResponseModel;
+import com.duytran.kdtrace.service.EndUserService;
 import com.duytran.kdtrace.service.ProcessService;
 import com.duytran.kdtrace.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,13 +16,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/enduser")
 public class EndUserController {
     @Autowired
-    private ProcessService processService;
-    @Autowired
-    private ProductService productService;
+    private EndUserService endUserService;
+
+    @RequestMapping(value = "/get-root-product", method = RequestMethod.GET)
+    public ResponseModel getRootByQRCode(@RequestParam String code) {
+        return endUserService.getRootProduct(code);
+    }
 
     @RequestMapping(value = "/get-product-info", method = RequestMethod.GET)
     public ResponseModel getByQRCode(@RequestParam String code) {
-        return processService.getInfomation(code);
+        return endUserService.getInfomation(code);
     }
 
     @RequestMapping(value = "/tracking-code", method = RequestMethod.PATCH)
@@ -31,12 +36,17 @@ public class EndUserController {
         }
         return new ResponseModel("Tracking QRCode successfully",
                 200,
-                productService.trackingCode(code, otp));
+                endUserService.trackingCode(code, otp));
     }
 
     @RequestMapping(value = "/report", method = RequestMethod.POST)
     public ResponseModel updateReport(@RequestBody RequestReport requestReport) {
         return new ResponseModel(null, 200,
-                productService.updateReport(requestReport));
+                endUserService.updateReport(requestReport));
+    }
+
+    @RequestMapping(value = "/getRate", method = RequestMethod.GET)
+    public ResponseModel getRate(@RequestParam Long id, @RequestParam RoleName role) {
+        return new ResponseModel(null, 200, endUserService.getRate(id, role));
     }
 }

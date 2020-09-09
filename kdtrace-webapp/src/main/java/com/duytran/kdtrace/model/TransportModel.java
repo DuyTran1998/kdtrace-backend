@@ -24,4 +24,6 @@ public class TransportModel {
     private String website;
 
     private String tin;
+
+    private Float rate;
 }

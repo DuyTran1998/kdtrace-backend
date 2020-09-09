@@ -22,4 +22,6 @@ public class ProducerInfoModel {
     private String website;
 
     private String tin;
+
+    private Float rate;
 }

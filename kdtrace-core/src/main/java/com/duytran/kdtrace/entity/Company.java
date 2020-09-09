@@ -38,6 +38,12 @@ public abstract class Company implements Serializable {
 
     private String tin;
 
+    @Column(name = "rate", nullable = false, columnDefinition = "float default 5.0")
+    private float rate = 5F;
+
+    @Column(name = "count_rate", nullable = false, columnDefinition = "int default 1")
+    private int countRate = 1;
+
     @Column(updatable = false)
     private String create_at;
 
@@ -59,5 +65,10 @@ public abstract class Company implements Serializable {
         this.update_at = update_at;
         this.website = website;
         this.tin = tin;
+    }
+
+    public void updateRate(Float rate) {
+        this.rate = (this.rate * countRate + rate)/(countRate + 1);
+        countRate = countRate + 1;
     }
 }
