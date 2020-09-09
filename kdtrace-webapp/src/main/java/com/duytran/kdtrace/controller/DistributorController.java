@@ -35,4 +35,9 @@ public class DistributorController {
     public ResponseEntity<?> getAllProducts(){
         return ResponseEntity.ok(productService.getAllProductForDistributor());
     }
+
+    @GetMapping("/getAllProducer")
+    public ResponseEntity<?> getAllProducer(){
+        return ResponseEntity.ok(productService.getAllProducerName());
+    }
 }

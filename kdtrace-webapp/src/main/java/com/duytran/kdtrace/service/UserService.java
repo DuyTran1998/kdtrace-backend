@@ -134,14 +134,17 @@ public class UserService {
                 case ROLE_PRODUCER:
                     Producer producer = producerRepository.findProducerByUser_Username(userModel.getUsername()).orElse(new Producer());
                     userModel.setCreateAt(producer.getCreate_at());
+                    userModel.setRate(producer.getRate());
                     break;
                 case ROLE_TRANSPORT:
                     Transport transport = transportRepository.findTransportByUser_Username(userModel.getUsername()).orElse(new Transport());
                     userModel.setCreateAt(transport.getCreate_at());
+                    userModel.setRate(transport.getRate());
                     break;
                 case ROLE_DISTRIBUTOR:
                     Distributor distributor = distributorRepository.findDistributorByUser_Username(userModel.getUsername()).orElse(new Distributor());
                     userModel.setCreateAt(distributor.getCreate_at());
+                    userModel.setRate(distributor.getRate());
                     break;
             }
         });
