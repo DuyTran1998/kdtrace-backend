@@ -1,8 +1,10 @@
 package com.duytran.kdtrace.mapper;
 
+import com.duytran.kdtrace.entity.Medicine;
 import com.duytran.kdtrace.entity.Product;
 import com.duytran.kdtrace.entity.QRCode;
 import com.duytran.kdtrace.entity.Report;
+import com.duytran.kdtrace.model.MedicineModel;
 import com.duytran.kdtrace.model.ProductModel;
 import com.duytran.kdtrace.model.QRCodeModel;
 import com.duytran.kdtrace.model.RequestReport;
@@ -23,6 +25,8 @@ public interface ProductMapper {
     ProductModel productToProductModel(Product product);
 
     Product productModelToProduct(ProductModel productModel);
+
+    Medicine medicineModelToMedicine(MedicineModel medicineModel);
 
     List<ProductModel> listProductToModel(List<Product> products);
 

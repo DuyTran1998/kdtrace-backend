@@ -6,10 +6,7 @@ import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.ProducerMapper;
 import com.duytran.kdtrace.mapper.ProductMapper;
 import com.duytran.kdtrace.model.*;
-import com.duytran.kdtrace.repository.ProducerRepository;
-import com.duytran.kdtrace.repository.ProductRepositoty;
-import com.duytran.kdtrace.repository.QRCodeRepository;
-import com.duytran.kdtrace.repository.ReportRepository;
+import com.duytran.kdtrace.repository.*;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,13 +59,22 @@ public class ProductService {
     @Autowired
     ReportRepository reportRepository;
 
+    @Autowired
+    MedicineRepository medicineRepository;
+
     @Transactional
     public ResponseModel createProduct(ProductModel productModel, MultipartFile[] multipartFiles) throws IOException {
         Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
         Producer producer = producerService.getProducerInPrincipal();
         product.setProducer(producer);
         product.setCreate_at(commonService.getDateTime());
-        productRepository.save(product);
+        List<Medicine> medicines = product.getMedicines();
+        Product temp = productRepository.save(product);
+
+        for(Medicine medicine : medicines){
+            medicine.setProduct(temp);
+        }
+        medicineRepository.saveAll(medicines);
         product.setImage(saveImage(multipartFiles, product.getId()));
         List<QRCode> qrCodes = generateCode(product);
         qrCodeRepository.saveAll(qrCodes);
@@ -177,31 +183,6 @@ public class ProductService {
         return productRepository.existsByIdAndProducer_Id(id, producer_id);
     }
 
-    public Long trackingCode(String code, String otp) {
-        QRCode qrCode = qrCodeRepository.findByCode(code).orElse(new QRCode());
-        if (otp.equals(qrCode.getOtp())) {
-            if (qrCode.getTracking() == null)
-                qrCode.setTracking(1L);
-            else
-                qrCode.setTracking(qrCode.getTracking() + 1);
-            return qrCodeRepository.save(qrCode).getTracking();
-        }
-        return null;
-    }
-
-    public String updateReport(RequestReport requestReport) {
-        QRCode qrCode = qrCodeRepository.findByCode(requestReport.getCode()).orElse(null);
-        if (qrCode == null || qrCode.getStatusQRCode()!= StatusQRCode.READY) {
-            return "QRCode not found!";
-        }
-        Report report = ProductMapper.INSTANCE.requestReportToReport(requestReport);
-        report.setProductLink(qrCode.getLink() );
-        report.setTime(commonService.getDateTime());
-        report.setCode(qrCode);
-        reportRepository.save(report);
-        return "Submit report for " + qrCode.getProduct().getName() + " successfully. Management department will check and overcome that is concerned. Thank you!";
-    }
-
     public ResponseModel getAllReports() {
         try {
             List<Report> reports = reportRepository.findAll();
@@ -215,9 +196,11 @@ public class ProductService {
     public ResponseModel getAllProductForDistributor() {
         List<Product> products = productRepository.findAllByOrderByIdAsc();
         List<ProductModel> productModels = ProductMapper.INSTANCE.listProductToModel(products);
+        String name = products.get(0).getProducer().getCompanyName();
         productModels.forEach(productModel -> {
             Predicate<QRCodeModel> isNotAVAILABLE = qrCodeModel -> (qrCodeModel.getStatusQRCode() != StatusQRCode.AVAILABLE);
             productModel.getCodes().removeIf(isNotAVAILABLE);
+            productModel.setCompanyName(name);
         });
         Predicate<ProductModel> notContainsAVAILABLE = productModel -> (productModel.getCodes().size() == 0);
         productModels.removeIf(notContainsAVAILABLE);

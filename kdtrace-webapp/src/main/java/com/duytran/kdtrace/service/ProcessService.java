@@ -42,11 +42,6 @@ public class ProcessService {
     private TransportRepository transportRepository;
     @Autowired
     private ProductRepositoty productRepositoty;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ProducerRepository producerRepository;
-
 
     @Transactional
     public ResponseModel createProcess(RequestProcessModel processModel) {
@@ -357,52 +352,6 @@ public class ProcessService {
 
     public List<QRCode> getQRCodeByProcessId(Long id) {
         return qrCodeRepository.findAllByProcess_Id(id);
-    }
-
-    public ResponseModel getInfomation(String code) {
-        QRCode qrCode = qrCodeRepository.findByCode(code).orElseThrow(
-                () -> new RecordNotFoundException("Don't found QRCode with code")
-        );
-        if (qrCode.getStatusQRCode() != StatusQRCode.READY) {
-            return new ResponseModel("Method is not allowed)", HttpStatus.METHOD_NOT_ALLOWED.value(), code);
-        }
-        User user1 = userRepository.findByUsername("enduser-kdtrace1").orElse(new User());
-        User user2 = userRepository.findByUsername("enduser-kdtrace2").orElse(new User());
-        User user3 = userRepository.findByUsername("enduser-kdtrace3").orElse(new User());
-        LedgerQRCode ledgerQRCode = blockchainService.getQRCode(
-                user1, qrCode.getId(), "Org1");
-        LedgerProcess ledgerProcess = blockchainService.getProcess(
-                user3, ledgerQRCode.getProcessId(), "Org3");
-        LedgerProduct ledgerProduct = blockchainService.getProduct(
-                user1, ledgerQRCode.getProductId(), "Org1");
-        LedgerProducer ledgerProducer = blockchainService.getProducer(
-                user1, producerRepository.findProducerById(ledgerProduct.getProducerId()).get().getUser().getId(), "Org1");
-        LedgerTransport ledgerTransport = blockchainService.getTransport(
-                user2, transportRepository.findTransportById(ledgerProcess.getTransportId()).get().getUser().getId(), "Org2");
-        LedgerDeliveryTruck ledgerDeliveryTruck = blockchainService.getDeliveryTruck(
-                user2, ledgerProcess.getDeliveryTruckId(), "Org2");
-        LedgerDistributor ledgerDistributor = blockchainService.getDistributor(
-                user3, qrCode.getProcess().getDistributor().getUser().getId(), "Org3");
-
-        ProcessModel processModel = new ProcessModel(
-                ledgerProcess.getId(),
-                ledgerProduct.getId(),
-                ledgerTransport.getTransportId(),
-                StatusProcess.valueOf(ledgerProcess.getStatusProcess()),
-                ledgerProcess.getDelivery_at(),
-                ledgerProcess.getReceipt_at(),
-                qrCode.getProcess().getQuanlity(),
-                ledgerProcess.getCreate_at(),
-                new ArrayList<>(),
-                LedgerMapper.INSTANCE.toProducerModel(ledgerProducer),
-                LedgerMapper.INSTANCE.toTransportModel(ledgerTransport),
-                LedgerMapper.INSTANCE.toDeliveryTruckModel(ledgerDeliveryTruck),
-                LedgerMapper.INSTANCE.toDistributorModel(ledgerDistributor),
-                LedgerMapper.INSTANCE.toProductModel(ledgerProduct),
-                qrCode.getProcess().getUpdateAt()
-        );
-        processModel.getProductModel().setImage(qrCode.getProduct().getImage());
-        return new ResponseModel("Process", HttpStatus.OK.value(), processModel);
     }
 
     @Transactional

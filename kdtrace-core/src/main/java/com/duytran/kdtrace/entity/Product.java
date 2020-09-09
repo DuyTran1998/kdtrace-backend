@@ -1,10 +1,10 @@
 package com.duytran.kdtrace.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +24,19 @@ public class Product {
     private Date mfg;
 
     private Date exp;
+
+    private LocalDate startDay;
+
+    private LocalDate endDay;
+
+    @Column
+    private Float price;
+
+    private String root;
+
+    @OneToMany(mappedBy = "product")
+    private List<Medicine> medicines;
+
 
     @OneToMany(mappedBy = "product")
     private List<QRCode> codes;
