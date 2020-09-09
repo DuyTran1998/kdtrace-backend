@@ -6,10 +6,7 @@ import com.duytran.kdtrace.exeption.RecordNotFoundException;
 import com.duytran.kdtrace.mapper.ProducerMapper;
 import com.duytran.kdtrace.mapper.ProductMapper;
 import com.duytran.kdtrace.model.*;
-import com.duytran.kdtrace.repository.ProducerRepository;
-import com.duytran.kdtrace.repository.ProductRepositoty;
-import com.duytran.kdtrace.repository.QRCodeRepository;
-import com.duytran.kdtrace.repository.ReportRepository;
+import com.duytran.kdtrace.repository.*;
 import com.duytran.kdtrace.security.principal.UserPrincipalService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,13 +59,22 @@ public class ProductService {
     @Autowired
     ReportRepository reportRepository;
 
+    @Autowired
+    MedicineRepository medicineRepository;
+
     @Transactional
     public ResponseModel createProduct(ProductModel productModel, MultipartFile[] multipartFiles) throws IOException {
         Product product = ProductMapper.INSTANCE.productModelToProduct(productModel);
         Producer producer = producerService.getProducerInPrincipal();
         product.setProducer(producer);
         product.setCreate_at(commonService.getDateTime());
-        productRepository.save(product);
+        List<Medicine> medicines = product.getMedicines();
+        Product temp = productRepository.save(product);
+
+        for(Medicine medicine : medicines){
+            medicine.setProduct(temp);
+        }
+        medicineRepository.saveAll(medicines);
         product.setImage(saveImage(multipartFiles, product.getId()));
         List<QRCode> qrCodes = generateCode(product);
         qrCodeRepository.saveAll(qrCodes);
