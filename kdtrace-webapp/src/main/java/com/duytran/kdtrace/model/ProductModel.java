@@ -56,4 +56,6 @@ public class ProductModel {
     private Unit unit;
 
     private String image;
+
+    private String companyName;
 }
