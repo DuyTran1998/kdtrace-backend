@@ -212,13 +212,13 @@ orderers:
       path: crypto-config/ordererOrganizations/kdtrace.vn/tlsca/tlsca.kdtrace.vn-cert.pem
 peers:
   peer0.org1.kdtrace.vn:
-    url: grpc://34.87.40.132:7051
+    url: grpc://34.126.121.47:7051
     grpcOptions:
       ssl-target-name-override: peer0.org1.kdtrace.vn
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/tlsca/tlsca.org1.kdtrace.vn-cert.pem
   peer1.org1.kdtrace.vn:
-    url: grpc://34.87.40.132:7054
+    url: grpc://34.126.121.47:7054
     grpcOptions:
       ssl-target-name-override: peer1.org1.kdtrace.vn
     tlsCACerts:
@@ -249,7 +249,7 @@ peers:
       path: blockchain/crypto-config/peerOrganizations/org3.kdtrace.vn/tlsca/tlsca.org3.kdtrace.vn-cert.pem
 certificateAuthorities:
   ca.org1.kdtrace.vn:
-    url: http://34.87.40.132:9001
+    url: http://34.126.121.47:9001
     tlsCACerts:
       path: blockchain/crypto-config/peerOrganizations/org1.kdtrace.vn/tlsca/tlsca.org1.kdtrace.vn-cert.pem
       client:
